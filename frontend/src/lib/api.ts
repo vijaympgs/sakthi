@@ -10,6 +10,13 @@ export const api = axios.create({
   timeout: 15000,
 });
 
+api.interceptors.response.use((response) => {
+  if (response.data && typeof response.data === "object" && "results" in response.data) {
+    return { ...response, data: response.data.results };
+  }
+  return response;
+});
+
 export const cmsApi = {
   getHome: () => api.get("/cms/home/"),
   getPages: () => api.get("/cms/pages/"),
