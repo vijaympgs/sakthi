@@ -1,0 +1,155 @@
+{
+  "siteSettings": {
+    "site_name": "Sakthi Solutions",
+    "tagline": "Digital Signage, Kiosks & IT Solutions",
+    "phone_primary": "04426420089",
+    "phone_secondary": "+91 9840057127",
+    "email_primary": "info@sakthisolutions.in",
+    "email_support": "support@sakthisolutions.in",
+    "address_line1": "1/1, 1st Floor, General Collins Road",
+    "address_line2": "Choolai",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "postal_code": "600112",
+    "country": "India",
+    "facebook_url": "https://www.facebook.com/Sakthi-Solutions-276890643116200/",
+    "linkedin_url": "https://www.linkedin.com/company/sakthi-solutions/",
+    "youtube_url": "https://www.youtube.com/channel/UCxRoJTQKDHkLFj6hFCTHW0g",
+    "founded_year": 2014,
+    "about_content": "Sakthi Solutions provides digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. The company was formed in the year 2014 by a team with vast experience of 25+ years in sales - Retail, Packaging, industrial automation and hospitality.",
+    "mission": "To provide complete hardware, digital signage and IT consulting end-to-end solutions for hospitality, retail and corporate sectors, enabling businesses to operate efficiently with the right technology.",
+    "vision": "To be the most trusted technology partner for digital signage and IT solutions, known for prompt service, reliable partnerships and innovative solutions."
+  },
+  "productCategories": [
+    {
+      "name": "Godspeed",
+      "slug": "godspeed",
+      "description": "World class digital signage with manufacturing unit in Hong Kong and China. Heavy duty body with toughened glass surface.",
+      "sort_order": 1
+    },
+    {
+      "name": "Tellus",
+      "slug": "tellus",
+      "description": "Customer feedback kiosk solution for restaurants and retail outlets.",
+      "sort_order": 2
+    },
+    {
+      "name": "Childwood",
+      "slug": "childwood",
+      "description": "Children's play equipment for indoor and outdoor spaces.",
+      "sort_order": 3
+    }
+  ],
+  "products": [
+    {
+      "category": "godspeed",
+      "name": "Indoor Digital Signage",
+      "slug": "indoor-digital-signage",
+      "tagline": "Revolutionary Digital Communication",
+      "short_description": "Digital signage with floor standing, wall mountable and LG options.",
+      "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface. User changeable images and videos using exclusive software.",
+      "is_featured": true,
+      "sort_order": 1
+    },
+    {
+      "category": "godspeed",
+      "name": "Smart Touch Table",
+      "slug": "smart-touch-table",
+      "tagline": "Next Generation Human-Machine Interaction",
+      "short_description": "Multi-touch interactive tables in 32\", 42\" and 46\" sizes.",
+      "description": "Multi-touch tables enabling advanced and intelligent interaction between human and machine. Available with foil touch, IR touch and capacitive touch options.",
+      "is_featured": false,
+      "sort_order": 2
+    },
+    {
+      "category": "godspeed",
+      "name": "Interactive Wayfinding Kiosk",
+      "slug": "wayfinding-kiosk",
+      "tagline": "Navigate with Ease",
+      "short_description": "Interactive wayfinding with directory, map and route guidance.",
+      "description": "Interactive wayfinding with intuitive interface, directory listing, shortest route guidance and attractive branding. Deployed at Phoenix Marketcity malls in Mumbai, Pune and Bangalore.",
+      "is_featured": false,
+      "sort_order": 3
+    },
+    {
+      "category": "godspeed",
+      "name": "Speed Touch Series Touch Screen Kiosk",
+      "slug": "touch-screen-kiosk",
+      "tagline": "Versatile Touch Solutions",
+      "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.",
+      "description": "Touch screen kiosk with high quality IR, resistance and capacitive touch options. Floor standing and half standing configurations. Industrial mother board with Windows/Android support.",
+      "is_featured": false,
+      "sort_order": 4
+    },
+    {
+      "category": "godspeed",
+      "name": "Video Wall",
+      "slug": "video-wall",
+      "tagline": "Perfect Visual Experience",
+      "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.",
+      "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG. Perfect visual experience with ultra thin splicing technology and intelligent controlling system.",
+      "is_featured": false,
+      "sort_order": 5
+    },
+    {
+      "category": "tellus",
+      "name": "Tellus Feedback Solution",
+      "slug": "tellus",
+      "tagline": "Measure Your Business by Guest Feedback",
+      "short_description": "Electronic customer feedback kiosks with instant alerts and reporting.",
+      "description": "Customer feedback kiosk for restaurants and retail. Collects feedback electronically, sends instant text alerts for poor ratings with customer name and mobile number. Less than Rs 20 per day per branch.",
+      "is_featured": true,
+      "sort_order": 6
+    },
+    {
+      "category": "childwood",
+      "name": "Childwood Children's Play Equipment",
+      "slug": "childwood",
+      "tagline": "Indoor & Outdoor Play Solutions",
+      "short_description": "Children's play equipment for indoor and outdoor spaces.",
+      "description": "Childwood children play equipment indoor / outdoor and gym equipments.",
+      "is_featured": false,
+      "sort_order": 7
+    }
+  ],
+  "services": [
+    {
+      "name": "Hardware for Restaurant and Bar",
+      "slug": "hardware",
+      "description": "Complete hardware solutions for the hospitality industry.",
+      "sort_order": 1
+    },
+    {
+      "name": "Consulting for IT Networking",
+      "slug": "it-networking",
+      "description": "Professional free consulting for new restaurants and bars.",
+      "sort_order": 2
+    }
+  ],
+  "industries": [
+    { "name": "Corporate Offices", "slug": "corporate" },
+    { "name": "Hospitals & Healthcare", "slug": "healthcare" },
+    { "name": "Shopping Malls & Retail", "slug": "retail" },
+    { "name": "Hotels & Resorts", "slug": "hotels" },
+    { "name": "Restaurants & Fine Dining", "slug": "restaurants" },
+    { "name": "Event Management", "slug": "events" },
+    { "name": "Airports", "slug": "airports" },
+    { "name": "Museums", "slug": "museums" },
+    { "name": "Cafes & Coffee Shops", "slug": "cafes" },
+    { "name": "Bars & Nightclubs", "slug": "bars" },
+    { "name": "Food Courts & QSR", "slug": "food-courts" },
+    { "name": "Entertainment Centers", "slug": "entertainment" }
+  ],
+  "enquiryTypes": [
+    { "name": "Godspeed Digital Signage", "sort_order": 1 },
+    { "name": "Smart Touch Table", "sort_order": 2 },
+    { "name": "Wayfinding Kiosk", "sort_order": 3 },
+    { "name": "Touch Screen Kiosk", "sort_order": 4 },
+    { "name": "Video Wall", "sort_order": 5 },
+    { "name": "Tellus Feedback", "sort_order": 6 },
+    { "name": "Childwood", "sort_order": 7 },
+    { "name": "Hardware Supply", "sort_order": 8 },
+    { "name": "IT Networking Consulting", "sort_order": 9 },
+    { "name": "General Enquiry", "sort_order": 10 }
+  ]
+}

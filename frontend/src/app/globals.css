@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary-50: #f0f0f8;
+  --color-primary-100: #d8d8ec;
+  --color-primary-200: #b0b0d9;
+  --color-primary-300: #8888c6;
+  --color-primary-400: #6060b3;
+  --color-primary-500: #1a1a2e;
+  --color-primary-600: #16162a;
+  --color-primary-700: #121226;
+  --color-primary-800: #0e0e22;
+  --color-primary-900: #0a0a1e;
+
+  --color-accent-50: #fef2f2;
+  --color-accent-100: #fee2e2;
+  --color-accent-200: #fecaca;
+  --color-accent-300: #fca5a5;
+  --color-accent-400: #f54337;
+  --color-accent-500: #f54337;
+  --color-accent-600: #e12f23;
+  --color-accent-700: #b91c1c;
+  --color-accent-800: #991b1b;
+  --color-accent-900: #7f1d1d;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8f9fa;
+
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-primary-500);
+  background-color: var(--color-surface);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@layer components {
+  .container-page {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .heading-xl {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+  }
+
+  .heading-lg {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight;
+  }
+
+  .heading-md {
+    @apply text-2xl md:text-3xl font-bold;
+  }
+
+  .heading-sm {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+
+  .text-body-lg {
+    @apply text-lg md:text-xl leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-3 bg-primary-500 text-white font-medium
+           hover:bg-primary-600 transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-8 py-3 border-2 border-primary-500 text-primary-500
+           font-medium hover:bg-primary-500 hover:text-white transition-colors duration-200;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-8 py-3 bg-accent-500 text-white font-medium
+           hover:bg-accent-600 transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white border border-gray-100 p-6 transition-shadow duration-200 hover:shadow-lg;
+  }
+
+  .section-header {
+    @apply text-center mb-12 md:mb-16;
+  }
+
+  .section-label {
+    @apply text-sm font-semibold uppercase tracking-widest text-accent-500 mb-3;
+  }
+}

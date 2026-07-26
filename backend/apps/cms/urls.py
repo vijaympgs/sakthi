@@ -1,0 +1,29 @@
+from django.urls import path
+from .views import *
+
+urlpatterns = [
+    path("home/", HomePageView.as_view(), name="home"),
+    path("pages/", PageListView.as_view(), name="page-list"),
+    path("pages/<slug:slug>/", PageDetailView.as_view(), name="page-detail"),
+    path("product-categories/", ProductCategoryListView.as_view(), name="product-category-list"),
+    path("product-categories/<slug:slug>/", ProductCategoryDetailView.as_view(), name="product-category-detail"),
+    path("products/", ProductListView.as_view(), name="product-list"),
+    path("products/<slug:slug>/", ProductDetailView.as_view(), name="product-detail"),
+    path("solutions/", SolutionListView.as_view(), name="solution-list"),
+    path("industries/", IndustryListView.as_view(), name="industry-list"),
+    path("services/", ServiceListView.as_view(), name="service-list"),
+    path("services/<slug:slug>/", ServiceDetailView.as_view(), name="service-detail"),
+    path("clients/", ClientListView.as_view(), name="client-list"),
+    path("testimonials/", TestimonialListView.as_view(), name="testimonial-list"),
+    path("galleries/", GalleryListView.as_view(), name="gallery-list"),
+    path("galleries/<slug:slug>/", GalleryDetailView.as_view(), name="gallery-detail"),
+    path("downloads/", DownloadListView.as_view(), name="download-list"),
+    path("blog/", BlogPostListView.as_view(), name="blog-list"),
+    path("blog/<slug:slug>/", BlogPostDetailView.as_view(), name="blog-detail"),
+    path("navigation/<slug:slug>/", NavigationMenuDetailView.as_view(), name="navigation-detail"),
+    path("footer/", FooterView.as_view(), name="footer"),
+    path("settings/site/", SiteSettingsView.as_view(), name="site-settings"),
+    path("settings/seo/", SEOSettingsView.as_view(), name="seo-settings"),
+    path("settings/theme/", ThemeSettingsView.as_view(), name="theme-settings"),
+    path("contact/", ContactSubmissionCreateView.as_view(), name="contact-submit"),
+]
