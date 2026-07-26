@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+
+export const metadata: Metadata = {
+  title: "Indoor Digital Signage - Sakthi Solutions | Floor Standing, Wall Mounting & LG Displays",
+  description: "Godspeed indoor digital signage solutions including floor standing series, wall mounting series and LG commercial displays. Heavy-duty body, toughened glass, full HD resolution. For corporate, retail and hospitality.",
+};
 
 const SUB_PRODUCTS = [
   {
@@ -11,7 +17,7 @@ const SUB_PRODUCTS = [
   {
     title: "LG Digital Signage",
     description: "LG branded commercial displays with enterprise-grade reliability, slim bezel design and centralized content management.",
-    href: "/products/indoor-digital-signage",
+    href: "/products/indoor-digital-signage/lg-digital-signage",
     image: "/assets/products/lcd.jpg",
   },
   {

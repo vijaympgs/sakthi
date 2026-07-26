@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { CaseStudy } from "@/components/ui/CaseStudy";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Interactive Wayfinding Kiosk - Sakthi Solutions | Mall & Hospital Directory Solution",
+  description: "Godspeed interactive wayfinding kiosk with directory listing, interactive map and shortest route guidance. Deployed at Phoenix Marketcity malls across Mumbai, Pune and Bangalore (27 kiosks).",
+};
 
 const data = PRODUCT_CATALOG.wayfindingKiosk;
 

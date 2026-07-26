@@ -235,7 +235,7 @@ export function ContactPage() {
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Locate Us</h3>
                 <div className="border border-gray-200 aspect-[4/3] bg-gray-50">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.6067!2d80.2378!3d13.0878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA1JzE2LjEiTiA4MMKwMTQnMTYuMSJF!5e0!3m2!1sen!2sin!4v1"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.5079!2d80.234098!3d13.091822!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526f5a2344c1f3%3A0x9ae6c0b8f5a23c0d!2s1%2F1%2C+General+Collins+Rd%2C+Choolai%2C+Chennai%2C+Tamil+Nadu+600112!5e0!3m2!1sen!2sin!4v1"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Video Wall - Sakthi Solutions | Samsung & LG LCD Video Walls 42\" to 55\"",
+  description: "Godspeed LCD video walls with original Samsung and LG A+ panels. Available in 42\", 46\" and 55\" with ultra-thin bezel splicing technology. Ideal for security, retail, events and hospitality.",
+};
 
 const data = PRODUCT_CATALOG.videoWall;
 

@@ -73,14 +73,14 @@ All created under `frontend/src/app/products/`:
 
 ---
 
-## VERIFIED BUILD — npm run build PASSED (17 pages)
+## VERIFIED BUILD — npm run build PASSED (19 pages)
 
 Route (app)                                             Size  First Load JS
-┌ ○ /                                                  124 B         109 kB
+┌ ○ /                                                2.29 kB         108 kB
 ├ ○ /_not-found                                        996 B         104 kB
-├ ○ /about                                           2.67 kB         109 kB
-├ ○ /contact                                         51.1 kB         157 kB
-├ ○ /products                                          124 B         109 kB
+├ ○ /about                                           2.29 kB         108 kB
+├ ○ /contact                                           51 kB         157 kB
+├ ○ /products                                        2.29 kB         108 kB
 ├ ○ /products/childwood                                180 B         106 kB
 ├ ○ /products/indoor-digital-signage                   180 B         106 kB
 ├ ○ /products/indoor-digital-signage/floor-standing    180 B         106 kB
@@ -90,34 +90,41 @@ Route (app)                                             Size  First Load JS
 ├ ○ /products/touch-screen-kiosk                       180 B         106 kB
 ├ ○ /products/video-wall                               180 B         106 kB
 ├ ○ /products/wayfinding-kiosk                         180 B         106 kB
-└ ○ /services                                          124 B         109 kB
+├ ○ /services                                        2.29 kB         108 kB
+├ ○ /services/hardware                                 127 B         103 kB
+└ ○ /services/it-networking                            127 B         103 kB
 
-## COMPLETED (This Session)
+## COMPLETED (Session 2 — Gap fixes)
 
-### Pending Items Done
-1. **navigation.json fixed** — `"/products/godspeed"` changed to `"/products"`
-2. **SAKTHI-DISCOVERY.md updated** — IKonnect sections removed, renumbered to 3 product lines, website page list updated, "Software Highlights" section removed, Technology Partners cleaned
-3. **public/assets/ created** — `frontend/public/assets/logo/` and `frontend/public/assets/products/` directories created (no placeholder images yet)
-4. **Django check passed** — `manage.py check` found 0 issues
-5. **TypeScript typecheck passed** — `tsc --noEmit` with zero errors
-6. **Frontend build passed** — `npm run build` compiled all 17 static pages successfully
-7. **OWP-ARCHITECTURE.md** — Already clean, no IKonnect references found
+### Discovery gap fixes applied
+1. **HomePage Godspeed link fixed** — `"/products/godspeed"` → `"/products"` (was 404)
+2. **navigation.json Godspeed link fixed** — `"/products/godspeed"` → `"/products"`
+3. **SAKTHI-DISCOVERY.md updated** — IKonnect sections removed, renumbered to 3 product lines, website page list updated, "Software Highlights" section removed, Technology Partners cleaned
+4. **public/assets/ created** — `frontend/public/assets/logo/` and `frontend/public/assets/products/` directories created
+5. **Django check passed** — `manage.py check` found 0 issues
+6. **TypeScript typecheck passed** — `tsc --noEmit` with zero errors
+7. **Tellus hardware labels fixed** — `"10 Inch Tablet"` → `"10\" Tablet"`, `"7 Inch Tablet"` → `"7\" Tablet"`
+8. **Thermal rolls label fixed** — `"Thermal Rolls For Billing"` → `"Thermal Rolls For Billing (79mm)"`
+9. **Google Maps embed fixed** — Replaced invalid coordinates with correct Choolai sales-office coordinates
+10. **Services sub-routes created** — `/services/hardware` and `/services/it-networking` redirect to `/services`
+11. **Frontend build passed** — `npm run build` compiled all 19 static pages successfully (2 new redirect pages)
+12. **OWP-ARCHITECTURE.md** — Already clean, no IKonnect references found
+
+## VERIFIED BACKEND
+- **SQLite fallback added** — `development.py` now uses SQLite by default when `USE_SQLITE=True` (default). Override with `USE_SQLITE=False` for PostgreSQL.
+- **Migrations** — All 22 migrations (users, cms, audit + Django core) created and applied
+- **Seed data** — `manage.py seed_sakthi` executed successfully:
+  - 3 Product Categories: Godspeed, Tellus, Childwood (0 IKonnect)
+  - 7 Products, 2 Services, 12 Industries, 10 EnquiryTypes
+- **Superuser** — `admin@sakthisolutions.in` / `admin123` created
+- **Development server** — `manage.py runserver 0.0.0.0:8000` starts without errors
+- **Admin URL** — `/admin/` should be accessible at `http://localhost:8000/admin/`
 
 ## PENDING / CAVEATS
-- **Django `manage.py seed` not run** — PostgreSQL not available on this machine. Requires Docker or local Postgres with `owp_user` credentials
-- **Django `manage.py migrate` not run** — Same database dependency
-- **No local images** — All product images reference `sakthisolutions.in` URLs. Placeholder images not generated
+- **No local images** — All product images reference `sakthisolutions.in` URLs. No placeholder images generated
 - **Navigation multi-level dropdown** — Godspeed parent links to `/products` (no dedicated page). Children work as individual product pages
-- **Floor Standing & Wall Mounting** pages are sub-pages of `/products/indoor-digital-signage/` — not listed in the main navigation dropdown (only parent is shown)
-
----
-
-## KNOWN ISSUES / BUGS
-1. navigation.json has broken link `/products/godspeed` — no page exists
-2. SAKTHI-DISCOVERY.md still has IKonnect documentation
-3. No `public/assets/` directory — all images are external URLs
-4. No build verification has been run
-5. Dedicated Sakthi Solutions website configuration directly in `frontend/src/config/siteConfig.ts`
+- **Floor Standing & Wall Mounting** pages are sub-pages of `/products/indoor-digital-signage/` — not listed in main nav dropdown
+- **`.env` has `DEBUG=release` in system environment** — `development.py` overrides this with `DEBUG = True`, but it may affect other tooling
 
 ---
 

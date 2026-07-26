@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { FeatureBlock } from "@/components/ui/FeatureBlock";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Floor Standing Digital Signage - Sakthi Solutions | Round Corner Series 42\" to 65\"",
+  description: "Godspeed floor standing digital signage with round corner design. Available in 42\", 46\", 55\" and 65\". High brightness, full HD 1920x1080, 60000 hrs lifetime. Ideal for retail, corporate and hospitality.",
+};
 
 const FEATURES = PRODUCT_CATALOG.indoorDigitalSignage.floorStanding.features;
 const SPECS = PRODUCT_CATALOG.indoorDigitalSignage.floorStanding.specs;

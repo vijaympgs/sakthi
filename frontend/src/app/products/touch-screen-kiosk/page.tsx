@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Touch Screen Kiosk - Sakthi Solutions | Speed Touch Series 19\" to 55\"",
+  description: "Godspeed Speed Touch Series touch screen kiosks from 19\" to 55\". Floor standing and half standing configurations. IR touch, capacitive touch options. For education, retail, public spaces and events.",
+};
 
 const data = PRODUCT_CATALOG.touchScreenKiosk;
 
@@ -143,6 +149,15 @@ export default function TouchScreenKioskPage() {
       </section>
 
       <section className="section-padding bg-white">
+        <div className="container-page">
+          <div className="bg-accent-50 border border-accent-200 p-6 max-w-4xl mx-auto">
+            <h2 className="heading-sm text-primary-500 mb-3">Additional Notes</h2>
+            <p className="text-sm text-gray-700 leading-relaxed">{data.notes}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding bg-surface-muted">
         <div className="container-page text-center max-w-2xl">
           <h2 className="heading-sm text-primary-500 mb-4">Need Touch Screen Kiosks?</h2>
           <p className="text-gray-500 mb-6">Contact us for configuration, customization and deployment planning.</p>

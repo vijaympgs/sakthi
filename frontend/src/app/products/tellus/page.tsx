@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Tellus Feedback Solution - Sakthi Solutions | Customer Feedback Kiosk for Restaurants",
+  description: "Tellus electronic customer feedback solution for restaurants and retail. Instant SMS alerts for negative feedback, downloadable reports, chain outlet management. Stainless steel kiosk, 10\" and 7\" tablet options.",
+};
 
 const data = PRODUCT_CATALOG.tellus;
 

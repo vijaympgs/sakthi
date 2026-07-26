@@ -1,8 +1,37 @@
 import Link from "next/link";
-import { ArrowRight, Monitor, Wifi, ShieldCheck, Clock, Users, Baby } from "lucide-react";
+import { ArrowRight, Monitor, Wifi, ShieldCheck, Clock, Users, Baby, Star, Quote } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { CTA } from "@/components/ui/CTA";
+
+const TESTIMONIALS = [
+  {
+    quote: "Sakthi Solutions helped us automate KOT with 16 Tablets across our outlets. Home Delivery, Takeaway and Phone orders with Customer tracking and SMS triggering helped us increase customer satisfaction significantly.",
+    author: "Mr. Navaz Buhari",
+    title: "Proprietor",
+    company: "Buhari",
+    rating: 5,
+  },
+  {
+    quote: "Sakthi Solutions guided us through a complete technology upgrade from legacy PC-based systems to modern tablet-based KOT and touch POS machines at both our restaurants. The transition was smooth and the training took minimal time.",
+    author: "Mr. Prasana Butt",
+    title: "Owner",
+    company: "Matsya, Egmore",
+    rating: 5,
+  },
+  {
+    quote: "We moved from a 10-year-old ECR system to modern technology. The tablet-based KOT, automatic email reporting and user-friendly interface made a real difference to our daily operations. Simple and effective.",
+    author: "Mr. Ramesh",
+    title: "Manager",
+    company: "Doveton Cafe, Purasaiwakkam",
+    rating: 5,
+  },
+];
+
+const CLIENT_LOGOS = [
+  "Buhari", "Matsya", "Doveton Cafe", "Phoenix Marketcity",
+  "High Street Phoenix", "Samsung", "LG", "Epson",
+];
 
 const HERO_FEATURES = [
   { icon: <Monitor size={20} />, text: "Digital Signage & Video Walls" },
@@ -15,7 +44,7 @@ const PRODUCT_CATEGORIES = [
   {
     title: "Godspeed Digital Signage",
     description: "World-class digital signage with heavy-duty body, toughened glass, software-controlled displays. Floor standing, wall mountable, touch screen and video walls.",
-    href: "/products/godspeed",
+    href: "/products",
     icon: <Monitor size={28} />,
   },
   {
@@ -219,6 +248,52 @@ export function HomePage() {
                 <div className="text-sm text-gray-500">Technology Partners</div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding bg-surface-muted">
+        <div className="container-page">
+          <SectionHeader
+            label="Testimonials"
+            title="What Our Clients Say"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.author} className="card bg-white border border-gray-100">
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} size={16} className="fill-accent-500 text-accent-500" />
+                  ))}
+                </div>
+                <div className="mb-4">
+                  <Quote size={24} className="text-accent-200" />
+                </div>
+                <blockquote className="text-sm text-gray-600 leading-relaxed mb-6">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <div>
+                  <div className="font-semibold text-primary-500">{t.author}</div>
+                  <div className="text-xs text-gray-500">{t.title}, {t.company}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding bg-white border-t border-gray-100">
+        <div className="container-page">
+          <SectionHeader
+            label="Trusted By"
+            title="Our Clients"
+          />
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+            {CLIENT_LOGOS.map((name) => (
+              <div key={name} className="flex items-center justify-center h-16 px-4 border border-gray-100 bg-surface-muted">
+                <span className="text-sm font-semibold text-gray-500 text-center leading-tight">{name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

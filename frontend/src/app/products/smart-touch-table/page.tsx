@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PRODUCT_CATALOG } from "@/lib/productData";
+
+export const metadata: Metadata = {
+  title: "Smart Touch Table - Sakthi Solutions | Interactive Multi-Touch Tables 32\" to 46\"",
+  description: "Godspeed smart touch tables with 20-point multi-touch. Available in 32\", 42\" and 46\" with IR and capacitive touch options. Also available in 21.5\" Android variant. For restaurants, retail and corporate.",
+};
 
 const data = PRODUCT_CATALOG.smartTouchTable;
 

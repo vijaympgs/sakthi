@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { CHILDWOOD_CATALOG } from "@/lib/childwoodData";
+
+export const metadata: Metadata = {
+  title: "Childwood Play Equipment - Sakthi Solutions | Indoor & Outdoor Children's Play Equipment",
+  description: "Childwood indoor and outdoor children's play equipment including playstations, spring rockers, swings, slides, rideons, tunnels and EVA mat floorings. 130+ products for restaurants, malls and schools.",
+};
 
 function CatalogSection({ title, items }: { title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }) {
   return (
