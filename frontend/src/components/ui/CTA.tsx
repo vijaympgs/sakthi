@@ -14,6 +14,7 @@ export function CTA({ title, subtitle, primaryLabel = "Contact Us", primaryHref 
   return (
     <section className="bg-primary-500 text-white py-16 md:py-24">
       <div className="container-page text-center max-w-3xl">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Get Started</p>
         <h2 className="heading-lg mb-4">{title}</h2>
         {subtitle && <p className="text-lg text-gray-300 mb-8">{subtitle}</p>}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

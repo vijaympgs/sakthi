@@ -35,4 +35,8 @@ export const cmsApi = {
   getSEOSettings: () => api.get("/cms/settings/seo/"),
   getThemeSettings: () => api.get("/cms/settings/theme/"),
   submitContact: (data: Record<string, unknown>) => api.post("/cms/contact/", data),
+  getPartners: () => api.get("/cms/partners/"),
+  getChildwood: (type?: string) => api.get("/cms/childwood/", { params: type ? { type } : {} }),
+  getProductSpecs: (productSlug: string) => api.get("/cms/product-specs/", { params: { product: productSlug } }),
+  getCaseStudies: (productSlug?: string) => api.get("/cms/case-studies/", { params: productSlug ? { product: productSlug } : {} }),
 };

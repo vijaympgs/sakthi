@@ -91,3 +91,44 @@ export function usePage(slug: string) {
     enabled: !!slug,
   });
 }
+
+export function usePartners() {
+  return useQuery({
+    queryKey: ["partners"],
+    queryFn: () => cmsApi.getPartners().then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useChildwood(type?: string) {
+  return useQuery({
+    queryKey: ["childwood", type],
+    queryFn: () => cmsApi.getChildwood(type).then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useProductSpecs(slug: string) {
+  return useQuery({
+    queryKey: ["product-specs", slug],
+    queryFn: () => cmsApi.getProductSpecs(slug).then((res) => res.data),
+    enabled: !!slug,
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useCaseStudies(productSlug?: string) {
+  return useQuery({
+    queryKey: ["case-studies", productSlug],
+    queryFn: () => cmsApi.getCaseStudies(productSlug).then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useFooter() {
+  return useQuery({
+    queryKey: ["footer"],
+    queryFn: () => cmsApi.getFooter().then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}

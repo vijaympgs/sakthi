@@ -4,55 +4,41 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, Phone, Mail, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigation } from "@/hooks/useQueries";
 
-const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  {
-    label: "Products",
-    href: "/products",
-    children: [
-      {
-        label: "Godspeed",
-        href: "/products",
-        children: [
-          { label: "Indoor Digital Signage", href: "/products/indoor-digital-signage" },
-          { label: "Smart Touch Table", href: "/products/smart-touch-table" },
-          { label: "Wayfinding Kiosk", href: "/products/wayfinding-kiosk" },
-          { label: "Touch Screen Kiosk", href: "/products/touch-screen-kiosk" },
-          { label: "Video Wall", href: "/products/video-wall" },
-        ],
-      },
-      { label: "Tellus Feedback", href: "/products/tellus" },
-      { label: "Childwood", href: "/products/childwood" },
-    ],
-  },
-  {
-    label: "Services",
-    href: "/services",
-    children: [
-      { label: "Hardware for Restaurant & Bar", href: "/services" },
-      { label: "IT Networking Consulting", href: "/services" },
-    ],
-  },
-  { label: "Contact Us", href: "/contact" },
-];
+interface NavItem {
+  label: string;
+  url?: string;
+  children?: NavItem[];
+}
+
+//
 
 export function Navigation() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const { data: apiNav } = useNavigation("main");
+  const navItems: NavItem[] = apiNav?.items ?? [];
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="container-page flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-primary-500 flex items-center justify-center shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h7v7H4V4z" fill="#f54337"/>
+                <path d="M13 4h7v7h-7V4z" fill="#b59449"/>
+                <path d="M4 13h7v7H4v-7z" fill="#b59449"/>
+                <path d="M13 13h7v7h-7v-7z" fill="#f54337"/>
+              </svg>
+            </div>
             <span className="text-xl md:text-2xl font-bold text-primary-500 tracking-tight">
               <span className="text-[#f54337]">S</span>akthi <span className="text-[#f54337]">S</span>olutions
             </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <div
                 key={item.label}
                 className="relative"
@@ -60,7 +46,7 @@ export function Navigation() {
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <Link
-                  href={item.href}
+                  href={item.url || "#"}
                   className={cn(
                     "flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors",
                     item.children && "cursor-pointer",
@@ -80,7 +66,7 @@ export function Navigation() {
                         onMouseLeave={() => setOpenDropdown(item.label)}
                       >
                         <Link
-                          href={child.href}
+                          href={child.url || "#"}
                           className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-500 transition-colors"
                         >
                           {child.label}
@@ -92,7 +78,7 @@ export function Navigation() {
                             {child.children.map((subChild) => (
                               <Link
                                 key={subChild.label}
-                                href={subChild.href}
+                                href={subChild.url || "#"}
                                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-500 transition-colors"
                               >
                                 {subChild.label}
@@ -109,16 +95,10 @@ export function Navigation() {
           </nav>
 
           <div className="hidden lg:block">
-            <Link href="/contact" className="btn-primary text-sm">
-              Get a Quote
-            </Link>
+            <Link href="/contact" className="btn-primary text-sm">Get a Quote</Link>
           </div>
 
-          <button
-            className="lg:hidden p-2 text-gray-700"
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-            aria-label="Toggle menu"
-          >
+          <button className="lg:hidden p-2 text-gray-700" onClick={() => setIsMobileOpen(!isMobileOpen)} aria-label="Toggle menu">
             {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -126,7 +106,7 @@ export function Navigation() {
         {isMobileOpen && (
           <div className="lg:hidden border-t border-gray-100 bg-white">
             <div className="container-page py-4 space-y-1">
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <MobileNavItem key={item.label} item={item} onClose={() => setIsMobileOpen(false)} />
               ))}
               <Link href="/contact" className="btn-primary block text-center mt-4" onClick={() => setIsMobileOpen(false)}>
@@ -139,12 +119,12 @@ export function Navigation() {
   );
 }
 
-function MobileNavItem({ item, onClose }: { item: (typeof NAV_ITEMS)[0]; onClose: () => void }) {
+function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!item.children) {
     return (
-      <Link href={item.href} className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-500" onClick={onClose}>
+      <Link href={item.url || "#"} className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-500" onClick={onClose}>
         {item.label}
       </Link>
     );
@@ -152,10 +132,7 @@ function MobileNavItem({ item, onClose }: { item: (typeof NAV_ITEMS)[0]; onClose
 
   return (
     <div>
-      <button
-        className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-gray-700"
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <button className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-gray-700" onClick={() => setIsOpen(!isOpen)}>
         {item.label}
         <ChevronDown size={14} className={cn("transition-transform", isOpen && "rotate-180")} />
       </button>
@@ -163,22 +140,13 @@ function MobileNavItem({ item, onClose }: { item: (typeof NAV_ITEMS)[0]; onClose
         <div className="pl-4 space-y-1">
           {item.children.map((child) => (
             <div key={child.label}>
-              <Link
-                href={child.href}
-                className="block px-4 py-2 text-sm text-gray-600 hover:text-primary-500"
-                onClick={onClose}
-              >
+              <Link href={child.url || "#"} className="block px-4 py-2 text-sm text-gray-600 hover:text-primary-500" onClick={onClose}>
                 {child.label}
               </Link>
               {child.children && (
                 <div className="pl-4">
                   {child.children.map((sub) => (
-                    <Link
-                      key={sub.label}
-                      href={sub.href}
-                      className="block px-4 py-1.5 text-xs text-gray-500 hover:text-primary-500"
-                      onClick={onClose}
-                    >
+                    <Link key={sub.label} href={sub.url || "#"} className="block px-4 py-1.5 text-xs text-gray-500 hover:text-primary-500" onClick={onClose}>
                       {sub.label}
                     </Link>
                   ))}

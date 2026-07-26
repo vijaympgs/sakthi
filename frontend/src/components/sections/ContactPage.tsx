@@ -86,16 +86,40 @@ export function ContactPage() {
 
   return (
     <>
-      <section className="bg-primary-500 text-white py-20 md:py-28">
+      <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent-400 mb-4">Contact Us</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
-          <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
-            Ready to transform your business with the right technology?
-            Contact us for a free consultation.
-          </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Contact Us</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
+              <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
+                Ready to transform your business with the right technology?
+                Contact us for a free consultation.
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="bg-primary-600/50 border border-gray-700/50 p-8">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-gray-300">
+                    <Phone size={18} className="text-label shrink-0" />
+                    <span className="text-sm">+91 9840057127</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-300">
+                    <Mail size={18} className="text-label shrink-0" />
+                    <span className="text-sm">info@sakthisolutions.in</span>
+                  </div>
+                  <div className="flex items-start gap-3 text-gray-300">
+                    <MapPin size={18} className="text-label shrink-0 mt-0.5" />
+                    <span className="text-sm">1/1, General Collins Road, Choolai, Chennai - 600112</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <section className="section-padding bg-white">
         <div className="container-page">
@@ -108,7 +132,7 @@ export function ContactPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                     <input
                       {...register("name")}
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary-500 focus:outline-none transition-colors bg-white"
                       placeholder="Your name"
                     />
                     {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
@@ -118,7 +142,7 @@ export function ContactPage() {
                     <input
                       {...register("email")}
                       type="email"
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary-500 focus:outline-none transition-colors bg-white"
                       placeholder="your@email.com"
                     />
                     {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
@@ -129,7 +153,7 @@ export function ContactPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
                   <input
                     {...register("phone")}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-primary-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 focus:border-primary-500 focus:outline-none transition-colors bg-white"
                     placeholder="+91 XXXXX XXXXX"
                   />
                   {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>}
@@ -143,10 +167,10 @@ export function ContactPage() {
                         key={opt.value}
                         type="button"
                         onClick={() => toggleProduct(opt.value)}
-                        className={`px-4 py-2 border text-sm font-medium transition-colors ${
+                        className={`px-4 py-2 border text-sm font-medium transition-all duration-200 ${
                           selectedProducts.includes(opt.value)
-                            ? "bg-primary-500 text-white border-primary-500"
-                            : "bg-white text-gray-700 border-gray-200 hover:border-primary-500"
+                            ? "bg-primary-500 text-white border-primary-500 shadow-md"
+                            : "bg-white text-gray-700 border-gray-300 hover:border-primary-500"
                         }`}
                       >
                         {opt.label}
@@ -161,7 +185,7 @@ export function ContactPage() {
                   <textarea
                     {...register("message")}
                     rows={5}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-primary-500 focus:outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 focus:border-primary-500 focus:outline-none transition-colors resize-none bg-white"
                     placeholder="Tell us about your requirements..."
                   />
                   {errors.message && <p className="text-sm text-red-500 mt-1">{errors.message.message}</p>}
@@ -175,64 +199,66 @@ export function ContactPage() {
             </div>
 
             <div>
-              <h2 className="heading-sm text-primary-500 mb-6">Contact Information</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Registered Office</h3>
-                  <div className="flex items-start gap-3">
-                    <MapPin size={18} className="mt-1 text-accent-500 shrink-0" />
-                    <p className="text-sm text-gray-600">
-                      F7, 1st Floor, 40/26 Arani Muthu Street,<br />
-                      Choolai, Chennai - 600112
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Sales Office</h3>
-                  <div className="flex items-start gap-3">
-                    <MapPin size={18} className="mt-1 text-accent-500 shrink-0" />
-                    <p className="text-sm text-gray-600">
-                      1/1, 1st Floor, General Collins Road,<br />
-                      Choolai, Chennai - 600112
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Call Us</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <Phone size={16} className="text-accent-500" />
-                      <span className="text-sm text-gray-600">044-26420089</span>
+              <div className="bg-surface-muted border border-gray-200 p-6">
+                <h2 className="heading-sm text-primary-500 mb-6">Contact Information</h2>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 mb-3">Registered Office</h3>
+                    <div className="flex items-start gap-3">
+                      <MapPin size={18} className="mt-1 text-label shrink-0" />
+                      <p className="text-sm text-gray-600">
+                        F7, 1st Floor, 40/26 Arani Muthu Street,<br />
+                        Choolai, Chennai - 600112
+                      </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Phone size={16} className="text-accent-500" />
-                      <div className="text-sm text-gray-600">
-                        <p>Jayakumar: +91 9840057127</p>
-                        <p>Vidya Rani: +91 9381459199</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 mb-3">Sales Office</h3>
+                    <div className="flex items-start gap-3">
+                      <MapPin size={18} className="mt-1 text-label shrink-0" />
+                      <p className="text-sm text-gray-600">
+                        1/1, 1st Floor, General Collins Road,<br />
+                        Choolai, Chennai - 600112
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 mb-3">Call Us</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <Phone size={16} className="text-label" />
+                        <span className="text-sm text-gray-600">044-26420089</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Phone size={16} className="text-label" />
+                        <div className="text-sm text-gray-600">
+                          <p>Jayakumar: +91 9840057127</p>
+                          <p>Vidya Rani: +91 9381459199</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Email</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <Mail size={16} className="text-accent-500" />
-                      <a href="mailto:info@sakthisolutions.in" className="text-sm text-gray-600 hover:text-primary-500">info@sakthisolutions.in</a>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Mail size={16} className="text-accent-500" />
-                      <a href="mailto:support@sakthisolutions.in" className="text-sm text-gray-600 hover:text-primary-500">support@sakthisolutions.in</a>
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 mb-3">Email</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <Mail size={16} className="text-label" />
+                        <a href="mailto:info@sakthisolutions.in" className="text-sm text-gray-600 hover:text-primary-500">info@sakthisolutions.in</a>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Mail size={16} className="text-label" />
+                        <a href="mailto:support@sakthisolutions.in" className="text-sm text-gray-600 hover:text-primary-500">support@sakthisolutions.in</a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Locate Us</h3>
+              <div className="mt-6">
+                <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 mb-3">Locate Us</h3>
                 <div className="border border-gray-200 aspect-[4/3] bg-gray-50">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.5079!2d80.234098!3d13.091822!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526f5a2344c1f3%3A0x9ae6c0b8f5a23c0d!2s1%2F1%2C+General+Collins+Rd%2C+Choolai%2C+Chennai%2C+Tamil+Nadu+600112!5e0!3m2!1sen!2sin!4v1"

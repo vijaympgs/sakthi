@@ -162,8 +162,76 @@ class ContactSubmissionAdmin(admin.ModelAdmin):
     readonly_fields = ["ip_address", "created_at"]
 
 
+@admin.register(CaseStudy)
+class CaseStudyAdmin(admin.ModelAdmin):
+    list_display = ["title", "client_name", "product", "is_published"]
+    list_filter = ["is_published", "product"]
+    search_fields = ["title", "client_name"]
+
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ["name", "type", "sort_order", "is_published"]
+    list_filter = ["is_published"]
+    search_fields = ["name"]
+
+
 @admin.register(PageView)
 class PageViewAdmin(admin.ModelAdmin):
     list_display = ["path", "ip_address", "created_at"]
     list_filter = ["path"]
     readonly_fields = ["path", "referrer", "user_agent", "ip_address", "session_id", "duration_seconds", "created_at"]
+
+
+class ProductSpecValueInline(admin.TabularInline):
+    model = ProductSpecValue
+    extra = 0
+
+
+class ProductSpecColumnInline(admin.TabularInline):
+    model = ProductSpecColumn
+    extra = 0
+
+
+class ProductSpecRowInline(admin.TabularInline):
+    model = ProductSpecRow
+    extra = 0
+
+
+@admin.register(ProductSpecGroup)
+class ProductSpecGroupAdmin(admin.ModelAdmin):
+    list_display = ["name", "product", "sort_order"]
+    list_filter = ["product"]
+    search_fields = ["name", "product__name"]
+    inlines = [ProductSpecColumnInline, ProductSpecRowInline]
+
+
+class PlayEquipmentInline(admin.TabularInline):
+    model = PlayEquipment
+    extra = 0
+
+
+class ChildwoodGroupInline(admin.TabularInline):
+    model = ChildwoodGroup
+    extra = 0
+
+
+@admin.register(ChildwoodCategory)
+class ChildwoodCategoryAdmin(admin.ModelAdmin):
+    list_display = ["name", "type", "sort_order"]
+    list_filter = ["type"]
+    inlines = [ChildwoodGroupInline]
+
+
+@admin.register(ChildwoodGroup)
+class ChildwoodGroupAdmin(admin.ModelAdmin):
+    list_display = ["name", "category", "sort_order"]
+    list_filter = ["category"]
+    inlines = [PlayEquipmentInline]
+
+
+@admin.register(PlayEquipment)
+class PlayEquipmentAdmin(admin.ModelAdmin):
+    list_display = ["sku", "name", "group", "dimensions"]
+    list_filter = ["group__category"]
+    search_fields = ["sku", "name"]

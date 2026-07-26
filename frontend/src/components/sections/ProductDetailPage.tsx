@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-const PRODUCT_DATA: Record<string, { title: string; category: string; description: string; features: string[] }> = {
+const PRODUCT_DATA: Record<string, { title: string; category: string; description: string; features: string[]; heroImage?: string }> = {
   "indoor-digital-signage": {
     title: "Indoor Digital Signage",
     category: "Godspeed",
@@ -14,6 +14,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Heavy duty construction",
       "Toughened glass surface",
     ],
+    heroImage: "/assets/products/r1.jpg",
   },
   "smart-touch-table": {
     title: "Smart Touch Table",
@@ -31,6 +32,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Android Quad core with 2GB RAM, full HD",
       "2 mobile phone charging ports",
     ],
+    heroImage: "/assets/products/about_images.jpg",
   },
   "wayfinding-kiosk": {
     title: "Interactive Wayfinding Kiosk",
@@ -43,6 +45,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Attractive branding when idle",
       "Applications: Retail, Healthcare, Airport, Corporate, Events, Museums, Hospitality",
     ],
+    heroImage: "/assets/products/about_images.jpg",
   },
   "touch-screen-kiosk": {
     title: "Speed Touch Series Touch Screen Kiosk",
@@ -58,6 +61,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "4-10 dots touch support",
       "Customizable functions",
     ],
+    heroImage: "/assets/products/about_images.jpg",
   },
   "video-wall": {
     title: "Video Wall",
@@ -74,6 +78,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Splicing gap from 3.5mm to 10mm",
       "Single screen, full screen and screen switch modes",
     ],
+    heroImage: "/assets/products/lcd.jpg",
   },
   tellus: {
     title: "Tellus Feedback Solution",
@@ -91,6 +96,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Potential customer data collection",
       "Gift coupon management for loyal customers",
     ],
+    heroImage: "/assets/products/X11C1367-200x300.jpg",
   },
   childwood: {
     title: "Childwood Children's Play Equipment",
@@ -102,6 +108,7 @@ const PRODUCT_DATA: Record<string, { title: string; category: string; descriptio
       "Gym equipment",
       "Customizable solutions",
     ],
+    heroImage: "/assets/products/about_images.jpg",
   },
 };
 
@@ -124,15 +131,32 @@ export function ProductDetailPage({ slug }: { slug: string }) {
 
   return (
     <>
-      <section className="bg-primary-500 text-white py-20 md:py-28">
+      <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent-400 mb-4">
-            {product.category}
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">{product.title}</h1>
-          <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">{product.description}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">
+                {product.category}
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{product.title}</h1>
+              <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">{product.description}</p>
+            </div>
+            {product.heroImage && (
+              <div className="hidden lg:block">
+                <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
+                  <img
+                    src={product.heroImage}
+                    alt={product.title}
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <section className="section-padding bg-white">
         <div className="container-page">
@@ -140,8 +164,8 @@ export function ProductDetailPage({ slug }: { slug: string }) {
             <h2 className="heading-md text-primary-500 mb-8">Key Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {product.features.map((feature, index) => (
-                <div key={index} className="flex items-start gap-3 p-4 border border-gray-100">
-                  <div className="w-6 h-6 bg-accent-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                <div key={index} className="flex items-start gap-3 p-4 border border-gray-100 hover:border-label/40 transition-colors">
+                  <div className="w-6 h-6 bg-label text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
                     {index + 1}
                   </div>
                   <span className="text-sm text-gray-700">{feature}</span>

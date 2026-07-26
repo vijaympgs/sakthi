@@ -157,4 +157,55 @@ class HomePageView(PublicMixin, APIView):
             "clients": ClientSerializer(Client.objects.filter(is_published=True), many=True).data,
             "industries": IndustrySerializer(Industry.objects.filter(is_published=True), many=True).data,
         }
+
+
+class ProductSpecGroupListView(PublicMixin, generics.ListAPIView):
+    serializer_class = ProductSpecGroupSerializer
+
+    def get_queryset(self):
+        product_slug = self.request.query_params.get("product")
+        qs = ProductSpecGroup.objects.all()
+        if product_slug:
+            qs = qs.filter(product__slug=product_slug)
+        return qs
+
+
+class CaseStudyDetailView(PublicMixin, generics.RetrieveAPIView):
+    serializer_class = CaseStudySerializer
+    lookup_field = "id"
+
+    def get_queryset(self):
+        qs = CaseStudy.objects.filter(is_published=True)
+        product_slug = self.request.query_params.get("product")
+        if product_slug:
+            qs = qs.filter(product__slug=product_slug)
+        return qs
+
+
+class CaseStudyListView(PublicMixin, generics.ListAPIView):
+    serializer_class = CaseStudySerializer
+
+    def get_queryset(self):
+        qs = CaseStudy.objects.filter(is_published=True)
+        product_slug = self.request.query_params.get("product")
+        if product_slug:
+            qs = qs.filter(product__slug=product_slug)
+        return qs
+
+
+class PartnerListView(PublicMixin, generics.ListAPIView):
+    serializer_class = PartnerSerializer
+    queryset = Partner.objects.filter(is_published=True)
+
+
+class ChildwoodCategoryListView(PublicMixin, generics.ListAPIView):
+    serializer_class = ChildwoodCategorySerializer
+    queryset = ChildwoodCategory.objects.all()
+
+    def get_queryset(self):
+        qs = ChildwoodCategory.objects.prefetch_related("groups__items")
+        type_filter = self.request.query_params.get("type")
+        if type_filter:
+            qs = qs.filter(type=type_filter)
+        return qs
         return Response(data)

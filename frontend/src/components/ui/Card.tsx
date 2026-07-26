@@ -23,11 +23,11 @@ export function Card({ title, description, image, href, icon, className }: CardP
           />
         </div>
       )}
-      {icon && <div className="mb-4 text-accent-500">{icon}</div>}
+      {icon && <div className="mb-4 text-label">{icon}</div>}
       <h3 className="heading-sm text-primary-500 mb-2">{title}</h3>
       <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
       {href && (
-        <div className="mt-4 flex items-center gap-2 text-sm font-medium text-accent-500 group-hover:text-accent-600">
+        <div className="mt-4 flex items-center gap-2 text-sm font-medium text-label group-hover:text-label/80">
           <span>Explore</span>
           <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </div>

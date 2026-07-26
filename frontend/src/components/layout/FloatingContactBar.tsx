@@ -4,25 +4,22 @@ import { Phone, MapPin } from "lucide-react";
 
 export function FloatingContactBar() {
   return (
-    <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col shadow-xl rounded-l-md overflow-hidden">
-      
-      {/* 1. Phone Call */}
+    <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col shadow-xl overflow-hidden">
       <a
         href="tel:+919840057127"
         title="Call +91 9840057127"
-        className="w-11 h-11 md:w-12 md:h-12 bg-[#b59449] hover:bg-[#a1813b] text-white flex items-center justify-center transition-transform hover:scale-105"
+        className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#b59449] text-white flex items-center justify-center transition-colors duration-200"
         aria-label="Call Us"
       >
         <Phone size={20} />
       </a>
 
-      {/* 2. WhatsApp */}
       <a
         href="https://wa.me/919840057127"
         target="_blank"
         rel="noopener noreferrer"
         title="Chat on WhatsApp"
-        className="w-11 h-11 md:w-12 md:h-12 bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center transition-transform hover:scale-105"
+        className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#25D366] text-white flex items-center justify-center transition-colors duration-200"
         aria-label="WhatsApp Chat"
       >
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -30,28 +27,25 @@ export function FloatingContactBar() {
         </svg>
       </a>
 
-      {/* 3. LinkedIn */}
       <a
         href="https://www.linkedin.com/company/sakthi-solutions/"
         target="_blank"
         rel="noopener noreferrer"
         title="LinkedIn Profile"
-        className="w-11 h-11 md:w-12 md:h-12 bg-[#0A66C2] hover:bg-[#08529c] text-white flex items-center justify-center transition-transform hover:scale-105"
+        className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#0A66C2] text-white flex items-center justify-center transition-colors duration-200"
         aria-label="LinkedIn"
       >
         <span className="font-bold text-base font-sans tracking-tight">in</span>
       </a>
 
-      {/* 4. Sales Office Location */}
       <a
         href="/contact"
         title="Sales Office Location"
-        className="w-11 h-11 md:w-12 md:h-12 bg-[#f54337] hover:bg-[#e12f23] text-white flex items-center justify-center transition-transform hover:scale-105"
+        className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#f54337] text-white flex items-center justify-center transition-colors duration-200"
         aria-label="Location"
       >
         <MapPin size={20} />
       </a>
-
     </div>
   );
 }

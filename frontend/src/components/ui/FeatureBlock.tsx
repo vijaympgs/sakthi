@@ -18,7 +18,7 @@ export function FeatureBlock({ icon, title, description, image }: FeatureBlockPr
           />
         </div>
       )}
-      {icon && <div className="mb-3 text-accent-500">{icon}</div>}
+      {icon && <div className="mb-3 text-label">{icon}</div>}
       <h3 className="font-semibold text-primary-500 mb-2">{title}</h3>
       <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
     </div>

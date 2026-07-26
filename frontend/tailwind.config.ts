@@ -35,6 +35,9 @@ const config: Config = {
           DEFAULT: "var(--color-surface)",
           muted: "var(--color-surface-muted)",
         },
+        label: {
+          DEFAULT: "var(--color-label)",
+        },
       },
       fontFamily: {
         heading: "var(--font-heading)",

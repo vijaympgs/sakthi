@@ -21,16 +21,31 @@ const TIMELINE = [
 export function AboutPage() {
   return (
     <>
-      <section className="bg-primary-500 text-white py-20 md:py-28">
+      <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent-400 mb-4">About Us</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Your Technology Partner<br />Since 2014</h1>
-          <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
-            Digital signage, interactive kiosks, feedback solutions and IT consulting
-            for hospitality, retail and corporate sectors.
-          </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">About Us</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Your Technology Partner<br />Since 2014</h1>
+              <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
+                Digital signage, interactive kiosks, feedback solutions and IT consulting
+                for hospitality, retail and corporate sectors.
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
+                <img
+                  src="/assets/products/r1.jpg"
+                  alt="Sakthi Solutions digital signage installation"
+                  className="w-full h-full object-cover opacity-80"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <section className="section-padding bg-white">
         <div className="container-page">
@@ -56,10 +71,10 @@ export function AboutPage() {
               </p>
             </div>
             <div>
-              <div className="aspect-[4/3] bg-gray-100 overflow-hidden mb-6">
+              <div className="aspect-[4/3] bg-gray-100 overflow-hidden mb-6 border border-gray-200">
                 <img
-                  src="/assets/products/about_images.jpg"
-                  alt="Sakthi Solutions"
+                  src="/assets/products/r2.jpg"
+                  alt="Digital signage installation at a commercial venue"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -82,11 +97,11 @@ export function AboutPage() {
 
       <section className="section-padding bg-surface-muted">
         <div className="container-page">
-          <SectionHeader label="Why Sakthi" title="Why Sakthi Solutions" />
+          <SectionHeader title="Why Sakthi Solutions" showLabel={false} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {WHY_ITEMS.map((item) => (
-              <div key={item.title} className="card">
-                <div className="w-12 h-12 bg-accent-50 flex items-center justify-center mb-4 text-accent-500">
+              <div key={item.title} className="card group hover:-translate-y-1 transition-transform duration-200">
+                <div className="w-12 h-12 bg-primary-50 flex items-center justify-center mb-4 text-primary-500 group-hover:bg-label/10 group-hover:text-label transition-colors">
                   {item.icon}
                 </div>
                 <h3 className="font-semibold text-primary-500 mb-2">{item.title}</h3>
@@ -99,7 +114,7 @@ export function AboutPage() {
 
       <section className="section-padding bg-white">
         <div className="container-page">
-          <SectionHeader label="Our Journey" title="Timeline" />
+          <SectionHeader title="Timeline" showLabel={false} />
           <div className="max-w-3xl mx-auto">
             {TIMELINE.map((item, index) => (
               <div key={index} className="flex gap-6 mb-8 last:mb-0">

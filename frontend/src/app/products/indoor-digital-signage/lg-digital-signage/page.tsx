@@ -18,33 +18,47 @@ const FEATURES = [
 export default function LGDigitalSignagePage() {
   return (
     <>
-      <Breadcrumb
-        items={[
-          { label: "Products", href: "/products" },
-          { label: "Godspeed", href: "/products" },
-          { label: "Indoor Digital Signage", href: "/products/indoor-digital-signage" },
-          { label: "LG Digital Signage" },
-        ]}
-      />
-
-      <section className="bg-primary-500 text-white py-20 md:py-28">
+      <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent-400 mb-4">Godspeed</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">LG Digital Signage</h1>
-          <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">
-            LG commercial displays paired with Godspeed mounting and control solutions. Enterprise-grade reliability,
-            slim bezel designs, and centralized content management for corporate, retail and hospitality environments.
-          </p>
+          <Breadcrumb
+            items={[
+              { label: "Products", href: "/products" },
+              { label: "Godspeed", href: "/products" },
+              { label: "Indoor Digital Signage", href: "/products/indoor-digital-signage" },
+              { label: "LG Digital Signage" },
+            ]}
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Godspeed</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">LG Digital Signage</h1>
+              <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">
+                LG commercial displays paired with Godspeed mounting and control solutions. Enterprise-grade reliability,
+                slim bezel designs, and centralized content management for corporate, retail and hospitality environments.
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
+                <img
+                  src="/assets/products/lcd.jpg"
+                  alt="LG Digital Signage"
+                  className="w-full h-full object-cover opacity-80"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <section className="section-padding bg-white">
         <div className="container-page">
           <h2 className="heading-md text-primary-500 mb-12">Key Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
             {FEATURES.map((feature) => (
-              <div key={feature.title} className="flex gap-4">
-                <div className="w-14 h-14 bg-accent-50 flex items-center justify-center text-accent-500 shrink-0">
+              <div key={feature.title} className="flex gap-4 group">
+                <div className="w-14 h-14 bg-primary-50 flex items-center justify-center text-primary-500 shrink-0 group-hover:bg-label/10 group-hover:text-label transition-colors">
                   {feature.icon}
                 </div>
                 <div>
@@ -62,7 +76,7 @@ export default function LGDigitalSignagePage() {
           <h2 className="heading-md text-primary-500 mb-8">Available Sizes</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
             {["32\"", "43\"", "49\"", "55\"", "65\"", "75\"", "86\"", "98\""].map((size) => (
-              <div key={size} className="border border-gray-200 bg-white p-6 text-center">
+              <div key={size} className="border border-gray-200 bg-white p-6 text-center hover:-translate-y-1 hover:border-label/40 transition-all duration-200">
                 <p className="text-2xl font-bold text-primary-500">{size}</p>
                 <p className="text-xs text-gray-500 mt-1">LG Commercial Display</p>
               </div>

@@ -26,4 +26,9 @@ urlpatterns = [
     path("settings/seo/", SEOSettingsView.as_view(), name="seo-settings"),
     path("settings/theme/", ThemeSettingsView.as_view(), name="theme-settings"),
     path("contact/", ContactSubmissionCreateView.as_view(), name="contact-submit"),
+    path("product-specs/", ProductSpecGroupListView.as_view(), name="product-specs"),
+    path("childwood/", ChildwoodCategoryListView.as_view(), name="childwood-list"),
+    path("case-studies/", CaseStudyListView.as_view(), name="case-study-list"),
+    path("partners/", PartnerListView.as_view(), name="partner-list"),
+    path("case-studies/<int:id>/", CaseStudyDetailView.as_view(), name="case-study-detail"),
 ]

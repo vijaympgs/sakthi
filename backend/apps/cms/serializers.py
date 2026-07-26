@@ -202,4 +202,74 @@ class ContactSubmissionSerializer(serializers.ModelSerializer):
 class ContactSubmissionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactSubmission
+
+
+class ProductSpecValueSerializer(serializers.ModelSerializer):
+    column_key = serializers.CharField(source="column.key", read_only=True)
+
+    class Meta:
+        model = ProductSpecValue
+        fields = ["column_key", "value"]
+
+
+class ProductSpecRowSerializer(serializers.ModelSerializer):
+    values = ProductSpecValueSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ProductSpecRow
+        fields = ["id", "label", "sort_order", "values"]
+
+
+class ProductSpecColumnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSpecColumn
+        fields = ["id", "key", "label", "sort_order"]
+
+
+class PlayEquipmentSerializer(serializers.ModelSerializer):
+    category_type = serializers.CharField(source="group.category.type", read_only=True)
+    group_name = serializers.CharField(source="group.name", read_only=True)
+
+    class Meta:
+        model = PlayEquipment
+        fields = ["id", "sku", "name", "image", "dimensions", "sort_order", "category_type", "group_name"]
+
+
+class ChildwoodGroupSerializer(serializers.ModelSerializer):
+    items = PlayEquipmentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ChildwoodGroup
+        fields = ["id", "name", "sort_order", "items"]
+
+
+class ChildwoodCategorySerializer(serializers.ModelSerializer):
+    groups = ChildwoodGroupSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ChildwoodCategory
+        fields = ["id", "name", "type", "sort_order", "groups"]
+
+
+class PartnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Partner
+        fields = ["id", "name", "type", "logo", "website", "sort_order"]
+
+
+class CaseStudySerializer(serializers.ModelSerializer):
+    product_slug = serializers.CharField(source="product.slug", read_only=True, allow_null=True)
+
+    class Meta:
+        model = CaseStudy
+        fields = "__all__"
+
+
+class ProductSpecGroupSerializer(serializers.ModelSerializer):
+    columns = ProductSpecColumnSerializer(many=True, read_only=True)
+    rows = ProductSpecRowSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ProductSpecGroup
+        fields = ["id", "name", "sort_order", "columns", "rows"]
         fields = ["name", "email", "phone", "enquiry_type", "products", "message"]
