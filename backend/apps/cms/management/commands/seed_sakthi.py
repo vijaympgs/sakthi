@@ -139,18 +139,44 @@ class Command(BaseCommand):
 
     # ─── products ───────────────────────────────────────────────
 
+    def _download_and_save_product_image(self, product_instance, url, filename):
+        import urllib.request
+        import ssl
+        from django.core.files.base import ContentFile
+        try:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+            req = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            )
+            with urllib.request.urlopen(req, context=ctx, timeout=15) as response:
+                content = response.read()
+                product_instance.image.save(filename, ContentFile(content), save=True)
+                self.stdout.write(f"Successfully downloaded and saved product image for {product_instance.slug}")
+                return True
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
+            return False
+
     def _seed_products(self):
         for data in [
-            {"category": "godspeed", "name": "Indoor Digital Signage", "slug": "indoor-digital-signage", "tagline": "Revolutionary Digital Communication", "short_description": "Digital signage with floor standing, wall mountable and LG options.", "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface.", "is_featured": True, "sort_order": 1},
-            {"category": "godspeed", "name": "Smart Touch Table", "slug": "smart-touch-table", "tagline": "Next Generation Human-Machine Interaction", "short_description": "Multi-touch interactive tables in 32\", 42\" and 46\" sizes.", "description": "Multi-touch tables enabling advanced interaction between human and machine.", "is_featured": False, "sort_order": 2},
-            {"category": "godspeed", "name": "Interactive Wayfinding Kiosk", "slug": "wayfinding-kiosk", "tagline": "Navigate with Ease", "short_description": "Interactive wayfinding with directory, map and route guidance.", "description": "Interactive wayfinding with directory listing, shortest route guidance. Deployed at Phoenix Marketcity.", "is_featured": False, "sort_order": 3},
-            {"category": "godspeed", "name": "Speed Touch Series Touch Screen Kiosk", "slug": "touch-screen-kiosk", "tagline": "Versatile Touch Solutions", "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.", "description": "High quality IR, resistance and capacitive touch kiosk. Floor standing and half standing configurations.", "is_featured": False, "sort_order": 4},
-            {"category": "godspeed", "name": "Video Wall", "slug": "video-wall", "tagline": "Perfect Visual Experience", "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.", "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG.", "is_featured": False, "sort_order": 5},
-            {"category": "tellus", "name": "Tellus Feedback Solution", "slug": "tellus", "tagline": "Measure Your Business by Guest Feedback", "short_description": "Customer feedback kiosks with instant alerts and reporting.", "description": "Electronic feedback collection with instant SMS alerts for poor ratings. Less than Rs 20 per day per branch.", "is_featured": True, "sort_order": 6},
-            {"category": "childwood", "name": "Childwood Children's Play Equipment", "slug": "childwood", "tagline": "Indoor & Outdoor Play Solutions", "short_description": "Children's play equipment for indoor and outdoor spaces.", "description": "Childwood children play equipment indoor / outdoor and gym equipments.", "is_featured": False, "sort_order": 7},
+            {"category": "godspeed", "name": "Indoor Digital Signage", "slug": "indoor-digital-signage", "tagline": "Revolutionary Digital Communication", "short_description": "Digital signage with floor standing, wall mountable and LG options.", "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface.", "is_featured": True, "sort_order": 1, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/lcd.jpg", "filename": "indoor_digital_signage.jpg"},
+            {"category": "godspeed", "name": "Smart Touch Table", "slug": "smart-touch-table", "tagline": "Next Generation Human-Machine Interaction", "short_description": "Multi-touch interactive tables in 32\", 42\" and 46\" sizes.", "description": "Multi-touch tables enabling advanced interaction between human and machine.", "is_featured": False, "sort_order": 2, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/pro3.png", "filename": "smart_touch_table.png"},
+            {"category": "godspeed", "name": "Interactive Wayfinding Kiosk", "slug": "wayfinding-kiosk", "tagline": "Navigate with Ease", "short_description": "Interactive wayfinding with directory, map and route guidance.", "description": "Interactive wayfinding with directory listing, shortest route guidance. Deployed at Phoenix Marketcity.", "is_featured": False, "sort_order": 3, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/image1.jpg", "filename": "wayfinding_kiosk.jpg"},
+            {"category": "godspeed", "name": "Speed Touch Series Touch Screen Kiosk", "slug": "touch-screen-kiosk", "tagline": "Versatile Touch Solutions", "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.", "description": "High quality IR, resistance and capacitive touch kiosk. Floor standing and half standing configurations.", "is_featured": False, "sort_order": 4, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/intra-kisosk-usibility.png", "filename": "touch_screen_kiosk.png"},
+            {"category": "godspeed", "name": "Video Wall", "slug": "video-wall", "tagline": "Perfect Visual Experience", "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.", "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG.", "is_featured": False, "sort_order": 5, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/video-wall3.jpg", "filename": "video_wall.jpg"},
+            {"category": "tellus", "name": "Tellus Feedback Solution", "slug": "tellus", "tagline": "Measure Your Business by Guest Feedback", "short_description": "Customer feedback kiosks with instant alerts and reporting.", "description": "Electronic feedback collection with instant SMS alerts for poor ratings. Less than Rs 20 per day per branch.", "is_featured": True, "sort_order": 6, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png", "filename": "tellus_feedback.png"},
+            {"category": "childwood", "name": "Childwood Children's Play Equipment", "slug": "childwood", "tagline": "Indoor & Outdoor Play Solutions", "short_description": "Children's play equipment for indoor and outdoor spaces.", "description": "Childwood children play equipment indoor / outdoor and gym equipments.", "is_featured": False, "sort_order": 7, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg", "filename": "childwood_play.jpg"},
         ]:
+            image_url = data.pop("image_url", None)
+            filename = data.pop("filename", None)
             d = {**data, "category": self._cat(data["category"]), "is_published": True}
-            Product.objects.update_or_create(slug=d["slug"], defaults=d)
+            prod, created = Product.objects.update_or_create(slug=d["slug"], defaults=d)
+            if image_url and filename and (not prod.image or str(prod.image) == ""):
+                self._download_and_save_product_image(prod, image_url, filename)
 
     # ─── product features ───────────────────────────────────────
 
