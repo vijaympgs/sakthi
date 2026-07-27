@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { useChildwood } from "@/hooks/useQueries";
-//
+import { ArrowLeft } from "lucide-react";
 
 const SKU_NAMES: Record<string, string> = {
   "CWP001": "Multi-Level Playstation",
@@ -79,7 +79,7 @@ function CatalogSection({ title, items, materialNote }: { title: string; items: 
   return (
     <div className="mb-16">
       <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-gray-200">
-        <h3 className="heading-sm text-primary-500">{title}</h3>
+        <h3 className="font-serif font-bold text-xl text-slate-900">{title}</h3>
         {materialNote && <span className="text-[10px] text-gray-400 uppercase tracking-wider">{materialNote}</span>}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -87,12 +87,12 @@ function CatalogSection({ title, items, materialNote }: { title: string; items: 
           const displayName = item.name || item.sku;
           const imageSrc = getPlayEquipmentImage(item);
           return (
-            <div key={item.sku} className="border border-gray-100 overflow-hidden group hover:-translate-y-1 transition-transform duration-200">
+            <div key={item.sku} className="border border-gray-100 overflow-hidden group hover:border-[#B89A4A] transition-all duration-300">
               <div className="aspect-square bg-gray-50 overflow-hidden">
                 <img src={imageSrc} alt={displayName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
               </div>
               <div className="p-3">
-                <p className="text-sm font-medium text-primary-500 mb-1">{displayName}</p>
+                <p className="text-sm font-medium text-slate-900 mb-1">{displayName}</p>
                 {item.dimensions && <p className="text-xs text-gray-500">{item.dimensions}</p>}
                 <p className="text-[10px] text-gray-400 font-mono mt-1">{item.sku}</p>
               </div>
@@ -104,17 +104,16 @@ function CatalogSection({ title, items, materialNote }: { title: string; items: 
   );
 }
 
-export function ChildwoodClient() {
+export function OutdoorPlayClient() {
   const { data: apiData } = useChildwood();
   const catalog = apiData ?? [];
 
   const outdoor = (Array.isArray(catalog) ? catalog.filter((c: { type: string }) => c.type === "outdoor") : []) as Array<{ type: string; groups?: Array<{ name: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }> }>;
-  const indoor = (Array.isArray(catalog) ? catalog.filter((c: { type: string }) => c.type === "indoor") : []) as Array<{ type: string; groups?: Array<{ name: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }> }>;
 
-  const getSections = (items: Array<{ groups?: Array<{ name: string; items: Array<unknown> }> }>) => {
+  const getSections = (items: Array<{ groups?: Array<{ name: string; items: Array<any> }> }>) => {
     if (!Array.isArray(items)) return [];
     return items.flatMap((cat) =>
-      (cat.groups ?? []).map((g: { name: string; items: Array<unknown> }) => ({
+      (cat.groups ?? []).map((g: { name: string; items: Array<any> }) => ({
         title: g.name,
         items: g.items,
       }))
@@ -122,28 +121,31 @@ export function ChildwoodClient() {
   };
 
   const outdoorSections = getSections(outdoor);
-  const indoorSections = getSections(indoor);
 
   return (
     <>
       <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
-          <Breadcrumb items={[{ label: "Products", href: "/products" }, { label: "Childwood Play Equipment" }]} />
+          <Breadcrumb 
+            items={[
+              { label: "Products", href: "/products" }, 
+              { label: "Childwood", href: "/products/childwood-children-play-equipment" }, 
+              { label: "Outdoor Play Equipment" }
+            ]} 
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Childwood</p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Children&apos;s Play Equipment</h1>
-              <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">
-                Indoor and outdoor children&apos;s play equipment, gym equipment, spring rockers,
-                see-saws, swings, slides, rideons, tunnels and floorings. Customizable solutions
-                for restaurants, malls, schools and entertainment centers.
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#B89A4A] mb-4">Childwood</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Outdoor Play Equipment</h1>
+              <p className="text-lg text-gray-300 max-w-3xl leading-relaxed font-light">
+                Complete range of outdoor play systems including multi-level playstations, spring rockers, see-saws, and swings. Built to withstand environmental conditions and heavy public usage.
               </p>
             </div>
             <div className="hidden lg:block">
               <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
                 <img
                   src="/assets/products/about_images.jpg"
-                  alt="Childwood Play Equipment"
+                  alt="Outdoor Play Equipment"
                   className="w-full h-full object-cover opacity-80"
                 />
               </div>
@@ -156,46 +158,21 @@ export function ChildwoodClient() {
 
       <section className="section-padding bg-white">
         <div className="container-page">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            <div className="border border-gray-100 p-6 hover:border-label/40 transition-colors">
-              <h2 className="heading-sm text-primary-500 mb-3">Outdoor Play Equipment</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Complete range of outdoor play equipment including playstations, spring rockers,
-                see-saws and swings. 62 products available with various sizes and configurations.
-              </p>
-              <a href="#outdoor" className="text-sm font-medium text-label hover:text-label/80">View Outdoor Products</a>
-            </div>
-            <div className="border border-gray-100 p-6 hover:border-label/40 transition-colors">
-              <h2 className="heading-sm text-primary-500 mb-3">Indoor Play Equipment</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Complete range of indoor play equipment including playstations, rideons, tunnels,
-                slides, swing combos and floorings. 34 products available.
-              </p>
-              <a href="#indoor" className="text-sm font-medium text-label hover:text-label/80">View Indoor Products</a>
-            </div>
+          <div className="mb-8">
+            <Link 
+              href="/products/childwood-children-play-equipment" 
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#B89A4A] hover:text-slate-950 transition-colors"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Childwood Categories</span>
+            </Link>
           </div>
 
           <div id="outdoor">
-            <h2 className="heading-lg text-primary-500 mb-12">Outdoor Play Equipment</h2>
-            {(outdoorSections as Array<{ title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }>).map((section) => (
+            {outdoorSections.map((section) => (
               <CatalogSection key={section.title} title={section.title} items={section.items} materialNote={MATERIAL_NOTES[section.title]} />
             ))}
           </div>
-
-          <div id="indoor" className="mt-20">
-            <h2 className="heading-lg text-primary-500 mb-12">Indoor Play Equipment</h2>
-            {(indoorSections as Array<{ title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }>).map((section) => (
-              <CatalogSection key={section.title} title={section.title} items={section.items} materialNote={MATERIAL_NOTES[section.title]} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section-padding bg-surface-muted">
-        <div className="container-page text-center max-w-2xl">
-          <h2 className="heading-sm text-primary-500 mb-4">Need Play Equipment for Your Space?</h2>
-          <p className="text-gray-500 mb-6">Contact us for custom configurations, site planning and bulk pricing.</p>
-          <Link href="/contact" className="btn-primary">Request a Quote</Link>
         </div>
       </section>
     </>

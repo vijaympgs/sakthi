@@ -22,7 +22,7 @@ urlpatterns = [
     path("blog/<slug:slug>/", BlogPostDetailView.as_view(), name="blog-detail"),
     path("navigation/<slug:slug>/", NavigationMenuDetailView.as_view(), name="navigation-detail"),
     path("footer/", FooterView.as_view(), name="footer"),
-    path("settings/site/", SiteSettingsView.as_view(), name="site-settings"),
+    path("settings/company/", CompanyInfoView.as_view(), name="company-info"),
     path("settings/seo/", SEOSettingsView.as_view(), name="seo-settings"),
     path("settings/theme/", ThemeSettingsView.as_view(), name="theme-settings"),
     path("contact/", ContactSubmissionCreateView.as_view(), name="contact-submit"),
@@ -31,4 +31,5 @@ urlpatterns = [
     path("case-studies/", CaseStudyListView.as_view(), name="case-study-list"),
     path("partners/", PartnerListView.as_view(), name="partner-list"),
     path("case-studies/<int:id>/", CaseStudyDetailView.as_view(), name="case-study-detail"),
+    path("team/", TeamMemberListView.as_view(), name="team-list"),
 ]

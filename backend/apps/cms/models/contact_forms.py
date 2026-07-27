@@ -15,12 +15,14 @@ class EnquiryType(models.Model):
 
 class ContactSubmission(models.Model):
     name = models.CharField(max_length=200)
+    business_name = models.CharField(max_length=200, blank=True)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
     enquiry_type = models.ForeignKey(
         EnquiryType, on_delete=models.SET_NULL, null=True, blank=True
     )
     products = models.JSONField(default=list, blank=True)
+    callback_time = models.CharField(max_length=100, blank=True)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     is_responded = models.BooleanField(default=False)

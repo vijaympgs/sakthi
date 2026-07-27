@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Navigation } from "@/components/layout/Navigation";
+import { Footer } from "@/components/layout/Footer";
 import { ChildwoodClient } from "./ChildwoodClient";
 
 export const metadata: Metadata = {
@@ -7,5 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default function ChildwoodPage() {
-  return <ChildwoodClient />;
+  return (
+    <>
+      <Navigation />
+      <main id="main-content">
+        <ChildwoodClient />
+      </main>
+      <Footer />
+    </>
+  );
 }

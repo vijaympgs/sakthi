@@ -114,12 +114,12 @@ class FooterView(PublicMixin, APIView):
         return Response(serializer.data)
 
 
-class SiteSettingsView(PublicMixin, APIView):
+class CompanyInfoView(PublicMixin, APIView):
     def get(self, request):
-        settings_obj = SiteSettings.objects.first()
-        if not settings_obj:
+        company_obj = CompanyInfo.objects.first()
+        if not company_obj:
             return Response({})
-        return Response(SiteSettingsSerializer(settings_obj).data)
+        return Response(CompanyInfoSerializer(company_obj).data)
 
 
 class SEOSettingsView(PublicMixin, APIView):
@@ -149,7 +149,7 @@ class ContactSubmissionCreateView(PublicMixin, generics.CreateAPIView):
 class HomePageView(PublicMixin, APIView):
     def get(self, request):
         data = {
-            "site_settings": SiteSettingsSerializer(SiteSettings.objects.first()).data if SiteSettings.objects.exists() else {},
+            "site_settings": CompanyInfoSerializer(CompanyInfo.objects.first()).data if CompanyInfo.objects.exists() else {},
             "products": ProductSerializer(Product.objects.filter(is_published=True, is_featured=True)[:6], many=True).data,
             "product_categories": ProductCategorySerializer(ProductCategory.objects.filter(is_published=True), many=True).data,
             "services": ServiceSerializer(Service.objects.filter(is_published=True), many=True).data,
@@ -157,6 +157,7 @@ class HomePageView(PublicMixin, APIView):
             "clients": ClientSerializer(Client.objects.filter(is_published=True), many=True).data,
             "industries": IndustrySerializer(Industry.objects.filter(is_published=True), many=True).data,
         }
+        return Response(data)
 
 
 class ProductSpecGroupListView(PublicMixin, generics.ListAPIView):
@@ -208,4 +209,8 @@ class ChildwoodCategoryListView(PublicMixin, generics.ListAPIView):
         if type_filter:
             qs = qs.filter(type=type_filter)
         return qs
-        return Response(data)
+
+
+class TeamMemberListView(PublicMixin, generics.ListAPIView):
+    serializer_class = TeamMemberSerializer
+    queryset = TeamMember.objects.filter(is_published=True)

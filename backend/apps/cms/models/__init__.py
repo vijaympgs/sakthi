@@ -15,10 +15,11 @@ from .blogs import BlogPost, BlogCategory
 from .navigation import NavigationMenu, NavigationItem
 from .footer import FooterColumn, FooterLink
 from .seo import SEOSettings
-from .site_settings import SiteSettings
+from .company_info import CompanyInfo
 from .theme_settings import ThemeSettings
 from .contact_forms import ContactSubmission, EnquiryType
 from .analytics import PageView
+from .team import TeamMember
 
 __all__ = [
     "Page", "PageSection",
@@ -44,8 +45,9 @@ __all__ = [
     "NavigationMenu", "NavigationItem",
     "FooterColumn", "FooterLink",
     "SEOSettings",
-    "SiteSettings",
+    "CompanyInfo",
     "ThemeSettings",
     "ContactSubmission", "EnquiryType",
     "PageView",
+    "TeamMember",
 ]

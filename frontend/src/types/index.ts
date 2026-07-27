@@ -19,9 +19,11 @@ export interface HomePageData {
   sections?: unknown[];
 }
 
-export interface SiteSettings {
+export interface CompanyInfo {
   id?: number;
-  site_name: string;
+  company_name: string;
+  logo?: string;
+  favicon?: string;
   tagline?: string;
   phone_primary?: string;
   phone_secondary?: string;
@@ -40,6 +42,11 @@ export interface SiteSettings {
   about_content?: string;
   mission?: string;
   vision?: string;
+  hero_title?: string;
+  hero_description?: string;
+  trust_chips?: Array<{ icon: string; text: string }>;
+  advantages?: Array<{ title: string; description: string }>;
+  hero_bg_image?: string;
 }
 
 export interface ThemeSettings {

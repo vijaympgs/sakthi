@@ -38,7 +38,7 @@ export const cmsApi = {
   getBlogPost: (slug: string) => api.get(`/cms/blog/${slug}/`),
   getNavigation: (slug: string) => api.get(`/cms/navigation/${slug}/`),
   getFooter: () => api.get("/cms/footer/"),
-  getSiteSettings: () => api.get("/cms/settings/site/"),
+  getCompanyInfo: () => api.get("/cms/settings/company/"),
   getSEOSettings: () => api.get("/cms/settings/seo/"),
   getThemeSettings: () => api.get("/cms/settings/theme/"),
   submitContact: (data: Record<string, unknown>) => api.post("/cms/contact/", data),
@@ -46,4 +46,5 @@ export const cmsApi = {
   getChildwood: (type?: string) => api.get("/cms/childwood/", { params: type ? { type } : {} }),
   getProductSpecs: (productSlug: string) => api.get("/cms/product-specs/", { params: { product: productSlug } }),
   getCaseStudies: (productSlug?: string) => api.get("/cms/case-studies/", { params: productSlug ? { product: productSlug } : {} }),
+  getTeam: () => api.get("/cms/team/"),
 };

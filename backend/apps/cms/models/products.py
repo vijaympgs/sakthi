@@ -5,6 +5,7 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True)
+    tagline = models.CharField(max_length=300, blank=True)
     icon = models.ImageField(upload_to="products/icons/", blank=True)
     image = models.ImageField(upload_to="products/categories/", blank=True)
     sort_order = models.IntegerField(default=0)

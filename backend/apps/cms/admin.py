@@ -1,6 +1,86 @@
 from django.contrib import admin
 from .models import *
 
+# Group models by Navbar main menu items
+original_get_app_list = admin.AdminSite.get_app_list
+
+def custom_get_app_list(self, request, app_label=None):
+    app_list = original_get_app_list(self, request, app_label)
+    
+    if app_label:
+        return app_list
+        
+    cms_app = None
+    other_apps = []
+    for app in app_list:
+        if app['app_label'] == 'cms':
+            cms_app = app
+        else:
+            other_apps.append(app)
+            
+    if not cms_app:
+        return app_list
+
+    groups = {
+        'About Us Menu': [
+            'CompanyInfo', 'TeamMember', 'Testimonial'
+        ],
+        'Products & Solutions Menu': [
+            'ProductCategory', 'Product', 'ProductFeature', 'ProductGallery',
+            'ProductSpecGroup', 'CaseStudy', 'ChildwoodCategory', 'ChildwoodGroup',
+            'PlayEquipment', 'Partner', 'Solution', 'Industry', 'Client'
+        ],
+        'Services Menu': [
+            'Service', 'ServiceItem'
+        ],
+        'Site Structure & Nav': [
+            'NavigationMenu', 'NavigationItem', 'FooterColumn', 'FooterLink'
+        ],
+        'Inquiries & Forms': [
+            'ContactSubmission', 'EnquiryType'
+        ],
+        'Content & Downloads': [
+            'BlogPost', 'BlogCategory', 'Gallery', 'GalleryImage', 'Download', 'DownloadCategory'
+        ],
+        'Pages & System Settings': [
+            'Page', 'PageSection', 'SEOSettings', 'ThemeSettings', 'PageView'
+        ]
+    }
+    
+    virtual_apps = []
+    models_by_name = {m['object_name']: m for m in cms_app['models']}
+    
+    for group_name, model_names in groups.items():
+        group_models = []
+        for name in model_names:
+            if name in models_by_name:
+                group_models.append(models_by_name[name])
+                
+        if group_models:
+            virtual_apps.append({
+                'name': group_name,
+                'app_label': f"cms_{group_name.lower().replace(' ', '_').replace('&', 'and')}",
+                'app_url': cms_app['app_url'],
+                'has_module_perms': cms_app['has_module_perms'],
+                'models': group_models,
+            })
+            
+    grouped_model_names = set(name for model_names in groups.values() for name in model_names)
+    other_models = [m for m in cms_app['models'] if m['object_name'] not in grouped_model_names]
+    if other_models:
+        virtual_apps.append({
+            'name': 'CMS Miscellaneous',
+            'app_label': 'cms_misc',
+            'app_url': cms_app['app_url'],
+            'has_module_perms': cms_app['has_module_perms'],
+            'models': other_models,
+        })
+        
+    return virtual_apps + other_apps
+
+admin.AdminSite.get_app_list = custom_get_app_list
+
+
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
@@ -66,7 +146,7 @@ class ServiceItemAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ["name", "industry", "sort_order", "is_published"]
+    list_display = ["name", "industry", "brand_color", "sort_order", "is_published"]
     list_filter = ["is_published", "industry"]
 
 
@@ -139,9 +219,9 @@ class SEOSettingsAdmin(admin.ModelAdmin):
     list_display = ["site_name", "default_meta_title"]
 
 
-@admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ["site_name", "phone_primary", "email_primary", "city"]
+@admin.register(CompanyInfo)
+class CompanyInfoAdmin(admin.ModelAdmin):
+    list_display = ["company_name", "phone_primary", "email_primary", "city"]
 
 
 @admin.register(ThemeSettings)
@@ -156,10 +236,17 @@ class EnquiryTypeAdmin(admin.ModelAdmin):
 
 @admin.register(ContactSubmission)
 class ContactSubmissionAdmin(admin.ModelAdmin):
-    list_display = ["name", "email", "enquiry_type", "is_read", "is_responded", "created_at"]
+    list_display = ["name", "business_name", "email", "enquiry_type", "is_read", "is_responded", "created_at"]
     list_filter = ["is_read", "is_responded", "enquiry_type"]
-    search_fields = ["name", "email"]
+    search_fields = ["name", "email", "business_name"]
     readonly_fields = ["ip_address", "created_at"]
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ["name", "designation", "sort_order", "is_published"]
+    list_filter = ["is_published"]
+    search_fields = ["name", "designation"]
 
 
 @admin.register(CaseStudy)

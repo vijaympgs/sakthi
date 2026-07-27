@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import type { SiteSettings, ThemeSettings, NavigationMenu, FooterColumn } from "@/types";
+import type { CompanyInfo, ThemeSettings, NavigationMenu, FooterColumn } from "@/types";
 
 interface SiteStore {
-  siteSettings: SiteSettings | null;
+  companyInfo: CompanyInfo | null;
   themeSettings: ThemeSettings | null;
   navigation: NavigationMenu | null;
   footer: FooterColumn[];
   isMobileMenuOpen: boolean;
-  setSiteSettings: (settings: SiteSettings) => void;
+  setCompanyInfo: (info: CompanyInfo) => void;
   setThemeSettings: (settings: ThemeSettings) => void;
   setNavigation: (nav: NavigationMenu) => void;
   setFooter: (footer: FooterColumn[]) => void;
@@ -16,12 +16,12 @@ interface SiteStore {
 }
 
 export const useSiteStore = create<SiteStore>((set) => ({
-  siteSettings: null,
+  companyInfo: null,
   themeSettings: null,
   navigation: null,
   footer: [],
   isMobileMenuOpen: false,
-  setSiteSettings: (settings) => set({ siteSettings: settings }),
+  setCompanyInfo: (info) => set({ companyInfo: info }),
   setThemeSettings: (settings) => set({ themeSettings: settings }),
   setNavigation: (nav) => set({ navigation: nav }),
   setFooter: (footer) => set({ footer }),

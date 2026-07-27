@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = "Seed database with complete Sakthi Solutions content"
 
     def handle(self, *args, **options):
-        self._seed_site_settings()
+        self._seed_company_info()
         self._seed_product_categories()
         self._seed_products()
         self._seed_product_features()
@@ -21,6 +21,7 @@ class Command(BaseCommand):
         self._seed_footer()
         self._seed_case_study()
         self._seed_childwood()
+        self._seed_clients()
         self.stdout.write(self.style.SUCCESS("Database seeded completely"))
 
     # ─── helpers ────────────────────────────────────────────────
@@ -31,12 +32,35 @@ class Command(BaseCommand):
     def _prod(self, slug):
         return Product.objects.get(slug=slug)
 
-    # ─── site settings ──────────────────────────────────────────
+    def _download_and_save_category_image(self, category_instance, url, filename):
+        import urllib.request
+        import ssl
+        from django.core.files.base import ContentFile
+        try:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
 
-    def _seed_site_settings(self):
-        SiteSettings.objects.update_or_create(pk=1, defaults={
-            "site_name": "Sakthi Solutions",
+            req = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            )
+            with urllib.request.urlopen(req, context=ctx, timeout=15) as response:
+                content = response.read()
+                category_instance.image.save(filename, ContentFile(content), save=True)
+                self.stdout.write(f"Successfully downloaded and saved category image for {category_instance.slug}")
+                return True
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
+            return False
+
+    # ─── company info ───────────────────────────────────────────
+
+    def _seed_company_info(self):
+        CompanyInfo.objects.update_or_create(pk=1, defaults={
+            "company_name": "Sakthi Solutions",
             "tagline": "Digital Signage, Kiosks & IT Solutions",
+            "logo": "settings/ss-logo.svg",
             "phone_primary": "04426420089",
             "phone_secondary": "+91 9840057127",
             "email_primary": "info@sakthisolutions.in",
@@ -44,24 +68,74 @@ class Command(BaseCommand):
             "address_line1": "1/1, 1st Floor, General Collins Road",
             "address_line2": "Choolai",
             "city": "Chennai", "state": "Tamil Nadu", "postal_code": "600112", "country": "India",
-            "facebook_url": "https://www.facebook.com/Sakthi-Solutions-276890643116200/",
-            "linkedin_url": "https://www.linkedin.com/company/sakthi-solutions/",
+            "facebook_url": "https://www.facebook.com/Sakthi-Solutions-276890643116200/?modal=admin_todo_tour",
+            "linkedin_url": "https://www.linkedin.com/company/sakthi-solutions/?lipi=urn%3Ali%3Apage%3Ad_flagship3_company_admin%3BLNHvzou%2FRO6VF1l8%2FVJD7A%3D%3D",
             "youtube_url": "https://www.youtube.com/channel/UCxRoJTQKDHkLFj6hFCTHW0g",
             "founded_year": 2014,
             "about_content": "Sakthi Solutions provides digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. The company was formed in the year 2014 by a dynamic couple — Jayakumar with 25+ years of experience in sales, hospitality, automation and Vidya Rani with expertise in financial products and customer relations.",
             "mission": "To provide complete hardware, digital signage and IT consulting end-to-end solutions for hospitality, retail and corporate sectors, enabling businesses to operate efficiently with the right technology.",
             "vision": "To be the most trusted technology partner for digital signage and IT solutions, known for prompt service, reliable partnerships and innovative solutions.",
+            "hero_title": "Digital Signage, Kiosks & IT Solutions",
+            "hero_description": "We help retail & hospitality brands boost customer engagement and streamline operations with premium digital signage, interactive kiosks, and 24/7 on-ground IT support.",
+            "hero_bg_image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80",
+            "trust_chips": [
+                {"icon": "→", "text": "Digital Signage & Video Walls"},
+                {"icon": "→", "text": "Interactive Kiosks"},
+                {"icon": "→", "text": "IT Networking Consulting"},
+                {"icon": "→", "text": "Feedback Solutions"}
+            ],
+            "advantages": [
+                {"title": "Direct OEM Collaborations", "description": "We partner directly with leading international manufacturers to deliver authentic, world-class digital displays and custom interactive hardware solutions."},
+                {"title": "24/7 On-Ground Support", "description": "Our team of certified, locally stationed technicians provides round-the-clock proactive monitoring and prompt maintenance support."},
+                {"title": "End-to-End IT Consulting", "description": "From setting up hospitality POS & KOT environments to designing high-speed network infrastructures, we offer expert consulting and clear roadmaps."},
+                {"title": "Vandal-Proof Engineering", "description": "All our public-facing signage devices feature heavy-duty commercial bodies and tempered protective glass surfaces built for high-traffic operations."}
+            ],
         })
 
     # ─── product categories ─────────────────────────────────────
 
     def _seed_product_categories(self):
-        for data in [
-            {"name": "Godspeed", "slug": "godspeed", "description": "World class digital signage with manufacturing unit in Hong Kong and China. Heavy duty body with toughened glass surface.", "sort_order": 1},
-            {"name": "Tellus", "slug": "tellus", "description": "Customer feedback kiosk solution for restaurants and retail outlets.", "sort_order": 2},
-            {"name": "Childwood", "slug": "childwood", "description": "Children's play equipment for indoor and outdoor spaces.", "sort_order": 3},
-        ]:
-            ProductCategory.objects.update_or_create(slug=data["slug"], defaults={**data, "is_published": True})
+        categories_data = [
+            {
+                "name": "Digital Signages and Video Wall",
+                "slug": "godspeed",
+                "tagline": "World Class Digital Displays",
+                "description": "World class digital signage with extra ordinary features heavy duty body and toughened glass surface can withstand impact, User changeable images.",
+                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/05/pro3.png",
+                "filename": "godspeed_category.png",
+                "sort_order": 1
+            },
+            {
+                "name": "Customer feedback kiosk",
+                "slug": "tellus",
+                "tagline": "Guest Feedback Solutions",
+                "description": "The purpose of business can be measured only with the Guest feedback i.e Restaurant should meet the purpose of customer walk in.",
+                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png",
+                "filename": "tellus_category.png",
+                "sort_order": 2
+            },
+            {
+                "name": "Childwood children play equipment",
+                "slug": "childwood",
+                "tagline": "Indoor & Outdoor Play Solutions",
+                "description": "Childwood children play equipment indoor / outdoor and gym equipments.",
+                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg",
+                "filename": "childwood_category.jpg",
+                "sort_order": 3
+            },
+        ]
+        
+        for data in categories_data:
+            image_url = data.pop("image_url", None)
+            filename = data.pop("filename", None)
+            cat, created = ProductCategory.objects.update_or_create(
+                slug=data["slug"],
+                defaults={**data, "is_published": True}
+            )
+            # Fetch from live server if not set
+            if not cat.image or str(cat.image) == "" or "tellus" in cat.slug:
+                if image_url and filename:
+                    self._download_and_save_category_image(cat, image_url, filename)
 
     # ─── products ───────────────────────────────────────────────
 
@@ -348,8 +422,8 @@ class Command(BaseCommand):
 
         # Services → sub-items
         for i, (label, url) in enumerate([
-            ("Hardware for Restaurant & Bar", "/services"),
-            ("IT Networking Consulting", "/services"),
+            ("Hardware for Restaurant & Bar", "/services/hardware"),
+            ("IT Networking Consulting", "/services/it-networking"),
         ]):
             NavigationItem.objects.update_or_create(menu=menu, label=label, parent=services_parent, defaults={"url": url, "sort_order": i, "is_visible": True})
 
@@ -467,10 +541,145 @@ class Command(BaseCommand):
             ],
         }
 
+        import urllib.request
+        import ssl
+        from django.core.files.base import ContentFile
+        
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        upload_base = "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/"
+
+        SKU_NAMES = {
+            "CWP001": "Multi-Level Playstation",
+            "CWP002": "Compact Play Structure",
+            "CWP003": "Adventure Tower",
+            "CWP004": "Slide Combo Unit",
+            "CWP005": "Junior Play Zone",
+            "CWP006": "Narrow Corridor Play",
+            "CWP007": "Extended Play Arena",
+            "CWP008": "Deluxe Playstation",
+            "CWP009": "Family Fun Center",
+            "CWP010": "Grand Play Structure",
+            "CWP011": "Mega Play Tunnel",
+            "CWP012": "Triple Deck Play",
+            "CWP013": "Multi-Level Playstation",
+            "CWP014": "Custom Play Setup",
+            "CWP015": "Premium Play Fortress",
+            "CWP016": "Dual Zone Play",
+            "CWP017": "Jumbo Adventure Park",
+            "CWP018": "Triple Slide Tower",
+            "CWP019": "Climbing Frame Combo",
+            "CWP020": "Multi-Activity Station",
+            "CWP021": "Double Deck Play Zone",
+            "CWP022": "Compact Adventure Frame",
+            "CWP023": "Wide Play Arena",
+            "CWP024": "Low Profile Play Unit",
+            "CWP025": "Extended Slide Complex",
+            "CWP026": "Dual Level Play Structure",
+            "CWP027": "Triple Level Play Frame",
+            "CWP028": "Climbing Adventure Combo",
+            "CWP029": "Large Multi-Play Unit",
+            "CWP030": "Junior Adventure Tower",
+            "CWP031": "Deluxe Play Fortress",
+            "CWP032": "Compact Slide Tower",
+            "CWP033": "Family Play Center",
+            "CWP034": "Square Play Station",
+            "CWP035": "Tall Multi-Deck Play",
+            "CWP036": "Standard Play Structure",
+            "CWP037": "Mega Adventure Complex",
+            "CWP038": "Premium Multi-Level Play",
+            "CWP039": "Grand Slide Fortress",
+            "CWP040": "Wide Play Arena",
+            "CWP041": "Jumbo Play Castle",
+            "CW0027": "Large Indoor Playstation",
+            "CW0028": "Extended Indoor Play Frame",
+            "CW0029": "Compact Indoor Play Unit",
+            "CW0030": "Multi-Activity Indoor Play",
+        }
+
+        DIMENSIONS = {
+            "CW0040": "80x2x32\"",
+            "CW0041": "136x20x32\"",
+            "CW0042": "260x120x88\"",
+        }
+
         for cat_type, cat_name in [("outdoor", "Outdoor"), ("indoor", "Indoor")]:
             cat, _ = ChildwoodCategory.objects.update_or_create(name=cat_name, defaults={"type": cat_type, "sort_order": 1 if cat_type == "outdoor" else 2})
             groups = OUTDOOR if cat_type == "outdoor" else INDOOR
             for gorder, (group_name, items) in enumerate(groups.items()):
                 group, _ = ChildwoodGroup.objects.update_or_create(category=cat, name=group_name, defaults={"sort_order": gorder})
                 for iorder, (sku, name) in enumerate(items):
-                    PlayEquipment.objects.update_or_create(group=group, sku=sku, defaults={"name": name, "sort_order": iorder})
+                    resolved_name = SKU_NAMES.get(sku, name)
+                    dims = DIMENSIONS.get(sku, "")
+                    eq, created = PlayEquipment.objects.update_or_create(
+                        group=group, sku=sku,
+                        defaults={"name": resolved_name, "dimensions": dims, "sort_order": iorder}
+                    )
+                    
+                    # Download image if not yet populated in the model
+                    if not eq.image or str(eq.image) == "":
+                        image_url = None
+                        filename = f"{sku}.jpg"
+                        
+                        if sku.startswith("CWP"):
+                            try:
+                                num = int(sku.replace("CWP", ""))
+                                image_url = f"{upload_base}{num}.jpg"
+                            except: pass
+                        elif sku.startswith("CW"):
+                            try:
+                                num = int(sku.replace("CW", ""))
+                                if num >= 18 and num <= 38:
+                                    image_url = f"{upload_base}{num - 17}-1.jpg"
+                                elif num == 40:
+                                    image_url = f"{upload_base}02-1.jpg"
+                                elif num == 41:
+                                    image_url = f"{upload_base}03-1.jpg"
+                                elif num == 42:
+                                    image_url = f"{upload_base}01-3.jpg"
+                                elif num == 43:
+                                    image_url = f"{upload_base}02-3.jpg"
+                                elif num >= 2001 and num <= 2011:
+                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
+                                elif num >= 2012 and num <= 2016:
+                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
+                                elif num >= 2017 and num <= 2041:
+                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
+                                elif num >= 2042:
+                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
+                            except: pass
+                        elif sku.startswith("CWI"):
+                            try:
+                                num = int(sku.replace("CWI", ""))
+                                image_url = f"{upload_base}i{num}.jpg"
+                            except: pass
+                            
+                        if image_url:
+                            try:
+                                req = urllib.request.Request(
+                                    image_url,
+                                    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+                                )
+                                with urllib.request.urlopen(req, context=ctx, timeout=6) as response:
+                                    content = response.read()
+                                    eq.image.save(filename, ContentFile(content), save=True)
+                            except Exception as e:
+                                pass
+
+    def _seed_clients(self):
+        clients_data = [
+            {"name": "Buhari Restaurant", "website": "", "industry": "Hospitality", "brand_color": "#C8922A", "sort_order": 1},
+            {"name": "Matsya Egmore", "website": "", "industry": "Hospitality", "brand_color": "#1A5276", "sort_order": 2},
+            {"name": "Doveton Cafe", "website": "", "industry": "Hospitality", "brand_color": "#6E2F1A", "sort_order": 3},
+            {"name": "Phoenix Marketcity Chennai", "website": "https://www.phoenixmarketcity.com/chennai", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 4},
+            {"name": "Phoenix Marketcity Bangalore", "website": "https://www.phoenixmarketcity.com/bangalore", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 5},
+            {"name": "Phoenix Marketcity Pune", "website": "https://www.phoenixmarketcity.com/pune", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 6},
+            {"name": "High Street Phoenix Mumbai", "website": "https://www.highstreetphoenix.com", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 7},
+            {"name": "Hotel Savera", "website": "", "industry": "Hospitality", "brand_color": "#1B4F72", "sort_order": 8},
+            {"name": "Sangeetha Mobiles", "website": "", "industry": "Retail", "brand_color": "#E74C3C", "sort_order": 9},
+            {"name": "GRT Jewellers", "website": "", "industry": "Retail", "brand_color": "#B8860B", "sort_order": 10},
+        ]
+        for data in clients_data:
+            Client.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
+

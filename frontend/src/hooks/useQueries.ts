@@ -76,10 +76,10 @@ export function useNavigation(slug: string) {
   });
 }
 
-export function useSiteSettings() {
+export function useCompanyInfo() {
   return useQuery({
-    queryKey: ["site-settings"],
-    queryFn: () => cmsApi.getSiteSettings().then((res) => res.data),
+    queryKey: ["company-info"],
+    queryFn: () => cmsApi.getCompanyInfo().then((res) => res.data),
     staleTime: 10 * 60 * 1000,
   });
 }
@@ -129,6 +129,14 @@ export function useFooter() {
   return useQuery({
     queryKey: ["footer"],
     queryFn: () => cmsApi.getFooter().then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useTeam() {
+  return useQuery({
+    queryKey: ["team"],
+    queryFn: () => cmsApi.getTeam().then((res) => res.data),
     staleTime: 10 * 60 * 1000,
   });
 }

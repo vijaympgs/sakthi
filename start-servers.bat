@@ -4,9 +4,10 @@ echo   OWP - Sakthi Solutions - Start Servers
 echo ============================================
 echo.
 
-echo [0/2] Terminating any existing Python and Node/Frontend processes...
+echo [0/2] Terminating existing processes and other command windows...
 taskkill /F /IM python.exe 2>nul
 taskkill /F /IM node.exe 2>nul
+powershell -Command "Get-Process -Name cmd -ErrorAction SilentlyContinue | Where-Object { `$_.Id -ne (Get-CimInstance Win32_Process -Filter 'ProcessId = $PID').ParentProcessId } | Stop-Process -Force" 2>nul
 timeout /t 1 /nobreak >nul
 echo Done.
 echo.

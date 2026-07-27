@@ -25,7 +25,7 @@ export function CountUp({ end, suffix = "", duration = 1500 }: { end: number; su
           requestAnimationFrame(step);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.1 }
     );
 
     observer.observe(el);

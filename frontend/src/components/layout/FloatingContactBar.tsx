@@ -1,13 +1,22 @@
 "use client";
 
-import { Phone, MapPin } from "lucide-react";
+import { Phone, MapPin, Facebook, Youtube } from "lucide-react";
+import { useCompanyInfo } from "@/hooks/useQueries";
 
 export function FloatingContactBar() {
+  const { data: companyInfo } = useCompanyInfo();
+
+  const phoneNum = companyInfo?.phone_secondary || "+91 9840057127";
+  const rawPhone = phoneNum.replace(/[^0-9]/g, "");
+  const whatsappUrl = companyInfo?.phone_secondary 
+    ? `https://wa.me/${rawPhone}` 
+    : "https://wa.me/919840057127";
+
   return (
     <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col shadow-xl overflow-hidden">
       <a
-        href="tel:+919840057127"
-        title="Call +91 9840057127"
+        href={`tel:${phoneNum}`}
+        title={`Call ${phoneNum}`}
         className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#b59449] text-white flex items-center justify-center transition-colors duration-200"
         aria-label="Call Us"
       >
@@ -15,7 +24,7 @@ export function FloatingContactBar() {
       </a>
 
       <a
-        href="https://wa.me/919840057127"
+        href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
         title="Chat on WhatsApp"
@@ -28,7 +37,7 @@ export function FloatingContactBar() {
       </a>
 
       <a
-        href="https://www.linkedin.com/company/sakthi-solutions/"
+        href={companyInfo?.linkedin_url || "https://www.linkedin.com/company/sakthi-solutions/"}
         target="_blank"
         rel="noopener noreferrer"
         title="LinkedIn Profile"
@@ -37,6 +46,32 @@ export function FloatingContactBar() {
       >
         <span className="font-bold text-base font-sans tracking-tight">in</span>
       </a>
+
+      {companyInfo?.facebook_url && (
+        <a
+          href={companyInfo.facebook_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Facebook Page"
+          className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#1877F2] text-white flex items-center justify-center transition-colors duration-200"
+          aria-label="Facebook"
+        >
+          <Facebook size={20} />
+        </a>
+      )}
+
+      {companyInfo?.youtube_url && (
+        <a
+          href={companyInfo.youtube_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="YouTube Channel"
+          className="w-11 h-11 md:w-12 md:h-12 bg-primary-500 hover:bg-[#FF0000] text-white flex items-center justify-center transition-colors duration-200"
+          aria-label="YouTube"
+        >
+          <Youtube size={20} />
+        </a>
+      )}
 
       <a
         href="/contact"

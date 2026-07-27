@@ -51,7 +51,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductCategory
-        fields = ["id", "name", "slug", "description", "icon", "image", "sort_order", "products"]
+        fields = ["id", "name", "slug", "description", "tagline", "icon", "image", "sort_order", "products"]
 
 
 class SolutionSerializer(serializers.ModelSerializer):
@@ -83,7 +83,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ["id", "name", "logo", "website", "industry", "sort_order"]
+        fields = ["id", "name", "logo", "website", "industry", "brand_color", "sort_order"]
 
 
 class TestimonialSerializer(serializers.ModelSerializer):
@@ -180,9 +180,9 @@ class SEOSettingsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SiteSettingsSerializer(serializers.ModelSerializer):
+class CompanyInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SiteSettings
+        model = CompanyInfo
         fields = "__all__"
 
 
@@ -195,7 +195,7 @@ class ThemeSettingsSerializer(serializers.ModelSerializer):
 class ContactSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactSubmission
-        fields = ["id", "name", "email", "phone", "enquiry_type", "products", "message", "created_at"]
+        fields = ["id", "name", "business_name", "email", "phone", "enquiry_type", "products", "callback_time", "message", "created_at"]
         read_only_fields = ["id", "created_at"]
 
 
@@ -272,4 +272,9 @@ class ProductSpecGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSpecGroup
         fields = ["id", "name", "sort_order", "columns", "rows"]
-        fields = ["name", "email", "phone", "enquiry_type", "products", "message"]
+
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMember
+        fields = ["id", "name", "designation", "brief", "photo", "sort_order"]
