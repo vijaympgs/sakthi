@@ -667,19 +667,49 @@ class Command(BaseCommand):
                             except Exception as e:
                                 pass
 
+    def _download_and_save_client_logo(self, client_instance, url, filename):
+        import urllib.request
+        import ssl
+        from django.core.files.base import ContentFile
+        try:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+            req = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            )
+            with urllib.request.urlopen(req, context=ctx, timeout=15) as response:
+                content = response.read()
+                client_instance.logo.save(filename, ContentFile(content), save=True)
+                self.stdout.write(f"Successfully downloaded and saved client logo for {client_instance.name}")
+                return True
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
+            return False
+
     def _seed_clients(self):
         clients_data = [
-            {"name": "Buhari Restaurant", "website": "", "industry": "Hospitality", "brand_color": "#C8922A", "sort_order": 1},
-            {"name": "Matsya Egmore", "website": "", "industry": "Hospitality", "brand_color": "#1A5276", "sort_order": 2},
-            {"name": "Doveton Cafe", "website": "", "industry": "Hospitality", "brand_color": "#6E2F1A", "sort_order": 3},
-            {"name": "Phoenix Marketcity Chennai", "website": "https://www.phoenixmarketcity.com/chennai", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 4},
-            {"name": "Phoenix Marketcity Bangalore", "website": "https://www.phoenixmarketcity.com/bangalore", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 5},
-            {"name": "Phoenix Marketcity Pune", "website": "https://www.phoenixmarketcity.com/pune", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 6},
-            {"name": "High Street Phoenix Mumbai", "website": "https://www.highstreetphoenix.com", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 7},
-            {"name": "Hotel Savera", "website": "", "industry": "Hospitality", "brand_color": "#1B4F72", "sort_order": 8},
-            {"name": "Sangeetha Mobiles", "website": "", "industry": "Retail", "brand_color": "#E74C3C", "sort_order": 9},
-            {"name": "GRT Jewellers", "website": "", "industry": "Retail", "brand_color": "#B8860B", "sort_order": 10},
+            {"name": "Cibo", "website": "", "industry": "Hospitality", "brand_color": "#2C5E3B", "sort_order": 1, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo0.jpg", "filename": "cibo_logo.jpg"},
+            {"name": "Ajnabi", "website": "", "industry": "Hospitality", "brand_color": "#D35400", "sort_order": 2, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo1.jpg", "filename": "ajnabi_logo.jpg"},
+            {"name": "Box Out", "website": "", "industry": "Cafe", "brand_color": "#D35400", "sort_order": 3, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo2.jpg", "filename": "boxout_logo.jpg"},
+            {"name": "Zamrud", "website": "", "industry": "Hospitality", "brand_color": "#27AE60", "sort_order": 4, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo3.jpg", "filename": "zamrud_logo.jpg"},
+            {"name": "Buhari Restaurant", "website": "", "industry": "Hospitality", "brand_color": "#C8922A", "sort_order": 5},
+            {"name": "Matsya Egmore", "website": "", "industry": "Hospitality", "brand_color": "#1A5276", "sort_order": 6},
+            {"name": "Doveton Cafe", "website": "", "industry": "Hospitality", "brand_color": "#6E2F1A", "sort_order": 7},
+            {"name": "Phoenix Marketcity Chennai", "website": "https://www.phoenixmarketcity.com/chennai", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 8},
+            {"name": "Phoenix Marketcity Bangalore", "website": "https://www.phoenixmarketcity.com/bangalore", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 9},
+            {"name": "Phoenix Marketcity Pune", "website": "https://www.phoenixmarketcity.com/pune", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 10},
+            {"name": "High Street Phoenix Mumbai", "website": "https://www.highstreetphoenix.com", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 11},
+            {"name": "Hotel Savera", "website": "", "industry": "Hospitality", "brand_color": "#1B4F72", "sort_order": 12},
+            {"name": "Sangeetha Mobiles", "website": "", "industry": "Retail", "brand_color": "#E74C3C", "sort_order": 13},
+            {"name": "GRT Jewellers", "website": "", "industry": "Retail", "brand_color": "#B8860B", "sort_order": 14},
         ]
         for data in clients_data:
-            Client.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
+            logo_url = data.pop("logo_url", None)
+            filename = data.pop("filename", None)
+            client, created = Client.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
+            if logo_url and filename and (not client.logo or str(client.logo) == ""):
+                self._download_and_save_client_logo(client, logo_url, filename)
 
