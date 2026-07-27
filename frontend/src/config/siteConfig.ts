@@ -77,7 +77,7 @@ export const SITE_CONFIG = {
           { label: "IT Networking Consulting", url: "/services" },
         ],
       },
-      { label: "Contact Us", url: "/contact", order: 5 },
+      { label: "Contact Us", url: "/#contact-section", order: 5 },
     ],
     footerColumns: [
       {
@@ -105,7 +105,7 @@ export const SITE_CONFIG = {
           { label: "About Us", url: "/about" },
           { label: "All Products", url: "/products" },
           { label: "Services Overview", url: "/services" },
-          { label: "Contact Us", url: "/contact" },
+          { label: "Contact Us", url: "/#contact-section" },
         ],
       },
     ],

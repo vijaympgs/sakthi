@@ -32,9 +32,59 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   const heroTitle = product.hero_title || product.name;
   const heroDesc = product.short_description || product.description || "";
   const heroImage = product.image || product.hero_image || null;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sakthi-solutions.vercel.app";
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: heroDesc,
+    ...(heroImage ? { image: heroImage.startsWith("http") ? heroImage : `${siteUrl}${heroImage}` } : {}),
+    brand: {
+      "@type": "Brand",
+      name: product.category_name || "Sakthi Solutions",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}/products/${slug}`,
+      availability: "https://schema.org/InStock",
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        price: "Contact for pricing",
+        priceCurrency: "INR",
+      },
+    },
+  };
+
+  // Helper: determine image URL for JSON-LD
+  const getJsonLdImage = () => {
+    if (!heroImage) return undefined;
+    return heroImage.startsWith("http") ? heroImage : `${siteUrl}${heroImage}`;
+  };
+  const jsonLdImage = getJsonLdImage();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            description: heroDesc,
+            ...(jsonLdImage ? { image: jsonLdImage } : {}),
+            brand: { "@type": "Brand", name: product.category_name || "Sakthi Solutions" },
+            offers: {
+              "@type": "Offer",
+              url: `${siteUrl}/products/${slug}`,
+              availability: "https://schema.org/InStock",
+              price: "Contact for pricing",
+              priceCurrency: "INR",
+            },
+          }),
+        }}
+      />
       <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
           <Breadcrumb items={[{ label: "Products", href: "/products" }, { label: product.name }]} />

@@ -10,14 +10,15 @@ import {
   MapPin,
   Send,
   CheckCircle,
-  Building2,
-  Clock,
   ChevronDown,
+  Navigation,
+  MessageCircle,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCompanyInfo } from "@/hooks/useQueries";
+import { SITE_CONFIG } from "@/config/siteConfig";
 
-const ENQUIRY_TYPES = [
+const FALLBACK_ENQUIRY_TYPES = [
   "Digital Signage & Video Wall",
   "Interactive Kiosk / Wayfinding",
   "IT Networking Consulting",
@@ -27,7 +28,7 @@ const ENQUIRY_TYPES = [
   "General Inquiry",
 ];
 
-const CALLBACK_SLOTS = [
+const FALLBACK_CALLBACK_SLOTS = [
   "Morning (9 AM – 12 PM)",
   "Afternoon (12 PM – 3 PM)",
   "Evening (3 PM – 6 PM)",
@@ -49,6 +50,12 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { data: companyInfo } = useCompanyInfo();
+  const enquiryTypes: string[] = (companyInfo?.enquiry_types && companyInfo.enquiry_types.length > 0)
+    ? companyInfo.enquiry_types.map((e: any) => typeof e === "string" ? e : e.name)
+    : FALLBACK_ENQUIRY_TYPES;
+  const callbackSlots: string[] = (companyInfo?.callback_slots && companyInfo.callback_slots.length > 0)
+    ? companyInfo.callback_slots.map((s: any) => typeof s === "string" ? s : s.label)
+    : FALLBACK_CALLBACK_SLOTS;
 
   const {
     register,
@@ -76,6 +83,24 @@ export function ContactPage() {
     }
   };
 
+  // ── Derived contact data (API → fallback to SITE_CONFIG) ──
+  const phonePrimary = companyInfo?.phone_primary || SITE_CONFIG.contact.phonePrimary;
+  const phoneSecondary = companyInfo?.phone_secondary || SITE_CONFIG.contact.phoneSecondary;
+  const emailPrimary = companyInfo?.email_primary || SITE_CONFIG.contact.emailPrimary;
+  const phoneJayakumar = (companyInfo as any)?.phone_jayakumar || phonePrimary;
+  const phoneVidya = (companyInfo as any)?.phone_vidya || phoneSecondary;
+
+  const salesAddress = companyInfo?.address_line1
+    ? `${companyInfo.address_line1}, ${companyInfo.address_line2 || ""}, ${companyInfo.city || ""} – ${companyInfo.postal_code || ""}`
+    : SITE_CONFIG.contact.salesOffice.formatted;
+
+  const registeredAddress = SITE_CONFIG.contact.registeredOffice.formatted;
+
+  const mapUrl = (companyInfo as any)?.google_maps_embed || SITE_CONFIG.contact.mapEmbedUrl;
+
+  const googleMapsDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Sakthi+Solutions+Chennai";
+  const whatsappUrl = `https://wa.me/${phonePrimary.replace(/[\s+\-]/g, "")}`;
+
   if (isSubmitted) {
     return (
       <section className="section-padding bg-white">
@@ -83,272 +108,365 @@ export function ContactPage() {
           <div className="w-20 h-20 bg-green-50 border border-green-200 flex items-center justify-center mb-6">
             <CheckCircle size={40} className="text-green-500" />
           </div>
-          <h1 className="font-serif font-extrabold text-3xl text-slate-900 mb-3">Enquiry Received!</h1>
-          <p className="text-gray-500 text-sm leading-relaxed mb-8">
-            Thank you for reaching out. Our team will review your enquiry and get back to you within one business day.
+          <h1 className="font-heading font-extrabold text-3xl text-primary-500 mb-3">
+            Enquiry Received!
+          </h1>
+          <p className="font-body text-gray-500 text-sm leading-relaxed mb-8">
+            Thank you for reaching out. Our team will review your enquiry and get back to you
+            within one business day.
           </p>
-          <div className="h-px w-16 bg-[#B89A4A]/50 mb-6" />
-          <p className="text-xs text-gray-400">
-            For urgent queries call <a href="tel:+919840057127" className="text-[#B89A4A] font-bold">+91 98400 57127</a>
+          <div className="gold-divider-center" />
+          <p className="text-xs text-gray-400 font-body">
+            For urgent queries call{" "}
+            <a href={`tel:${phonePrimary}`} className="text-accent-500 font-bold">
+              {phonePrimary}
+            </a>
           </p>
         </div>
       </section>
     );
   }
 
-  const inputClass =
-    "w-full px-4 py-3 border border-gray-200 bg-white text-slate-800 text-sm placeholder-gray-400 focus:border-[#B89A4A] focus:outline-none transition-colors font-normal";
-  const labelClass = "block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600 mb-1.5";
-  const errorClass = "text-xs text-red-500 mt-1";
-
   return (
     <>
-      {/* Hero Banner */}
-      <section className="bg-slate-950 text-white py-16 md:py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/60" />
-        <div className="container-page relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#B89A4A] mb-3">Contact Us</p>
-              <h1 className="font-serif font-extrabold text-4xl md:text-5xl text-white mb-4 leading-[1.1]">
-                Let&apos;s Talk Technology
-              </h1>
-              <p className="text-gray-400 text-sm max-w-lg leading-relaxed font-normal">
-                Whether you&apos;re planning a digital signage rollout, need an IT infrastructure audit, or want a custom kiosk quote — we&apos;re here to help.
-              </p>
-            </div>
-            <div className="hidden lg:block">
-              <div className="border border-white/10 bg-white/5 backdrop-blur-sm p-7 space-y-5">
-                <div className="flex items-center gap-3 text-gray-300">
-                  <div className="w-8 h-8 bg-[#B89A4A]/20 flex items-center justify-center shrink-0">
-                    <Phone size={15} className="text-[#B89A4A]" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mb-0.5">Sales</p>
-                    <span className="text-sm">{companyInfo?.phone_secondary || "+91 98400 57127"}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-gray-300">
-                  <div className="w-8 h-8 bg-[#B89A4A]/20 flex items-center justify-center shrink-0">
-                    <Mail size={15} className="text-[#B89A4A]" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mb-0.5">Email</p>
-                    <span className="text-sm">{companyInfo?.email_primary || "info@sakthisolutions.in"}</span>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 text-gray-300">
-                  <div className="w-8 h-8 bg-[#B89A4A]/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <MapPin size={15} className="text-[#B89A4A]" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mb-0.5">Sales Office</p>
-                    <span className="text-sm leading-relaxed">
-                      {companyInfo?.address_line1
-                        ? `${companyInfo.address_line1}, ${companyInfo.address_line2 || ""}, ${companyInfo.city || ""} - ${companyInfo.postal_code || ""}`
-                        : "1/1, 1st Floor, General Collins Road, Choolai, Chennai – 600112"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* ═══════════════════════════════════════════════════════
+          SECTION HEADER
+          ═══════════════════════════════════════════════════════ */}
+      <section className="section-padding bg-cream">
+        <div className="container-page section-header-left max-w-3xl">
+          <p className="section-label">Contact Us</p>
+          <h1 className="heading-lg text-primary-500 mb-1">
+            Let&apos;s Build Something Remarkable
+          </h1>
+          <div className="gold-divider" />
+          <p className="font-body text-gray-500 text-sm md:text-base leading-relaxed max-w-xl">
+            Whether you&apos;re planning a digital signage rollout, need an IT infrastructure
+            audit, or want a custom kiosk quote — we&apos;re here to help.
+          </p>
         </div>
       </section>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-[#B89A4A]/40 to-transparent" />
-
-      {/* Form + Sidebar */}
+      {/* ═══════════════════════════════════════════════════════
+          SPLIT LAYOUT — Offices (Left) + Form (Right)
+          ═══════════════════════════════════════════════════════ */}
       <section className="section-padding bg-white">
         <div className="container-page">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 xl:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16">
 
-            {/* Form */}
-            <div className="lg:col-span-2">
-              <h2 className="font-serif font-extrabold text-2xl md:text-3xl text-slate-900 mb-6">
-                Send Us an Enquiry
-              </h2>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" id="contact-enquiry-form">
+            {/* ── LEFT: Office Contact Info ── */}
+            <div className="space-y-8">
+              <div>
+                <p className="section-label">Our Offices</p>
+                <h2 className="heading-md text-primary-500 mb-1">Visit or Call Us</h2>
+                <div className="gold-divider" />
+              </div>
 
-                {/* Row: Name + Business */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className={labelClass}>Your Name *</label>
-                    <input {...register("name")} className={inputClass} placeholder="Full name" />
-                    {errors.name && <p className={errorClass}>{errors.name.message}</p>}
+              {/* Office Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Registered Office */}
+                <div className="card p-5 space-y-3">
+                  <h3 className="font-heading text-lg font-bold text-primary-500">
+                    Registered Office
+                  </h3>
+                  <div className="flex items-start gap-2.5">
+                    <MapPin size={15} className="text-accent-500 mt-0.5 shrink-0" />
+                    <p className="font-body text-xs text-gray-600 leading-relaxed">
+                      {registeredAddress}
+                    </p>
                   </div>
-                  <div>
-                    <label className={labelClass}>Business / Organization *</label>
-                    <input {...register("business_name")} className={inputClass} placeholder="Hotel / Restaurant / Retail brand" />
-                    {errors.business_name && <p className={errorClass}>{errors.business_name.message}</p>}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center gap-2">
+                      <Phone size={13} className="text-accent-500 shrink-0" />
+                      <a
+                        href={`tel:${phonePrimary.replace(/[\s-]/g, "")}`}
+                        className="font-body text-xs text-accent-500 hover:underline"
+                      >
+                        {phonePrimary}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail size={13} className="text-accent-500 shrink-0" />
+                      <a
+                        href={`mailto:${emailPrimary}`}
+                        className="font-body text-xs text-accent-500 hover:underline"
+                      >
+                        {emailPrimary}
+                      </a>
+                    </div>
                   </div>
                 </div>
 
-                {/* Row: Email + Phone */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Sales Office */}
+                <div className="card p-5 space-y-3">
+                  <h3 className="font-heading text-lg font-bold text-primary-500">
+                    Sales Office
+                  </h3>
+                  <div className="flex items-start gap-2.5">
+                    <MapPin size={15} className="text-accent-500 mt-0.5 shrink-0" />
+                    <p className="font-body text-xs text-gray-600 leading-relaxed">
+                      {salesAddress}
+                    </p>
+                  </div>
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center gap-2">
+                      <Phone size={13} className="text-accent-500 shrink-0" />
+                      <a
+                        href={`tel:${phoneSecondary.replace(/[\s-]/g, "")}`}
+                        className="font-body text-xs text-accent-500 hover:underline"
+                      >
+                        {phoneSecondary}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail size={13} className="text-accent-500 shrink-0" />
+                      <a
+                        href={`mailto:${emailPrimary}`}
+                        className="font-body text-xs text-accent-500 hover:underline"
+                      >
+                        {emailPrimary}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button Row */}
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={googleMapsDirectionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                  title="Get Directions"
+                >
+                  <Navigation size={16} />
+                  <span className="font-body text-xs font-medium">Get Directions</span>
+                </a>
+                <a
+                  href={`tel:${phonePrimary.replace(/[\s-]/g, "")}`}
+                  className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                  title="Call"
+                >
+                  <Phone size={16} />
+                  <span className="font-body text-xs font-medium">Call</span>
+                </a>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                  title="WhatsApp"
+                >
+                  <MessageCircle size={16} />
+                  <span className="font-body text-xs font-medium">WhatsApp</span>
+                </a>
+              </div>
+
+              {/* Individual Contacts */}
+              <div className="bg-cream p-5 space-y-3">
+                <p className="font-heading text-sm font-bold text-primary-500">
+                  Direct Lines
+                </p>
+                {(phoneJayakumar || phoneVidya) && (
+                  <div className="space-y-2">
+                    {phoneJayakumar && (
+                      <div className="flex items-center gap-2.5">
+                        <Phone size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`tel:${phoneJayakumar.replace(/[\s-]/g, "")}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          Jayakumar: {phoneJayakumar}
+                        </a>
+                      </div>
+                    )}
+                    {phoneVidya && (
+                      <div className="flex items-center gap-2.5">
+                        <Phone size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`tel:${phoneVidya.replace(/[\s-]/g, "")}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          Vidya Rani: {phoneVidya}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {(companyInfo as any)?.business_hours && (
+                  <p className="font-body text-xs text-gray-500">
+                    {(companyInfo as any).business_hours}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* ── RIGHT: Inquiry Form ── */}
+            <div>
+              <div className="mb-6">
+                <p className="section-label">Request a Consultation</p>
+                <p className="font-accent italic text-xl md:text-2xl text-primary-500/70">
+                  Start your project journey
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} id="contact-enquiry-form" className="space-y-5">
+                {/* Row: Name + Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Email *</label>
-                    <input {...register("email")} type="email" className={inputClass} placeholder="your@email.com" />
-                    {errors.email && <p className={errorClass}>{errors.email.message}</p>}
+                    <label className="form-label">Your Name *</label>
+                    <input
+                      {...register("name")}
+                      className="form-input"
+                      placeholder="Full name"
+                    />
+                    {errors.name && (
+                      <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+                    )}
                   </div>
                   <div>
-                    <label className={labelClass}>Phone *</label>
-                    <input {...register("phone")} className={inputClass} placeholder="+91 XXXXX XXXXX" />
-                    {errors.phone && <p className={errorClass}>{errors.phone.message}</p>}
+                    <label className="form-label">Email *</label>
+                    <input
+                      {...register("email")}
+                      type="email"
+                      className="form-input"
+                      placeholder="your@email.com"
+                    />
+                    {errors.email && (
+                      <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row: Phone + Company */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="form-label">Phone *</label>
+                    <input
+                      {...register("phone")}
+                      className="form-input"
+                      placeholder="+91 XXXXX XXXXX"
+                    />
+                    {errors.phone && (
+                      <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label">Business / Organization *</label>
+                    <input
+                      {...register("business_name")}
+                      className="form-input"
+                      placeholder="Hotel / Restaurant / Retail brand"
+                    />
+                    {errors.business_name && (
+                      <p className="text-xs text-red-500 mt-1">{errors.business_name.message}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Enquiry Type */}
                 <div>
-                  <label className={labelClass}>Enquiry Type *</label>
+                  <label className="form-label">Enquiry Type *</label>
                   <div className="relative">
-                    <select {...register("enquiry_type")} className={`${inputClass} appearance-none pr-10 cursor-pointer`}>
+                    <select
+                      {...register("enquiry_type")}
+                      className="form-select pr-10 cursor-pointer"
+                    >
                       <option value="">— Select what you need —</option>
-                      {ENQUIRY_TYPES.map((t) => (
-                        <option key={t} value={t}>{t}</option>
+                      {enquiryTypes.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
                       ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <ChevronDown
+                      size={14}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    />
                   </div>
-                  {errors.enquiry_type && <p className={errorClass}>{errors.enquiry_type.message}</p>}
+                  {errors.enquiry_type && (
+                    <p className="text-xs text-red-500 mt-1">{errors.enquiry_type.message}</p>
+                  )}
                 </div>
 
                 {/* Preferred Callback */}
                 <div>
-                  <label className={labelClass}>Preferred Callback Time</label>
+                  <label className="form-label">Preferred Callback Time</label>
                   <div className="relative">
-                    <select {...register("callback_time")} className={`${inputClass} appearance-none pr-10 cursor-pointer`}>
+                    <select
+                      {...register("callback_time")}
+                      className="form-select pr-10 cursor-pointer"
+                    >
                       <option value="">— Any time is fine —</option>
-                      {CALLBACK_SLOTS.map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                      {callbackSlots.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
                       ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <ChevronDown
+                      size={14}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    />
                   </div>
                 </div>
 
                 {/* Message */}
                 <div>
-                  <label className={labelClass}>Message / Requirements *</label>
+                  <label className="form-label">Message / Requirements *</label>
                   <textarea
                     {...register("message")}
                     rows={5}
-                    className={`${inputClass} resize-none`}
+                    className="form-input resize-none"
                     placeholder="Tell us about your project scope, location, timeline, or any specific requirements..."
                   />
-                  {errors.message && <p className={errorClass}>{errors.message.message}</p>}
+                  {errors.message && (
+                    <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
+                  )}
                 </div>
 
+                {/* Submit */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   id="submit-enquiry-btn"
-                  className="inline-flex items-center gap-2 bg-[#B89A4A] hover:bg-transparent text-white hover:text-[#B89A4A] border border-[#B89A4A] font-bold px-8 py-3.5 text-xs uppercase tracking-widest transition-colors shadow-md disabled:opacity-60"
+                  className="btn-accent w-full"
                 >
-                  {isSubmitting ? "Sending..." : "Send Enquiry"}
-                  <Send size={14} />
+                  {isSubmitting ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      Send Enquiry <Send size={14} className="ml-2" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Contact Card */}
-              <div className="bg-slate-50 border border-gray-200 p-6">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B89A4A] mb-5">Contact Information</h3>
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Sales Office</p>
-                    <div className="flex items-start gap-2.5">
-                      <MapPin size={14} className="text-[#B89A4A] mt-0.5 shrink-0" />
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        {companyInfo?.address_line1 && companyInfo?.address_line2
-                          ? `${companyInfo.address_line1}, ${companyInfo.address_line2}, ${companyInfo.city || ""} – ${companyInfo.postal_code || ""}`
-                          : "1/1, 1st Floor, General Collins Road, Choolai, Chennai – 600112"}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Call Us</p>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2.5">
-                        <Phone size={13} className="text-[#B89A4A] shrink-0" />
-                        <a href="tel:+919840057127" className="text-xs text-slate-600 hover:text-[#B89A4A] transition-colors">
-                          Jayakumar: +91 98400 57127
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <Phone size={13} className="text-[#B89A4A] shrink-0" />
-                        <a href="tel:+919381459199" className="text-xs text-slate-600 hover:text-[#B89A4A] transition-colors">
-                          Vidya Rani: +91 93814 59199
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Email</p>
-                    <div className="flex items-center gap-2.5">
-                      <Mail size={13} className="text-[#B89A4A] shrink-0" />
-                      <a
-                        href={`mailto:${companyInfo?.email_primary || "info@sakthisolutions.in"}`}
-                        className="text-xs text-slate-600 hover:text-[#B89A4A] transition-colors"
-                      >
-                        {companyInfo?.email_primary || "info@sakthisolutions.in"}
-                      </a>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Business Hours</p>
-                    <div className="flex items-center gap-2.5">
-                      <Clock size={13} className="text-[#B89A4A] shrink-0" />
-                      <span className="text-xs text-slate-600">Mon – Sat: 9:00 AM – 6:30 PM</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Why Us mini card */}
-              <div className="border-l-4 border-[#B89A4A] pl-4 bg-slate-50 py-4 pr-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Building2 size={14} className="text-[#B89A4A]" />
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Why Sakthi Solutions?</p>
-                </div>
-                <ul className="space-y-1.5">
-                  {[
-                    "Direct Godspeed OEM partner",
-                    "On-site installation & support",
-                    "24/7 maintenance SLA",
-                    "Hospitality-grade hardware",
-                  ].map((point) => (
-                    <li key={point} className="flex items-start gap-2 text-xs text-slate-600">
-                      <span className="w-1 h-1 bg-[#B89A4A] rounded-full mt-1.5 shrink-0" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Map */}
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Locate Us</p>
-                <div className="border border-gray-200 aspect-[4/3] bg-gray-50">
-                  <iframe
-                    src={
-                      companyInfo?.google_maps_embed ||
-                      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.142420851332!2d80.26311231482329!3d13.09015899077815!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5265fb1d99fc0d%3A0x426a91434f932dba!2ssakthi+solutions!5e0!3m2!1sen!2sin!4v1522991981617"
-                    }
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Sakthi Solutions Location"
-                  />
-                </div>
-              </div>
-            </div>
+      {/* ═══════════════════════════════════════════════════════
+          MAP SECTION
+          ═══════════════════════════════════════════════════════ */}
+      <section className="bg-cream">
+        <div className="container-page py-12">
+          <div className="section-header-center max-w-xl mx-auto">
+            <p className="section-label text-center">Locate Us</p>
+            <h2 className="heading-md text-primary-500 mb-1">Find Us on the Map</h2>
+            <div className="gold-divider-center" />
+          </div>
+          <div className="border border-accent-500/15 aspect-[16/7] bg-gray-50 overflow-hidden">
+            <iframe
+              src={mapUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Sakthi Solutions Location"
+            />
           </div>
         </div>
       </section>

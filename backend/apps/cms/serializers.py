@@ -36,22 +36,22 @@ class ProductSerializer(serializers.ModelSerializer):
     features = ProductFeatureSerializer(many=True, read_only=True)
     gallery = ProductGallerySerializer(many=True, read_only=True)
     category_name = serializers.CharField(source="category.name", read_only=True)
+    group_name = serializers.CharField(source="group.name", read_only=True, allow_null=True)
 
     class Meta:
         model = Product
         fields = [
-            "id", "category", "category_name", "parent", "name", "slug",
+            "id", "category", "category_name", "group", "group_name", "parent", "name", "slug",
+            "sku", "dimensions",
             "tagline", "short_description", "description", "image", "brochure",
             "is_featured", "is_published", "sort_order", "features", "gallery",
         ]
 
 
-class ProductCategorySerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True, read_only=True)
-
+class BrandSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductCategory
-        fields = ["id", "name", "slug", "description", "tagline", "icon", "image", "sort_order", "products"]
+        model = Brand
+        fields = ["id", "name", "slug", "description", "tagline", "logo", "icon", "website", "sort_order"]
 
 
 class SolutionSerializer(serializers.ModelSerializer):
@@ -226,29 +226,32 @@ class ProductSpecColumnSerializer(serializers.ModelSerializer):
         fields = ["id", "key", "label", "sort_order"]
 
 
-class PlayEquipmentSerializer(serializers.ModelSerializer):
-    category_type = serializers.CharField(source="group.category.type", read_only=True)
-    group_name = serializers.CharField(source="group.name", read_only=True)
+class ProductGroupSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
 
     class Meta:
-        model = PlayEquipment
-        fields = ["id", "sku", "name", "image", "dimensions", "sort_order", "category_type", "group_name"]
+        model = ProductGroup
+        fields = ["id", "name", "sort_order", "products"]
 
 
-class ChildwoodGroupSerializer(serializers.ModelSerializer):
-    items = PlayEquipmentSerializer(many=True, read_only=True)
+class ProductCategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
+    groups = ProductGroupSerializer(many=True, read_only=True)
+    brand_name = serializers.CharField(source="brand.name", read_only=True, allow_null=True)
+    brand_icon = serializers.CharField(source="brand.icon", read_only=True, allow_null=True)
+    brand_logo = serializers.SerializerMethodField()
+
+    def get_brand_logo(self, obj):
+        if obj.brand and obj.brand.logo:
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(obj.brand.logo.url)
+            return obj.brand.logo.url
+        return None
 
     class Meta:
-        model = ChildwoodGroup
-        fields = ["id", "name", "sort_order", "items"]
-
-
-class ChildwoodCategorySerializer(serializers.ModelSerializer):
-    groups = ChildwoodGroupSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = ChildwoodCategory
-        fields = ["id", "name", "type", "sort_order", "groups"]
+        model = ProductCategory
+        fields = ["id", "name", "slug", "brand", "brand_name", "brand_icon", "brand_logo", "description", "tagline", "icon", "image", "sort_order", "products", "groups"]
 
 
 class PartnerSerializer(serializers.ModelSerializer):

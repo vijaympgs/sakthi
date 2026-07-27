@@ -19,6 +19,7 @@ api.interceptors.response.use((response) => {
 
 export const cmsApi = {
   getHome: () => api.get("/cms/home/"),
+  getBrands: () => api.get("/cms/brands/"),
   getPages: () => api.get("/cms/pages/"),
   getPage: (slug: string) => api.get(`/cms/pages/${slug}/`),
   getProductCategories: () => api.get("/cms/product-categories/"),
@@ -43,7 +44,7 @@ export const cmsApi = {
   getThemeSettings: () => api.get("/cms/settings/theme/"),
   submitContact: (data: Record<string, unknown>) => api.post("/cms/contact/", data),
   getPartners: () => api.get("/cms/partners/"),
-  getChildwood: (type?: string) => api.get("/cms/childwood/", { params: type ? { type } : {} }),
+  getProductGroups: (categorySlug?: string) => api.get("/cms/product-groups/", { params: categorySlug ? { category: categorySlug } : {} }),
   getProductSpecs: (productSlug: string) => api.get("/cms/product-specs/", { params: { product: productSlug } }),
   getCaseStudies: (productSlug?: string) => api.get("/cms/case-studies/", { params: productSlug ? { product: productSlug } : {} }),
   getTeam: () => api.get("/cms/team/"),

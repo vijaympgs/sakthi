@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display, Cormorant_Garamond } from "next/font/google";
 import Script from "next/script";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ThemeProvider } from "@/lib/ThemeContext";
 import { FloatingContactBar } from "@/components/layout/FloatingContactBar";
 import "./globals.css";
 
@@ -10,7 +11,21 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const siteUrl = "https://sakthi-solutions.vercel.app";
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sakthisolutions.in";
 
 export const metadata: Metadata = {
   title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
@@ -37,19 +52,19 @@ export const metadata: Metadata = {
     title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
     description: "Digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. Serving Chennai and pan-India since 2014.",
     url: siteUrl,
-    images: [{ url: `${siteUrl}/assets/products/ss-logo.png`, width: 200, height: 67, alt: "Sakthi Solutions" }],
+    images: [{ url: `${siteUrl}/assets/logo/ss-logo.png`, width: 200, height: 67, alt: "Sakthi Solutions" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
     description: "Digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors.",
-    images: [`${siteUrl}/assets/products/ss-logo.png`],
+    images: [`${siteUrl}/assets/logo/ss-logo.png`],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${cormorant.variable}`} data-theme="sakthi" data-typography="editorial">
       <body>
         <a
           href="#main-content"
@@ -83,67 +98,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               name: "Sakthi Solutions",
-              image: "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/ss-logo.png",
-              url: "https://sakthi-solutions.vercel.app",
-              telephone: ["+91 9840057127", "+91 9381459199", "044-26420089"],
-              email: "info@sakthisolutions.in",
-              foundingDate: "2014",
-              founder: [
-                { "@type": "Person", name: "Jayakumar" },
-                { "@type": "Person", name: "Vidya Rani" },
-              ],
-              address: [
-                {
-                  "@type": "PostalAddress",
-                  name: "Registered Office",
-                  streetAddress: "F7, 1st Floor, 40/26 Arani Muthu Street, Choolai",
-                  addressLocality: "Chennai",
-                  addressRegion: "Tamil Nadu",
-                  postalCode: "600112",
-                  addressCountry: "IN",
-                },
-                {
-                  "@type": "PostalAddress",
-                  name: "Sales Office",
-                  streetAddress: "1/1, 1st Floor, General Collins Road, Choolai",
-                  addressLocality: "Chennai",
-                  addressRegion: "Tamil Nadu",
-                  postalCode: "600112",
-                  addressCountry: "IN",
-                },
-              ],
-              hasOfferCatalog: {
-                "@type": "OfferCatalog",
-                name: "Products and Services",
-                itemListElement: [
-                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Signage" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Interactive Kiosks" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Networking Consulting" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Feedback Solutions" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Product", name: "Godspeed Digital Signage" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Product", name: "Tellus Feedback Solution" } },
-                  { "@type": "Offer", itemOffered: { "@type": "Product", name: "Childwood Play Equipment" } },
-                ],
-              },
-              areaServed: { "@type": "Country", name: "IN" },
-              openingHoursSpecification: [
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Monday", opens: "09:00", closes: "18:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday", opens: "09:00", closes: "18:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "09:00", closes: "18:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday", opens: "09:00", closes: "18:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday", opens: "09:00", closes: "18:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "09:00", closes: "18:00" },
-              ],
-              sameAs: [
-                "https://www.facebook.com/Sakthi-Solutions-276890643116200/",
-                "https://www.linkedin.com/company/sakthi-solutions/",
-                "https://www.youtube.com/channel/UCxRoJTQKDHkLFj6hFCTHW0g",
-              ],
+              image: `${siteUrl}/assets/logo/ss-logo.png`,
+              url: siteUrl,
             }),
           }}
         />
         <QueryProvider>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
           <FloatingContactBar />
         </QueryProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
@@ -153,6 +116,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}');`}
             </Script>
           </>
+        )}
+        {process.env.NEXT_PUBLIC_CLARITY_ID && (
+          <Script id="microsoft-clarity" strategy="afterInteractive">
+            {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${process.env.NEXT_PUBLIC_CLARITY_ID}");`}
+          </Script>
         )}
       </body>
     </html>

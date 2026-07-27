@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { api } from "@/lib/api";
+import { SITE_CONFIG } from "@/config/siteConfig";
 import Link from "next/link";
 import {
   ArrowRight,
-  Monitor,
   Users,
-  Baby,
   Star,
   Quote,
   ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
   Award,
   Shield,
   Clock,
@@ -27,8 +28,27 @@ import {
   GlassWater,
   Pizza,
   Gamepad2,
-  Building
+  Building,
+  Phone,
+  Mail,
+  MapPin,
+  ChevronDown,
+  Navigation,
+  MessageCircle,
+  Send
 } from "lucide-react";
+
+const contactSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  business_name: z.string().min(2, "Business / Organization name is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(10, "Valid phone number is required"),
+  enquiry_type: z.string().min(1, "Please select an enquiry type"),
+  callback_time: z.string().optional(),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CTA } from "@/components/ui/CTA";
 import { CountUp } from "@/components/ui/CountUp";
@@ -40,7 +60,8 @@ import {
   useProductCategories,
   useIndustries,
   useCompanyInfo,
-  useClients
+  useClients,
+  useTeam
 } from "@/hooks/useQueries";
 
 function ScrollReveal({ children, className = "", stagger = false }: { children: React.ReactNode; className?: string; stagger?: boolean }) {
@@ -52,34 +73,32 @@ function ScrollReveal({ children, className = "", stagger = false }: { children:
   );
 }
 
-const getCategoryIcon = (slug?: string) => {
-  switch (slug) {
-    case "godspeed":
-      return <Monitor className="w-6 h-6 text-[#B89A4A]" />;
-    case "tellus":
-      return <Users className="w-6 h-6 text-[#B89A4A]" />;
-    case "childwood":
-      return <Baby className="w-6 h-6 text-[#B89A4A]" />;
-    default:
-      return <Monitor className="w-6 h-6 text-[#B89A4A]" />;
-  }
-};
-
 const getCategoryFallbackImage = (slug?: string) => {
-  switch (slug) {
-    case "godspeed":
-      return "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80";
-    case "tellus":
-      return "https://images.unsplash.com/photo-1552581230-c01bc0d48453?auto=format&fit=crop&w=800&q=80";
-    case "childwood":
-      return "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=800&q=80";
-    default:
-      return "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80";
-  }
+  // 4K Unsplash images mapped to product category slugs
+  const images: Record<string, string> = {
+    // Godspeed
+    "digital-signage": "https://images.unsplash.com/photo-1507215210622-539686c4bfaa?auto=format&fit=crop&w=3840&q=80",
+    "video-wall-cat": "https://images.unsplash.com/photo-1589186161289-9eb8898086df?auto=format&fit=crop&w=3840&q=80",
+    "interactive-displays": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=3840&q=80",
+    // Tellus
+    "feedback-kiosk": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=3840&q=80",
+    "customer-experience": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=3840&q=80",
+    // Childwood
+    "indoor-play": "https://images.unsplash.com/photo-1759330203240-b89ccee8840f?auto=format&fit=crop&w=3840&q=80",
+    "outdoor-play": "https://images.unsplash.com/photo-1575783970733-1aaedde1db74?auto=format&fit=crop&w=3840&q=80",
+    "gym-equipment": "https://images.unsplash.com/photo-1720729706612-040e610e611c?auto=format&fit=crop&w=3840&q=80",
+    "school-furniture": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=3840&q=80",
+  };
+  if (slug && images[slug]) return images[slug];
+  // Brand-level fallbacks
+  if (slug === "godspeed") return images["digital-signage"];
+  if (slug === "tellus") return images["feedback-kiosk"];
+  if (slug === "childwood") return images["indoor-play"];
+  return "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=3840&q=80";
 };
 
 const getCategoryImage = (cat: any) => {
-  if (!cat.image) {
+  if (!cat || !cat.image) {
     return getCategoryFallbackImage(cat.slug);
   }
   if (cat.image.startsWith("http://") || cat.image.startsWith("https://")) {
@@ -135,24 +154,74 @@ export function HomePage() {
   const { data: apiIndustries } = useIndustries();
   const { data: companyInfo } = useCompanyInfo();
   const { data: apiClients } = useClients();
-
-  const [testiIndex, setTestiIndex] = useState(0);
+  const { data: apiTeam } = useTeam();
 
   const testimonials = apiTestimonials ?? [];
   const partners = apiPartners ?? [];
   const categories = apiCategories ?? [];
   const industries: string[] = apiIndustries ? apiIndustries.map((i: { name: string }) => i.name) : [];
   const clients = apiClients ?? [];
+  const team = apiTeam && apiTeam.length > 0 ? apiTeam : [];
 
-  const nextTesti = () => {
-    if (testimonials.length === 0) return;
-    setTestiIndex((prev) => (prev + 1) % testimonials.length);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const enquiryTypes: string[] = (companyInfo?.enquiry_types && companyInfo.enquiry_types.length > 0)
+    ? companyInfo.enquiry_types.map((e: any) => typeof e === "string" ? e : e.name)
+    : [
+      "Digital Signage & Video Wall",
+      "Interactive Kiosk / Wayfinding",
+      "IT Networking Consulting",
+      "Hardware Supply (POS / KOT)",
+      "Customer Feedback Solution",
+      "Smart Touch Table",
+      "General Inquiry",
+    ];
+  const callbackSlots: string[] = (companyInfo?.callback_slots && companyInfo.callback_slots.length > 0)
+    ? companyInfo.callback_slots.map((s: any) => typeof s === "string" ? s : s.label)
+    : [
+      "Morning (9 AM – 12 PM)",
+      "Afternoon (12 PM – 3 PM)",
+      "Evening (3 PM – 6 PM)",
+      "Anytime",
+    ];
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      await api.post("/cms/contact/", {
+        name: data.name,
+        business_name: data.business_name,
+        email: data.email,
+        phone: data.phone,
+        enquiry_type: null,
+        products: [data.enquiry_type],
+        callback_time: data.callback_time || "",
+        message: data.message,
+      });
+      setIsSubmitted(true);
+    } catch {
+      alert("Something went wrong. Please try again.");
+    }
   };
 
-  const prevTesti = () => {
-    if (testimonials.length === 0) return;
-    setTestiIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  const phonePrimary = companyInfo?.phone_primary || SITE_CONFIG.contact.phonePrimary;
+  const phoneSecondary = companyInfo?.phone_secondary || SITE_CONFIG.contact.phoneSecondary;
+  const emailPrimary = companyInfo?.email_primary || SITE_CONFIG.contact.emailPrimary;
+  const phoneJayakumar = (companyInfo as any)?.phone_jayakumar || phonePrimary;
+  const phoneVidya = (companyInfo as any)?.phone_vidya || phoneSecondary;
+  const salesAddress = companyInfo?.address_line1
+    ? `${companyInfo.address_line1}, ${companyInfo.address_line2 || ""}, ${companyInfo.city || ""} – ${companyInfo.postal_code || ""}`
+    : SITE_CONFIG.contact.salesOffice.formatted;
+  const registeredAddress = SITE_CONFIG.contact.registeredOffice.formatted;
+  const mapUrl = (companyInfo as any)?.google_maps_embed || SITE_CONFIG.contact.mapEmbedUrl;
+  const googleMapsDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Sakthi+Solutions+Chennai";
+  const whatsappUrl = `https://wa.me/${phonePrimary.replace(/[\s+\-]/g, "")}`;
 
   const yearsOfExperience = companyInfo?.founded_year
     ? new Date().getFullYear() - companyInfo.founded_year
@@ -189,7 +258,7 @@ export function HomePage() {
   return (
     <>
       <section
-        className="relative h-[72vh] min-h-[72vh] flex flex-col justify-end items-center overflow-hidden bg-cover bg-center text-white"
+        className="relative h-[72vh] min-h-[72vh] flex flex-col justify-center items-center overflow-hidden bg-cover bg-center text-white"
         style={{ backgroundImage: `url(${companyInfo?.hero_bg_image || "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"})` }}
       >
         {/* Dark overlay to ensure readability */}
@@ -198,24 +267,13 @@ export function HomePage() {
         <div className="container-page flex flex-col items-center justify-center text-center z-10 w-full mx-auto pb-10">
           <div className="max-w-4xl mx-auto animate-fade-up flex flex-col items-center">
             <p className="text-xs font-bold italic uppercase tracking-[0.22em] text-[#E4C36A] mb-4">
-              Since 2014 &mdash; Chennai &bull; Hospitality &amp; Retail IT Partner
+              {companyInfo?.hero_tagline || "Since 2014 — Chennai • Hospitality & Retail IT Partner"}
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.1] tracking-tight mb-4 whitespace-pre-line text-white">
               {heroTitle.includes("&") ? (
                 <>
                   <span className="block">
-                    {heroTitle.split("&")[0].includes("Digital Signage") ? (
-                      <>
-                        <span className="text-5xl md:text-6xl lg:text-[4.4rem] font-black tracking-tight text-white block md:inline mb-2 md:mb-0">
-                          Digital Signage
-                        </span>
-                        <span className="text-4xl md:text-5xl lg:text-[3.65rem] font-extrabold tracking-tight text-white">
-                          {heroTitle.split("&")[0].replace("Digital Signage", "")}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-white">{heroTitle.split("&")[0]}</span>
-                    )}
+                    {heroTitle.split("&")[0]}
                   </span>
                   <span className="block mt-[0.5em]">
                     &amp; <span className="text-[#E4C36A] font-serif italic font-normal">{heroTitle.split("&")[1]}</span>
@@ -241,14 +299,14 @@ export function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
               <Link
                 href="/products"
-                className="bg-[#E4C36A] hover:bg-transparent text-[#0B0F1A] hover:text-[#E4C36A] border border-[#E4C36A] font-bold px-8 py-3.5 transition-colors text-xs uppercase tracking-widest inline-flex items-center justify-center shadow-lg"
+                className="btn-accent shadow-lg"
               >
                 Explore Products
                 <ArrowRight size={14} className="ml-2" />
               </Link>
               <Link
-                href="/contact"
-                className="border border-white/60 text-white hover:bg-white hover:text-[#0B0F1A] hover:border-white transition-all text-xs font-semibold uppercase tracking-wide px-5 py-3.5 inline-flex items-center justify-center"
+                href="#contact-section"
+                className="btn-outline-white"
               >
                 Book Free IT Consultation
               </Link>
@@ -262,33 +320,37 @@ export function HomePage() {
       <section className="border-y border-[#B89A4A] grid grid-cols-1 lg:grid-cols-2 text-slate-900 bg-white h-auto lg:h-[18vh] min-h-[18vh] overflow-hidden">
         {/* Left side: Performance Metrics (4 columns) */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:border-r lg:border-[#B89A4A] h-full">
-          {[
+          {(companyInfo?.stats && companyInfo.stats.length > 0 ? companyInfo.stats : [
             { value: "12+", label: "Years Experience" },
             { value: "500+", label: "Projects Completed" },
             { value: "150+", label: "Happy Clients" },
             { value: "24/7", label: "On-Ground Support" }
-          ].map((stat, i) => (
+          ]).map((stat: any, i: number) => (
             <div
               key={stat.label}
               className={`p-3 flex flex-col justify-center text-center md:text-left relative min-h-[9vh] lg:min-h-0 h-full transition-all duration-300 hover:bg-slate-50/85 hover:-translate-y-0.5 hover:shadow-inner cursor-default ${i % 2 === 0 ? "bg-white" : "bg-slate-50"
                 } ${i < 3 ? "border-r border-[#B89A4A]/25" : ""}`}
             >
-              <span className="block font-serif font-extrabold text-xl md:text-2xl text-slate-900 leading-none mb-1">
+              <span className="stat-value text-slate-900 mb-1">
                 {renderStatValue(stat.value)}
               </span>
-              <span className="block text-[9px] font-bold uppercase tracking-wider text-gray-500 leading-tight">
+              <span className="stat-label">
                 {stat.label}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Right side: Brand Pillars (2 columns) */}
+        {/* Right side: Brand Pillars (2 columns) — from companyInfo.advantages first 2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-          {[
-            { title: "Why Clients Partner With Us", desc: "High-performance hardware, customized digital signage, and prompt local support." },
-            { title: "Trust & Transparency", desc: "Direct OEM collaborations and certified engineering professionals." }
-          ].map((pillar, i) => (
+          {(() => {
+            const adv = companyInfo?.advantages || [];
+            const pillars = adv.length >= 2 ? adv.slice(0, 2).map((a: any) => ({ title: a.title, desc: a.description })) : [
+              { title: "Why Clients Partner With Us", desc: "High-performance hardware, customized digital signage, and prompt local support." },
+              { title: "Trust & Transparency", desc: "Direct OEM collaborations and certified engineering professionals." }
+            ];
+            return pillars;
+          })().map((pillar: any, i: number) => (
             <div
               key={pillar.title}
               className={`p-3 flex flex-col justify-center text-center md:text-left relative min-h-[9vh] lg:min-h-0 h-full transition-all duration-300 hover:bg-slate-50/85 hover:-translate-y-0.5 hover:shadow-inner cursor-default ${i % 2 === 0 ? "bg-white" : "bg-slate-50"
@@ -307,96 +369,275 @@ export function HomePage() {
 
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-      {/* Redesigned Products & Solutions Section */}
+      {/* Products & Solutions Section — design-system compliant */}
       <ScrollReveal>
-        <section className="section-padding bg-slate-50">
+        <section className="section-padding bg-white">
           <div className="container-page">
-            <SectionHeader
-              title="Products &amp; Solutions"
-              subtitle="International-grade hardware and digital signage solutions custom-engineered for modern hospitality, retail, and corporate sectors."
-              showLabel={false}
-            />
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              {categories.map((cat: any, i: number) => {
-                const icon = getCategoryIcon(cat.slug);
-                const image = getCategoryImage(cat);
-                return (
-                  <div
-                    key={cat.slug ?? i}
-                    className="flex flex-col bg-white border border-gray-200/80 hover:border-[#B89A4A] transition-all duration-300 group hover:shadow-lg relative overflow-hidden"
-                  >
-                    {/* Visual aspect header — double gold border frame */}
-                    <div className="h-56 w-full overflow-hidden relative bg-slate-100 shrink-0 border border-[#B89A4A]/35">
-                      <div className="absolute inset-[5px] border border-[#B89A4A]/20 z-10 pointer-events-none" />
-                      <img
-                        src={image}
-                        alt={cat.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
-                      />
-                      <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/20 transition-colors duration-300" />
-                      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 shadow-md z-20">
-                        {icon}
-                      </div>
-                    </div>
+            {/* Section Kicker */}
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m7.5 4.27 9 5.15" />
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Product Range</span>
+            </div>
 
-                    {/* Content area */}
-                    <div className="p-6 flex flex-col flex-grow justify-between">
-                      <div>
-                        {cat.tagline && (
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-[#B89A4A] mb-1.5">{cat.tagline}</p>
-                        )}
-                        <h3 className="font-serif font-bold text-xl text-slate-950 mb-2 group-hover:text-[#B89A4A] transition-colors">
-                          {cat.name}
-                        </h3>
-                        <p className="text-gray-500 text-xs leading-relaxed mb-6 font-normal">
-                          {cat.description}
-                        </p>
+            {/* Primary Heading */}
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight">
+              Products &amp; Solutions
+            </h2>
 
-                        {/* Sub-products grid listing for rich visual hierarchy */}
-                        {cat.products && cat.products.length > 0 && (
-                          <div className="mb-6">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">Key Product Lines</p>
-                            <ul className="space-y-1.5">
-                              {cat.products.slice(0, 4).map((prod: any) => (
-                                <li key={prod.slug} className="flex items-center text-xs font-semibold text-slate-700 hover:text-[#B89A4A] transition-colors">
-                                  <span className="w-1.5 h-1.5 bg-[#B89A4A] mr-2 shrink-0" />
-                                  <Link href={`/products/${prod.slug}`}>
-                                    {prod.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
+            {/* Sub-headline + Description — gold left bar */}
+            <div className="border-l-2 border-[#B89A4A] pl-4 mt-2">
+              <h4 className="font-heading text-lg md:text-xl font-normal italic text-gray-600">
+                Engineered for hospitality, retail, and corporate environments.
+              </h4>
+              <p className="font-body text-sm text-gray-500 whitespace-nowrap overflow-hidden text-ellipsis mt-1">
+                International-grade hardware and digital signage solutions custom-engineered for modern hospitality, retail, and corporate sectors.
+              </p>
+            </div>
+
+            {/* Card Grid — ordered by Brand */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
+              {[...categories]
+                .sort((a: any, b: any) => (a.brand_name || "").localeCompare(b.brand_name || ""))
+                .map((cat: any, i: number) => {
+                  const image = getCategoryImage(cat);
+                  const brandLogoUrl = cat.brand_logo;
+                  return (
+                    <div
+                      key={cat.slug ?? i}
+                      className="card p-0 flex flex-col group relative overflow-hidden"
+                    >
+                      {/* Image area */}
+                      <div className="h-48 w-full overflow-hidden relative bg-slate-100 shrink-0">
+                        <img
+                          src={image}
+                          alt={cat.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                        />
+                        <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/20 transition-colors duration-300" />
+                        {brandLogoUrl && (
+                          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm p-1.5 shadow-md z-20">
+                            <img src={brandLogoUrl} alt={cat.brand_name || cat.name} className="h-5 w-auto object-contain" />
                           </div>
                         )}
                       </div>
 
-                      {/* Explore CTA */}
-                      <Link
-                        href={`/products/${cat.slug}`}
-                        className="w-full text-center border-t border-gray-100 pt-4 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-[#B89A4A] group-hover:text-slate-950 transition-colors"
-                      >
-                        <span>Explore Collection</span>
-                        <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </Link>
+                      {/* Content — all left-aligned */}
+                      <div className="p-5 flex flex-col flex-grow justify-between">
+                        <div>
+                          {cat.tagline && (
+                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#B89A4A] mb-1.5 font-ui">{cat.tagline}</p>
+                          )}
+                          <h3 className="font-heading font-bold text-lg text-primary-500 mb-2 group-hover:text-[#B89A4A] transition-colors">
+                            {cat.name}
+                          </h3>
+                          <p className="font-body text-xs text-gray-500 leading-relaxed mb-4">
+                            {cat.description}
+                          </p>
+                          {cat.products && cat.products.length > 0 && (
+                            <ul className="space-y-1 mb-4">
+                              {cat.products.slice(0, 4).map((prod: any) => (
+                                <li key={prod.slug} className="flex items-center text-xs font-medium text-gray-600 hover:text-[#B89A4A] transition-colors font-ui">
+                                  <span className="w-1 h-1 bg-[#B89A4A] mr-2 shrink-0 rounded-full" />
+                                  <Link href={`/products/${prod.slug}`}>{prod.name}</Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                        <Link
+                          href={`/products/${cat.slug}`}
+                          className="text-xs font-bold uppercase tracking-wider text-[#B89A4A] hover:text-primary-500 transition-colors font-ui inline-flex items-center gap-1.5"
+                        >
+                          Explore <ArrowUpRight size={12} />
+                        </Link>
+                      </div>
                     </div>
+                  );
+                })}
+            </div>
+
+            {/* CTA Button Row */}
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Link href="/products" className="btn-accent">
+                View All Products
+              </Link>
+              <Link href="/contact" className="btn-outline-gold">
+                Request a Quote
+              </Link>
+            </div>
+
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* ── Compact About & Team Section ── */}
+      <ScrollReveal>
+        <section className="section-padding bg-surface-muted">
+          <div className="container-page">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+              {/* Left Column: About Us */}
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">About Us</span>
                   </div>
-                );
-              })}
+                  <h2 className="font-heading text-3xl font-bold text-primary-500 leading-tight">
+                    Your Technology Partner Since 2014
+                  </h2>
+                </div>
+
+                {/* Story */}
+                <div className="border-l-2 border-[#B89A4A] pl-4 space-y-3">
+                  <p className="font-body text-sm text-gray-600 leading-relaxed">
+                    Sakthi Solutions was founded in 2014 by a dynamic couple bringing together decades of combined expertise in sales, retail, automation, and hospitality.
+                  </p>
+                  <p className="font-body text-sm text-gray-600 leading-relaxed">
+                    We provide end-to-end IT consulting and digital signage solutions for hospitality, retail and corporate sectors. We represent Godspeed, a world-class digital signage brand with manufacturing units in Hong Kong and China.
+                  </p>
+                </div>
+
+                {/* Mission + Stats (Merged from the Right) */}
+                <div className="space-y-4 pt-2">
+                  <div className="highlight-block">
+                    <p className="text-accent-italic text-gray-700 font-medium">
+                      To deliver world-class digital signage and IT infrastructure solutions that empower businesses to operate efficiently and grow confidently.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(companyInfo?.stats && companyInfo.stats.length > 0 ? companyInfo.stats : [
+                      { value: "10+", label: "Years Experience" },
+                      { value: "500+", label: "Clients Served" },
+                      { value: "1,000+", label: "Projects Delivered" },
+                      { value: "50+", label: "Product Partners" },
+                    ]).map((s: any) => (
+                      <div key={s.label} className="bg-white border border-gray-100 p-3 text-center rounded-sm">
+                        <span className="stat-value text-[#B89A4A] font-bold text-xl md:text-2xl">{s.value}</span>
+                        <span className="stat-label block mt-1 text-[10px] text-gray-500 font-medium font-ui uppercase tracking-wider">{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Our Team (Moved from below) */}
+              <div className="space-y-6 lg:space-y-0 lg:flex lg:flex-col lg:h-full">
+                <div className="lg:mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                    </svg>
+                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Our Team</span>
+                  </div>
+                  <h2 className="font-heading text-3xl font-bold text-primary-500 leading-tight">
+                    The People Behind the Tech
+                  </h2>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-between gap-6">
+                  {team.slice(0, 4).map((member: any, i: number) => {
+                    const initials = (member.name || "")
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((w: string) => w[0])
+                      .join("")
+                      .toUpperCase();
+
+                    const getMemberPhotoUrl = (photo: string | null) => {
+                      if (!photo) return null;
+                      if (photo.startsWith("http://") || photo.startsWith("https://")) return photo;
+                      const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
+                      return `${apiBaseUrl}${photo.startsWith("/") ? "" : "/"}${photo}`;
+                    };
+
+                    const photoUrl = getMemberPhotoUrl(member.photo);
+
+                    return (
+                      <div key={i} className="card p-6 sm:p-8 group hover:-translate-y-1 relative flex flex-col sm:flex-row gap-6 items-stretch bg-white border border-gray-100 rounded-sm">
+                        {/* Photo Container */}
+                        <div className="w-32 h-40 bg-slate-50 flex items-center justify-center shrink-0 border border-gray-100 rounded-sm overflow-hidden shadow-sm">
+                          {photoUrl ? (
+                            <img src={photoUrl} alt={member.name} className="w-full h-full object-cover select-none" />
+                          ) : (
+                            <div className="w-full h-full bg-[#B89A4A]/5 border border-[#B89A4A]/20 flex items-center justify-center rounded-sm">
+                              <span className="text-3xl font-bold text-[#B89A4A] tracking-wider font-ui">{initials}</span>
+                            </div>
+                          )}
+                        </div>
+                        {/* Text Details Column */}
+                        <div className="space-y-3.5 flex-1">
+                          {/* Pill Tags (Formatted to match user request style) */}
+                          <div className="flex flex-wrap gap-2">
+                            {(member.name === "Jayakumar"
+                              ? ["Co-Founder & Director", "Sales & Operations"]
+                              : member.name === "Vidya Rani"
+                                ? ["Co-Founder & Director", "Customer Relations & Finance"]
+                                : [member.designation]
+                            ).map((role: string, idx: number) => (
+                              <span
+                                key={idx}
+                                className="inline-block px-3 py-1 bg-[#B89A4A]/5 border border-[#B89A4A]/20 text-[#B89A4A] text-[9px] font-bold uppercase tracking-wider rounded-full font-ui"
+                              >
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Name and Qualifications (Proper Case / Serif Font) */}
+                          <div>
+                            <h4 className="font-serif font-bold text-lg text-slate-800 transition-colors inline-flex flex-wrap items-baseline gap-2">
+                              {member.name === "Jayakumar" ? "Mr. Jayakumar" : (member.name === "Vidya Rani" ? "Mrs. Vidya Rani" : member.name)}
+                              {member.name === "Jayakumar" && (
+                                <span className="text-[10px] font-bold text-[#B89A4A] tracking-wider uppercase font-ui">
+                                  B.B.A., M.B.A.
+                                </span>
+                              )}
+                            </h4>
+                          </div>
+
+                          {/* Brief Bio */}
+                          {member.brief && (
+                            <p className="font-body text-xs text-gray-500 leading-relaxed font-normal">
+                              {member.brief}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
       </ScrollReveal>
 
-      {/* Redesigned The Sakthi Advantage Section */}
+      {/* The Sakthi Advantage Section — design-system left-aligned */}
       <ScrollReveal stagger>
         <section className="section-padding bg-white border-y border-gray-100">
           <div className="container-page">
-            <SectionHeader
-              title="The Sakthi Advantage"
-              subtitle="Why hospitality, retail, and corporate leaders partner with us for their mission-critical technology setups."
-              showLabel={false}
-            />
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Why Choose Us</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-2">
+              The Sakthi Advantage
+            </h2>
+            <p className="font-body text-sm text-gray-500 max-w-2xl mb-8">
+              Why hospitality, retail, and corporate leaders partner with us for their mission-critical technology setups.
+            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {(companyInfo?.advantages && companyInfo.advantages.length > 0
@@ -417,7 +658,7 @@ export function HomePage() {
                 return (
                   <div
                     key={item.title}
-                    className="border border-gray-200/80 bg-slate-50 p-6 transition-all duration-300 hover:bg-white hover:border-[#B89A4A] group hover:-translate-y-1 relative"
+                    className="card group hover:-translate-y-1 relative"
                   >
                     <div className="absolute top-0 right-0 p-4 font-serif font-bold text-gray-200/80 text-xl group-hover:text-[#B89A4A]/20 transition-colors">
                       {`0${i + 1}`}
@@ -435,15 +676,22 @@ export function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Redesigned Trusted Across Sectors (Industries) Section */}
+      {/* Trusted Across Sectors — design-system left-aligned */}
       <ScrollReveal stagger>
         <section className="section-padding bg-slate-50">
           <div className="container-page">
-            <SectionHeader
-              title="Trusted Across Sectors"
-              subtitle="Tailored hardware integrations and digital signage platforms operating across diverse high-traffic environments."
-              showLabel={false}
-            />
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Industries We Serve</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-2">
+              Trusted Across Sectors
+            </h2>
+            <p className="font-body text-sm text-gray-500 max-w-2xl mb-8">
+              Tailored hardware integrations and digital signage platforms operating across diverse high-traffic environments.
+            </p>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {industries.map((industry) => {
@@ -451,7 +699,7 @@ export function HomePage() {
                 return (
                   <div
                     key={industry}
-                    className="flex flex-col items-center justify-center p-6 border border-gray-200 bg-white hover:border-[#B89A4A] hover:bg-slate-50/50 transition-all duration-300 group cursor-default text-center"
+                    className="card flex flex-col items-center justify-center cursor-default text-center p-6"
                   >
                     <div className="mb-4 text-slate-400 group-hover:text-[#B89A4A] transition-colors duration-300">
                       {icon}
@@ -465,21 +713,26 @@ export function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Redesigned Technology Partners Section */}
+      {/* Technology Partners — design-system left-aligned */}
       <ScrollReveal>
-        <section className="py-16 bg-white border-y border-gray-100">
+        <section className="section-padding bg-white border-y border-gray-100">
           <div className="container-page">
-            <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-10">OEM &amp; Technology Partners</p>
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Technology Partners</span>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
               {partners.map((partner: { name: string; type: string }) => (
                 <div
                   key={partner.name}
                   className="flex flex-col items-center gap-2 group transition-all duration-300"
                 >
-                  <div className="h-12 flex items-center justify-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                  <div className="h-12 flex items-center justify-center transition-all duration-300">
                     <PartnerLogo name={partner.name} />
                   </div>
-                  <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                  <div className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 transition-opacity">
                     {partner.type}
                   </div>
                 </div>
@@ -489,24 +742,32 @@ export function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Redesigned About Company Section */}
+      {/* About Company Section — design-system compliant */}
       <ScrollReveal>
         <section className="section-padding bg-white">
           <div className="container-page">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-center">
-              {/* Image Column */}
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">About the Company</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-6">
+              {companyInfo?.about_heading || "Your Reliable Technology Partner Since 2014"}
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-start">
               <div className="lg:col-span-5 relative">
-                <div className="border-4 border-[#B89A4A]/20 p-2">
+                <div className="border-4 border-[#B89A4A]/20 p-2 aspect-[4/3] overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&q=80"
-                    alt="Sakthi Solutions Corporate Setup"
-                    className="w-full h-auto object-cover select-none"
+                    src={companyInfo?.about_image || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80"}
+                    alt={companyInfo?.company_name || "Sakthi Solutions"}
+                    className="w-full h-full object-cover select-none"
                   />
                 </div>
                 <div className="absolute -bottom-6 -right-6 hidden sm:block bg-slate-950 text-white p-6 max-w-xs border-l-4 border-[#B89A4A]">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#B89A4A] mb-1">Our Core Focus</p>
                   <p className="font-serif text-sm italic font-normal text-gray-200">
-                    Chennai's trusted enterprise hospitality and retail system integrator since 2014.
+                    {companyInfo?.tagline || "Chennai's trusted enterprise hospitality and retail system integrator since 2014."}
                   </p>
                 </div>
               </div>
@@ -515,28 +776,25 @@ export function HomePage() {
               <div className="lg:col-span-7">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#B89A4A] mb-3">About the Company</p>
                 <h2 className="font-serif font-extrabold text-3xl md:text-4xl text-slate-950 mb-6 leading-tight">
-                  Your Reliable Technology Partner Since 2014
+                  {companyInfo?.about_heading || "Your Reliable Technology Partner Since 2014"}
                 </h2>
                 <p className="text-slate-600 text-sm leading-relaxed mb-4 font-normal">
-                  Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces, customer feedback consoles, and structured network engineering across India. Founded by a dynamic leadership team combining sales, automation, and customer relationship expertise.
-                </p>
-                <p className="text-slate-600 text-sm leading-relaxed mb-8 font-normal">
-                  As the primary representative of Godspeed displays, we customize, deploy, and service heavy-duty, outdoor, and indoor digital signage solutions designed to operate continuously under rigorous environmental conditions.
+                  {companyInfo?.about_body || "Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces..."}
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[
-                    { value: yearsOfExperience, suffix: "+", label: "Years Experience" },
-                    { value: productLines, suffix: "", label: "Product Lines" },
-                    { value: industriesServed, suffix: "+", label: "Sectors Served" },
-                    { value: technologyPartners, suffix: "+", label: "OEM Partners" },
-                  ].map((stat) => (
+                  {(companyInfo?.stats && companyInfo.stats.length > 0 ? companyInfo.stats : [
+                    { value: `${yearsOfExperience}+`, label: "Years Experience" },
+                    { value: `${productLines}`, label: "Product Lines" },
+                    { value: `${industriesServed}+`, label: "Sectors Served" },
+                    { value: `${technologyPartners}+`, label: "OEM Partners" },
+                  ]).map((stat: any) => (
                     <div
                       key={stat.label}
                       className="bg-slate-50 border border-gray-200/80 p-4 transition-all duration-300 hover:bg-white hover:border-[#B89A4A] group"
                     >
                       <div className="text-2xl font-serif font-black text-[#B89A4A] mb-1">
-                        <CountUp end={stat.value} suffix={stat.suffix} />
+                        {renderStatValue(stat.value)}
                       </div>
                       <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide leading-tight">
                         {stat.label}
@@ -557,74 +815,58 @@ export function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Redesigned Testimonials Section with Carousel Controls */}
+      {/* Testimonials — design-system left-aligned */}
       <ScrollReveal stagger>
         <section className="section-padding bg-slate-50">
           <div className="container-page">
-            <SectionHeader
-              title="What Our Clients Say"
-              subtitle="Real experiences from restaurant owners, hotel managers, and retail operators running our hardware systems."
-              showLabel={false}
-            />
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Testimonials</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-2">
+              What Our Clients Say
+            </h2>
+            <p className="font-body text-sm text-gray-500 max-w-2xl mb-8">
+              Real experiences from restaurant owners, hotel managers, and retail operators running our hardware systems.
+            </p>
 
             {testimonials.length > 0 ? (
-              <div className="max-w-4xl mx-auto bg-white border border-gray-200/80 p-8 md:p-12 relative">
-                {/* Large Quote decoration */}
-                <div className="absolute top-6 left-6 text-gray-100 select-none pointer-events-none">
-                  <Quote size={80} className="opacity-40" />
-                </div>
-
-                <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="flex items-center gap-1 mb-6">
-                    {Array.from({ length: testimonials[testiIndex]?.rating || 5 }).map((_, i) => (
-                      <Star key={i} size={18} className="fill-[#B89A4A] text-[#B89A4A]" />
-                    ))}
-                  </div>
-
-                  <blockquote className="font-serif text-lg md:text-xl text-slate-800 leading-relaxed italic mb-8 max-w-2xl font-normal">
-                    &ldquo;{testimonials[testiIndex]?.content}&rdquo;
-                  </blockquote>
-
-                  <div className="h-px w-16 bg-[#B89A4A]/50 mb-6" />
-
-                  <div>
-                    <div className="font-bold text-slate-900 text-base">
-                      {testimonials[testiIndex]?.author_name}
-                    </div>
-                    <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mt-1">
-                      {testimonials[testiIndex]?.author_title}
-                      {testimonials[testiIndex]?.author_company ? ` — ${testimonials[testiIndex]?.author_company}` : ""}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Carousel Controls */}
-                <div className="flex justify-center gap-4 mt-8 relative z-20">
-                  <button
-                    onClick={prevTesti}
-                    aria-label="Previous testimonial"
-                    className="p-2 border border-gray-200 hover:border-[#B89A4A] bg-white text-slate-700 hover:text-[#B89A4A] transition-colors"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {testimonials.map((t: any, i: number) => (
+                  <div
+                    key={i}
+                    className="bg-white border border-gray-200/80 p-6 relative flex flex-col hover:border-[#B89A4A] transition-all duration-300 group"
                   >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <div className="flex items-center gap-1.5">
-                    {testimonials.map((_: any, idx: number) => (
-                      <button
-                        key={idx}
-                        onClick={() => setTestiIndex(idx)}
-                        aria-label={`Go to testimonial ${idx + 1}`}
-                        className={`w-2 h-2 transition-all ${idx === testiIndex ? "bg-[#B89A4A] w-5" : "bg-gray-200"}`}
-                      />
-                    ))}
+                    {/* Quote decoration */}
+                    <div className="text-gray-100 select-none pointer-events-none mb-2">
+                      <Quote size={32} className="opacity-30" />
+                    </div>
+
+                    <div className="flex items-center gap-1 mb-3">
+                      {Array.from({ length: t.rating || 5 }).map((_, ri) => (
+                        <Star key={ri} size={14} className="fill-[#B89A4A] text-[#B89A4A]" />
+                      ))}
+                    </div>
+
+                    <blockquote className="text-sm text-slate-700 leading-relaxed italic mb-4 flex-grow font-normal">
+                      &ldquo;{t.content}&rdquo;
+                    </blockquote>
+
+                    <div className="h-px w-10 bg-[#B89A4A]/40 mb-3" />
+
+                    <div>
+                      <div className="font-bold text-slate-900 text-sm">
+                        {t.author_name}
+                      </div>
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mt-0.5">
+                        {t.author_title}
+                        {t.author_company ? ` — ${t.author_company}` : ""}
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={nextTesti}
-                    aria-label="Next testimonial"
-                    className="p-2 border border-gray-200 hover:border-[#B89A4A] bg-white text-slate-700 hover:text-[#B89A4A] transition-colors"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
+                ))}
               </div>
             ) : (
               <p className="text-center text-gray-400 text-xs">No client testimonials registered.</p>
@@ -633,82 +875,388 @@ export function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Trusted By Brands — rich client cards with brand color initials / logos */}
+      {/* Clients — Production-style logo scroller */}
       <ScrollReveal>
-        <section className="py-12 bg-white border-t border-gray-100 overflow-hidden">
+        <section className="section-padding bg-white border-y border-gray-100 overflow-hidden">
           <div className="container-page">
-            <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-8">Trusted By Leading Brands</p>
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Our Esteemed Clients</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-8">
+              Trusted by Industry Leaders
+            </h2>
             {(() => {
               const fallbackClients = [
-                { name: "Buhari Restaurant", industry: "Restaurant", brand_color: "#C8922A", logo: "" },
-                { name: "Matsya Egmore", industry: "Restaurant", brand_color: "#1A5276", logo: "" },
-                { name: "Doveton Cafe", industry: "Cafe", brand_color: "#6E2F1A", logo: "" },
-                { name: "Phoenix Marketcity", industry: "Retail Mall", brand_color: "#8B0000", logo: "" },
-                { name: "Phoenix Mills", industry: "Retail Mall", brand_color: "#8B0000", logo: "" },
-                { name: "Hotel Savera", industry: "Hotel", brand_color: "#1B4F72", logo: "" },
-                { name: "Sangeetha Mobiles", industry: "Retail", brand_color: "#E74C3C", logo: "" },
-                { name: "GRT Jewellers", industry: "Jewellery", brand_color: "#B8860B", logo: "" },
+                { name: "Cibo", logo: "" },
+                { name: "Buhari Restaurant", logo: "" },
+                { name: "Matsya Egmore", logo: "" },
+                { name: "Doveton Cafe", logo: "" },
+                { name: "Phoenix Marketcity", logo: "" },
+                { name: "Hotel Savera", logo: "" },
               ];
               const displayClients: any[] = clients.length > 0 ? clients : fallbackClients;
+              const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
+              const resolveUrl = (path: string) => path.startsWith("http") ? path : `${apiBase}${path.startsWith("/") ? "" : "/"}${path}`;
+              // Filter to only clients with logos for the carousel
+              const logoClients = displayClients.filter((c: any) => c.logo);
+              if (logoClients.length === 0) return <p className="text-gray-400 text-xs">No client logos available.</p>;
+              // Duplicate for seamless infinite scroll
+              const doubled = [...logoClients, ...logoClients];
               return (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                  {displayClients.map((client: any, i: number) => {
-                    const initials = client.name.split(" ").slice(0, 2).map((w: string) => w[0]).join("").toUpperCase();
-                    const color = client.brand_color || "#B89A4A";
-                    const logoUrl = client.logo
-                      ? (client.logo.startsWith("http") ? client.logo : `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "")}${client.logo.startsWith("/") ? "" : "/"}${client.logo}`)
-                      : null;
-                    return (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center gap-2 p-3 border border-gray-100 hover:border-[#B89A4A]/50 transition-all duration-300 group cursor-default bg-white hover:bg-slate-50/50"
-                      >
+                <div className="relative overflow-hidden py-4">
+                  {/* Fade edges */}
+                  <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10" />
+                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-r from-transparent to-white z-10" />
+                  <div className="animate-marquee">
+                    {doubled.map((client: any, i: number) => {
+                      const logoUrl = resolveUrl(client.logo);
+                      return (
                         <div
-                          className="w-12 h-12 flex items-center justify-center rounded-none shrink-0 overflow-hidden"
-                          style={{ background: `${color}18`, border: `1.5px solid ${color}55` }}
+                          key={`${client.name}-${i}`}
+                          className="flex items-center justify-center shrink-0 px-6"
+                          style={{ height: "48px", minWidth: "140px" }}
                         >
-                          {logoUrl ? (
-                            <img src={logoUrl} alt={client.name} className="w-10 h-10 object-contain" />
-                          ) : (
-                            <span className="font-black text-sm" style={{ color }}>{initials}</span>
-                          )}
+                          <img
+                            src={logoUrl}
+                            alt={client.name}
+                            className="max-h-full max-w-[120px] object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+                            loading="lazy"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                          />
                         </div>
-                        <span className="text-[9px] font-bold uppercase tracking-wide text-slate-500 text-center leading-tight group-hover:text-slate-800 transition-colors">{client.name}</span>
-                        {client.industry && (
-                          <span className="text-[8px] text-slate-300 uppercase tracking-widest">{client.industry}</span>
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })()}
           </div>
-          {/* Subtle marquee strip below */}
-          <div className="relative w-full overflow-hidden border-t border-gray-100/75 py-3 bg-slate-50/50 mt-8">
-            <div className="animate-marquee flex gap-12">
-              {Array(4).fill(clients.length > 0 ? clients.map((c: any) => c.name) : [
-                "Buhari Restaurant", "Matsya Egmore", "Doveton Cafe",
-                "Phoenix Marketcity", "Phoenix Mills", "Hotel Savera", "Sangeetha Mobiles", "GRT Jewellers"
-              ]).flat().map((name: string, i: number) => (
-                <div key={i} className="flex items-center justify-center h-8 px-6 shrink-0 cursor-default">
-                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-300 select-none">{name}</span>
-                  <span className="mx-4 text-[#B89A4A]/40 text-xs">✦</span>
+        </section>
+      </ScrollReveal>
+
+      {/* ── Reusable Contact Us Section on Homepage (Matches ContactPage.tsx exactly) ── */}
+      <ScrollReveal>
+        <section className="section-padding bg-white" id="contact-section">
+          <div className="container-page">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16">
+
+              {/* ── LEFT: Office Contact Info ── */}
+              <div className="space-y-8">
+                <div>
+                  <p className="section-label">Our Offices</p>
+                  <h2 className="heading-md text-primary-500 mb-1">Visit or Call Us</h2>
+                  <div className="gold-divider" />
                 </div>
-              ))}
+
+                {/* Office Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Registered Office */}
+                  <div className="card p-5 space-y-3 h-full flex flex-col justify-between">
+                    <h3 className="font-heading text-lg font-bold text-primary-500">
+                      Registered Office
+                    </h3>
+                    <div className="flex items-start gap-2.5">
+                      <MapPin size={15} className="text-accent-500 mt-0.5 shrink-0" />
+                      <p className="font-body text-xs text-gray-600 leading-relaxed">
+                        {registeredAddress}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center gap-2">
+                        <Phone size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`tel:${phonePrimary.replace(/[\s-]/g, "")}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          {phonePrimary}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mail size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`mailto:${emailPrimary}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          {emailPrimary}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sales Office */}
+                  <div className="card p-5 space-y-3 h-full flex flex-col justify-between">
+                    <h3 className="font-heading text-lg font-bold text-primary-500">
+                      Sales Office
+                    </h3>
+                    <div className="flex items-start gap-2.5">
+                      <MapPin size={15} className="text-accent-500 mt-0.5 shrink-0" />
+                      <p className="font-body text-xs text-gray-600 leading-relaxed">
+                        {salesAddress}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center gap-2">
+                        <Phone size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`tel:${phoneSecondary.replace(/[\s-]/g, "")}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          {phoneSecondary}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mail size={13} className="text-accent-500 shrink-0" />
+                        <a
+                          href={`mailto:${emailPrimary}`}
+                          className="font-body text-xs text-accent-500 hover:underline"
+                        >
+                          {emailPrimary}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Button Row */}
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={googleMapsDirectionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                    title="Get Directions"
+                  >
+                    <Navigation size={16} />
+                    <span className="font-body text-xs font-medium">Get Directions</span>
+                  </a>
+                  <a
+                    href={`tel:${phonePrimary.replace(/[\s-]/g, "")}`}
+                    className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                    title="Call"
+                  >
+                    <Phone size={16} />
+                    <span className="font-body text-xs font-medium">Call</span>
+                  </a>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 border border-accent-500/30 p-3 text-accent-500 hover:bg-accent-500/10 transition-colors duration-200"
+                    title="WhatsApp"
+                  >
+                    <MessageCircle size={16} />
+                    <span className="font-body text-xs font-medium">WhatsApp</span>
+                  </a>
+                </div>
+
+                {/* Individual Contacts */}
+                <div className="bg-cream p-5 space-y-3">
+                  <p className="font-heading text-sm font-bold text-primary-500">
+                    Direct Lines
+                  </p>
+                  {(phoneJayakumar || phoneVidya) && (
+                    <div className="space-y-2">
+                      {phoneJayakumar && (
+                        <div className="flex items-center gap-2.5">
+                          <Phone size={13} className="text-accent-500 shrink-0" />
+                          <a
+                            href={`tel:${phoneJayakumar.replace(/[\s-]/g, "")}`}
+                            className="font-body text-xs text-accent-500 hover:underline"
+                          >
+                            Jayakumar: {phoneJayakumar}
+                          </a>
+                        </div>
+                      )}
+                      {phoneVidya && (
+                        <div className="flex items-center gap-2.5">
+                          <Phone size={13} className="text-accent-500 shrink-0" />
+                          <a
+                            href={`tel:${phoneVidya.replace(/[\s-]/g, "")}`}
+                            className="font-body text-xs text-accent-500 hover:underline"
+                          >
+                            Vidya Rani: {phoneVidya}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {(companyInfo as any)?.business_hours && (
+                    <p className="font-body text-xs text-gray-500">
+                      {(companyInfo as any).business_hours}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* ── RIGHT: Inquiry Form Card with subtle backdrop ── */}
+              <div className="bg-gradient-to-br from-slate-50 to-[#B89A4A]/[0.03] border border-[#B89A4A]/15 p-6 sm:p-8 lg:p-10 rounded-sm shadow-sm hover:shadow-md hover:border-[#B89A4A]/30 transition-all duration-300 relative overflow-hidden group/form">
+                {/* Subtle gold decorative gradient blob in background */}
+                <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#B89A4A]/5 rounded-full blur-xl pointer-events-none" />
+
+                <div className="mb-6 relative z-10">
+                  <p className="section-label text-[#B89A4A]/90">Request a Consultation</p>
+                  <p className="font-accent italic text-xl md:text-2xl text-primary-500/85">
+                    Start your project journey
+                  </p>
+                </div>
+
+                {isSubmitted ? (
+                  <div className="flex flex-col items-center justify-center text-center py-12 h-full relative z-10">
+                    <div className="w-16 h-16 bg-green-50 border border-green-200 flex items-center justify-center mb-6 rounded-sm">
+                      <CheckCircle2 size={32} className="text-green-500" />
+                    </div>
+                    <h3 className="font-heading font-extrabold text-2xl text-primary-500 mb-2">Enquiry Received!</h3>
+                    <p className="font-body text-gray-500 text-xs leading-relaxed max-w-sm">
+                      Thank you for reaching out. Our team will review your enquiry and get back to you within one business day.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit(onSubmit)} id="contact-enquiry-form" className="space-y-5 relative z-10">
+                    {/* Row: Name + Email */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="form-label">Your Name *</label>
+                        <input
+                          {...register("name")}
+                          className="form-input"
+                          placeholder="Full name"
+                        />
+                        {errors.name && (
+                          <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="form-label">Email *</label>
+                        <input
+                          {...register("email")}
+                          type="email"
+                          className="form-input"
+                          placeholder="your@email.com"
+                        />
+                        {errors.email && (
+                          <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row: Phone + Company */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="form-label">Phone *</label>
+                        <input
+                          {...register("phone")}
+                          className="form-input"
+                          placeholder="+91 XXXXX XXXXX"
+                        />
+                        {errors.phone && (
+                          <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="form-label">Business / Organization *</label>
+                        <input
+                          {...register("business_name")}
+                          className="form-input"
+                          placeholder="Hotel / Restaurant / Retail brand"
+                        />
+                        {errors.business_name && (
+                          <p className="text-xs text-red-500 mt-1">{errors.business_name.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row: Enquiry Type + Preferred Callback Time */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="form-label">Enquiry Type *</label>
+                        <div className="relative">
+                          <select
+                            {...register("enquiry_type")}
+                            className="form-select pr-10 cursor-pointer"
+                          >
+                            <option value="">— Select what you need —</option>
+                            {enquiryTypes.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown
+                            size={14}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                          />
+                        </div>
+                        {errors.enquiry_type && (
+                          <p className="text-xs text-red-500 mt-1">{errors.enquiry_type.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="form-label">Preferred Callback Time</label>
+                        <div className="relative">
+                          <select
+                            {...register("callback_time")}
+                            className="form-select pr-10 cursor-pointer"
+                          >
+                            <option value="">— Any time is fine —</option>
+                            {callbackSlots.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown
+                            size={14}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Message + Submit CTA Side-by-Side */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+                      <div className="sm:col-span-8 md:col-span-9">
+                        <label className="form-label">Message / Requirements *</label>
+                        <textarea
+                          {...register("message")}
+                          rows={8}
+                          className="form-input resize-none w-full"
+                          placeholder="Tell us about your project scope, location, timeline, or any specific requirements..."
+                        />
+                        {errors.message && (
+                          <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
+                        )}
+                      </div>
+                      <div className="sm:col-span-4 md:col-span-3 sm:mt-[26px] w-full">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          id="submit-enquiry-btn"
+                          className="btn-accent w-full sm:h-[184px] h-14 flex flex-row sm:flex-col items-center justify-center gap-2 leading-tight uppercase font-bold text-xs tracking-wider group hover:scale-[1.03] hover:shadow-xl hover:shadow-[#B89A4A]/25 transition-all duration-300"
+                        >
+                          {isSubmitting ? (
+                            "Sending..."
+                          ) : (
+                            <>
+                              <Send size={22} className="sm:mb-1.5 transform group-hover:translate-x-1.5 group-hover:-translate-y-1.5 transition-transform duration-300" />
+                              <span className="text-sm tracking-widest">Send Enquiry</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </div>
+
             </div>
           </div>
         </section>
       </ScrollReveal>
-
-      <CTA
-        title="Ready to Transform Your Business?"
-        subtitle="Get a free consultation and discover how Sakthi Solutions can streamline your operations with the right technology."
-        primaryLabel="Contact Us Today"
-        primaryHref="/contact"
-        secondaryLabel="View Products"
-        secondaryHref="/products"
-      />
     </>
   );
 }

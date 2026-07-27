@@ -1,11 +1,12 @@
+from .brands import Brand
 from .pages import Page, PageSection
-from .products import ProductCategory, Product, ProductFeature, ProductGallery
+from .products import ProductGroup, ProductCategory, Product, ProductFeature, ProductGallery
 from .product_specs import ProductSpecGroup, ProductSpecColumn, ProductSpecRow, ProductSpecValue
 from .solutions import Solution
 from .industries import Industry
 from .services import Service, ServiceItem
 from .case_studies import CaseStudy
-from .childwood import ChildwoodCategory, ChildwoodGroup, PlayEquipment
+# Childwood data migrated to ProductGroup + Product hierarchy
 from .partners import Partner
 from .clients import Client
 from .testimonials import Testimonial
@@ -22,16 +23,15 @@ from .analytics import PageView
 from .team import TeamMember
 
 __all__ = [
+    "Brand",
     "Page", "PageSection",
-    "ProductCategory", "Product",     "ProductFeature",
+    "ProductGroup", "ProductCategory", "Product",     "ProductFeature",
     "ProductGallery",
     "ProductSpecGroup",
     "ProductSpecColumn",
     "ProductSpecRow",
     "ProductSpecValue",
-    "ChildwoodCategory",
-    "ChildwoodGroup",
-    "PlayEquipment",
+    "ProductGroup",
     "CaseStudy",
     "Partner",
     "Solution",

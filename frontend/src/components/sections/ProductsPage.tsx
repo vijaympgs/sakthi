@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Monitor, Users, Baby, ArrowRight } from "lucide-react";
+import { Monitor, Users, Baby, MessageSquare, ArrowRight } from "lucide-react";
 import { useProductCategories } from "@/hooks/useQueries";
 
-const ICON_MAP: Record<string, React.ReactNode> = {
-  godspeed: <Monitor size={32} />,
-  tellus: <Users size={32} />,
-  childwood: <Baby size={32} />,
+const ICON_REGISTRY: Record<string, React.ComponentType<{ size?: number }>> = {
+  Monitor, Users, Baby, MessageSquare,
+};
+
+const getBrandIcon = (iconName?: string | null, size = 32) => {
+  const Icon = iconName && ICON_REGISTRY[iconName] ? ICON_REGISTRY[iconName] : Monitor;
+  return <Icon size={size} />;
 };
 
 export function ProductsPage() {
@@ -36,8 +39,7 @@ export function ProductsPage() {
         </div>
       </section>
 
-      {(categories as Array<{ name: string; slug: string; description?: string; products?: Array<{ name: string; slug: string; short_description?: string; description?: string }> }>).map((category, catIdx) => {
-        const icon = ICON_MAP[category.slug] ?? <Monitor size={32} />;
+      {(categories as Array<{ name: string; slug: string; description?: string; brand_logo?: string; brand_name?: string; products?: Array<{ name: string; slug: string; short_description?: string; description?: string }> }>).map((category, catIdx) => {
         const products = (category.products ?? []).map((p) => ({
           name: p.name,
           slug: p.slug,
@@ -47,7 +49,13 @@ export function ProductsPage() {
           <section key={category.slug} className={`section-padding ${catIdx % 2 === 0 ? "bg-white" : "bg-surface-muted"}`}>
             <div className="container-page">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-14 h-14 bg-accent-50 flex items-center justify-center text-accent-500">{icon}</div>
+                <div className="w-14 h-14 bg-accent-50 flex items-center justify-center">
+                  {category.brand_logo ? (
+                    <img src={category.brand_logo} alt={category.brand_name || category.name} className="h-8 w-auto object-contain" />
+                  ) : (
+                    getBrandIcon((category as any).brand_icon)
+                  )}
+                </div>
                 <div>
                   <h2 className="heading-md text-primary-500">{category.name}</h2>
                   <p className="text-gray-500">{category.description ?? ""}</p>

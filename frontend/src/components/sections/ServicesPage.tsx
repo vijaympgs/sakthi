@@ -1,41 +1,11 @@
+"use client";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CTA } from "@/components/ui/CTA";
-import { PRODUCT_CATALOG } from "@/lib/productData";
-import { Monitor, Wifi, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Monitor, Wifi, CheckCircle2 } from "lucide-react";
+import { useServices, usePage } from "@/hooks/useQueries";
 
-const RAW_HARDWARE = PRODUCT_CATALOG.hardware.items;
-
-const EPSON_VARIANTS = RAW_HARDWARE.filter((i) => i.name === "Epson POS / KOT Printers" || i.name === "Model: TM-T82 II, M30");
-const NON_EPSON = RAW_HARDWARE.filter((i) => i.name !== "Epson POS / KOT Printers" && i.name !== "Model: TM-T82 II, M30");
-
-const HARDWARE_GROUPS: { name: string; image: string; spec: string; variants?: { name: string; image: string; spec: string }[] }[] = [
-  ...NON_EPSON.map((i) => ({
-    name: i.name,
-    image: i.image,
-    spec: ({
-      "Server (HP ML10)": "Tower server, 4-core, RAID support",
-      "PC (DELL)": "Business desktop, i5/i7 options",
-      "Posiflex: 3316E": "POS terminal, touch-screen, fanless",
-      "Partnertech - SP850": "All-in-one POS system",
-      "Cash Drawers": "Electronic cash drawer, 5 bill slots",
-      "Thermal Rolls For Billing (79mm)": "79mm thermal paper, 50m roll",
-      "7 inch TAB for KOT": "Android tablet, WiFi, KOT ordering",
-    } as Record<string, string>)[i.name] || "",
-  })),
-  {
-    name: "Epson POS / KOT Printers",
-    image: EPSON_VARIANTS[0]?.image || "",
-    spec: "Thermal receipt printers, LAN/USB",
-    variants: EPSON_VARIANTS.map((v) => ({
-      name: v.name,
-      image: v.image,
-      spec: v.name === "Model: TM-T82 II, M30" ? "Auto-cutter, 250mm/s" : "Full printer range",
-    })),
-  },
-];
-
-const IT_CONSULTING = [
+const FALLBACK_CONSULTING = [
   { name: "Free Professional Consulting", description: "Offered at zero cost for new restaurants, cafes, and bars to plan their tech infrastructure." },
   { name: "Multi-Floor Network Architecture", description: "Tailored cable laying, network switch racking, and router sizing based on layout and node count." },
   { name: "WiFi Site Survey & AP Selection", description: "Determining precise access point counts for uninterrupted mobile/tablet order taking via KOT." },
@@ -47,23 +17,29 @@ const IT_CONSULTING = [
 ];
 
 export function ServicesPage() {
+  const { data: apiServices } = useServices();
+  const { data: servicesPage } = usePage("services");
+  const hardwareService = apiServices?.find((s: any) => s.slug === "hardware");
+  const consultingService = apiServices?.find((s: any) => s.slug === "it-networking");
+  const hardwareItems: any[] = hardwareService?.items ?? [];
+  const consultingItems: any[] = consultingService?.items ?? FALLBACK_CONSULTING;
+  const heroSection = servicesPage?.sections?.find((s: any) => s.section_type === "hero");
   return (
     <>
       <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
         <div className="container-page">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Our Services</p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Hardware Supply & IT<br />Networking Consulting</h1>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">{servicesPage?.hero_title || "Our Services"}</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{servicesPage?.title || "Hardware Supply & IT Networking Consulting"}</h1>
               <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
-                Complete hardware supply and professional IT networking consulting for the
-                hospitality industry. Free consulting for new restaurants and bars.
+                {heroSection?.content || servicesPage?.meta_description || "Complete hardware supply and professional IT networking consulting for the hospitality industry. Free consulting for new restaurants and bars."}
               </p>
             </div>
             <div className="hidden lg:block">
               <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
                 <img
-                  src="/assets/products/IT-Networking.png"
+                  src={servicesPage?.hero_image || "/assets/products/IT-Networking.png"}
                   alt="IT Networking Consulting"
                   className="w-full h-full object-contain p-6 opacity-80"
                 />
@@ -88,24 +64,16 @@ export function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {HARDWARE_GROUPS.map((group) => (
-              <div key={group.name} className="border border-gray-200 hover:border-label/40 transition-colors p-4 flex flex-col items-center text-center bg-white group hover:-translate-y-1 transition-transform duration-200">
+            {hardwareItems.map((item: any) => (
+              <div key={item.title} className="border border-gray-200 hover:border-label/40 transition-colors p-4 flex flex-col items-center text-center bg-white group hover:-translate-y-1 transition-transform duration-200">
                 <div className="w-full aspect-[4/3] bg-gray-50 flex items-center justify-center overflow-hidden mb-4 border border-gray-100">
-                  <img src={group.image} alt={group.name} className="w-full h-full object-contain p-2" loading="lazy" />
-                </div>
-                <h3 className="text-base font-bold text-primary-500">{group.name}</h3>
-                {group.spec && (
-                  <p className="text-xs text-gray-500 mt-1">{group.spec}</p>
-                )}
-                {group.variants && group.variants.length > 1 && (
-                  <div className="mt-3 pt-3 border-t border-gray-100 w-full">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Models</p>
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {group.variants.map((v) => (
-                        <span key={v.name} className="text-[10px] bg-surface-muted text-gray-600 px-2 py-0.5">{v.name === "Model: TM-T82 II, M30" ? "TM-T82 II / M30" : "POS Range"}</span>
-                      ))}
-                    </div>
+                  <div className="w-14 h-14 bg-primary-50 flex items-center justify-center text-primary-500 text-lg font-bold">
+                    {item.title.charAt(0)}
                   </div>
+                </div>
+                <h3 className="text-base font-bold text-primary-500">{item.title}</h3>
+                {item.description && (
+                  <p className="text-xs text-gray-500 mt-1">{item.description}</p>
                 )}
               </div>
             ))}
@@ -126,11 +94,11 @@ export function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            {IT_CONSULTING.map((item) => (
-              <div key={item.name} className="card bg-white p-5 border border-gray-200 group hover:-translate-y-1 transition-transform duration-200">
+            {consultingItems.map((item: any) => (
+              <div key={item.name || item.title} className="card bg-white p-5 border border-gray-200 group hover:-translate-y-1 transition-transform duration-200">
                 <div className="flex items-center gap-2 mb-2 text-label">
                   <CheckCircle2 size={18} />
-                  <h3 className="font-bold text-primary-500 text-sm">{item.name}</h3>
+                  <h3 className="font-bold text-primary-500 text-sm">{item.name || item.title}</h3>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">{item.description}</p>
               </div>

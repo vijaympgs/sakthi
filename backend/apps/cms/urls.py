@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path("home/", HomePageView.as_view(), name="home"),
+    path("brands/", BrandListView.as_view(), name="brand-list"),
     path("pages/", PageListView.as_view(), name="page-list"),
     path("pages/<slug:slug>/", PageDetailView.as_view(), name="page-detail"),
     path("product-categories/", ProductCategoryListView.as_view(), name="product-category-list"),
@@ -26,8 +27,8 @@ urlpatterns = [
     path("settings/seo/", SEOSettingsView.as_view(), name="seo-settings"),
     path("settings/theme/", ThemeSettingsView.as_view(), name="theme-settings"),
     path("contact/", ContactSubmissionCreateView.as_view(), name="contact-submit"),
+    path("product-groups/", ProductGroupListView.as_view(), name="product-groups"),
     path("product-specs/", ProductSpecGroupListView.as_view(), name="product-specs"),
-    path("childwood/", ChildwoodCategoryListView.as_view(), name="childwood-list"),
     path("case-studies/", CaseStudyListView.as_view(), name="case-study-list"),
     path("partners/", PartnerListView.as_view(), name="partner-list"),
     path("case-studies/<int:id>/", CaseStudyDetailView.as_view(), name="case-study-detail"),

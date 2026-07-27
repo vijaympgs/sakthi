@@ -203,3 +203,65 @@ Route (app)                                             Size  First Load JS
 4. **Credential Setup**:
    - Superuser set up with email `admin@sakthisolutions.in` and password `admin@123`.
 
+
+## COMPLETED (Session 4 -- Design System, Brand Logos, Client Carousel, CMS Wiring)
+
+### Design System & Typography
+1. **Propertism.in patterns analysed** -- Extracted fonts, section anatomy, kicker pattern, alignment rules from `01propertism/static/css/v4-*.css`
+2. **`design-system.md`** -- 15-section reference with exact font sizes, colour tokens, layouts, components, asset rules
+3. **Global CSS rebuilt** -- 3 themes (sakthi/light/dark), 3 typography profiles, reusable classes
+4. **Tailwind config** -- font families, cream token, ESM import fix
+5. **ThemeContext** (`src/lib/ThemeContext.tsx`) -- `useTheme()` hook with `cycleTheme()`/`cycleTypography()`, localStorage persistence
+6. **Theme toggle in Navigation** -- Palette and Type icon buttons
+
+### Brand Logos & Client Assets
+7. **Brand logos fetched** -- `fetch_brand_logos` command, 3 brand logos from production to `media/brands/`
+8. **74 clients seeded** -- 14 named + 60 from Swiper carousel, 72 JPEGs downloaded to `media/clients/`
+9. **Company logo** -- `sslogo.png` placed in `media/settings/`, seed updated
+10. **Brand logo preservation** -- Seed uses `get_or_create()` instead of `delete()`
+
+### HomePage Sections -- Design System Applied
+11. **Products & Solutions** -- Section kicker, gold-left-border block, 4K Unsplash fallbacks per category
+12. **Compact About** -- 2-col grid, CMS-driven stats
+13. **Compact Team** -- Top 4 members, gold-bordered initials fallback
+14. **All sections left-aligned** -- Sakthi Advantage, Industries, Partners, About Company, Testimonials
+15. **Client carousel** -- CSS marquee, clean logos (no bg boxes), fade edges
+16. **Nav branding** -- "SAKTHI" red + "SOLUTIONS" gold beside logo
+
+### CMS Wiring & Audit
+17. **Systematic audit** -- 126 CRITICAL, 59 FALLBACK items across 8 files
+18. **JSON-LD schema** -- Simplified to minimal static data
+19. **HomePage wired** -- Stats, company name, hero parsing from CMS
+20. **AboutPage wired** -- Stats from `companyInfo.stats`
+21. **Django admin** -- Eye-icon Logo column in Client listing
+
+### Infrastructure
+22. **`run.bat`** -- Single-window server launcher
+23. **Image cleanup** -- Project-root PNGs removed after media verification
+
+## COMPLETED (Session 5 — Navigation, Homepage Contact Parity & Premium CTA Backdrop)
+
+### Navigation Header Updates
+1. **Left-Shifted Layout**: Replaced the header's centered `.container-page` constraint with `w-full px-4 sm:px-8 lg:px-12` to shift the logo and company name towards the left.
+2. **Reduced Height**: Decreased header dimensions from `h-20 lg:h-24` to a sleeker `h-16 lg:h-20` (64px / 80px), and scaled down the logo to `h-12 lg:h-16`.
+3. **Branding Parity**: Capitalized both parts of the company name to **SAKTHI SOLUTIONS** and sized them identically (`text-2xl lg:text-3xl font-extrabold tracking-tight`).
+
+### Homepage Contact Us Integration
+4. **Complete Layout Migration**: Copied the entire visual and functional layout of the Contact Us page to the bottom of the Home Page (replacing the static CTA strip).
+5. **Office Info & Direct Lines**: Included the interactiveRegistered/Sales cards, quick-action directions/call/WhatsApp links, direct lines contact list, and business hours.
+6. **Even Height Alignment**: Applied `h-full flex flex-col justify-between` to Registered and Sales office cards to keep their heights perfectly balanced.
+7. **Form Dropdowns Row**: Positioned the *Enquiry Type* and *Preferred Callback Time* selects side-by-side.
+
+### Layout Adjustment & Backdrop Design
+8. **Side-by-Side Message Area**: Positioned the Message textarea and Send button side-by-side in a responsive grid. Enlarged the message box to `rows={8}`.
+9. **Form Card Backdrop**: Applied a premium gradient card backdrop (`bg-gradient-to-br from-slate-50 to-[#B89A4A]/[0.03]`) with gold borders, hover transitions, and a custom top-right blur highlight behind the form fields.
+10. **Micro-animations**: Added a hover zoom scale (`hover:scale-[1.03]`), gold drop shadow, and a taking-off micro-translation animation to the paper plane Send icon.
+
+### Seeding & Media Fallback
+11. **Premium About Image**: Updated the database seeding command `seed_sakthi.py` and the homepage About section component to pull or fall back to a high-resolution Unsplash photo of a boardroom screen meeting.
+
+## PENDING
+- Client "N" names are placeholders -- rename in Django admin
+- Some `/2018/05/*.jpg` may be product photos, not logos
+- Section kickers and CTA texts remain hardcoded (UI copy)
+

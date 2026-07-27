@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ProductSpecsSection } from "@/components/ui/ProductSpecsSection";
-import { PRODUCT_CATALOG } from "@/lib/productData";
+import { useProduct } from "@/hooks/useQueries";
 import { Monitor, Usb, Clock, Lock, Palette, Shield, Columns3, LayoutGrid } from "lucide-react";
-
-const FEATURES = PRODUCT_CATALOG.indoorDigitalSignage.wallMounting.features;
 
 const FEATURE_ICONS = [
   <Monitor size={24} />,
@@ -20,6 +18,8 @@ const FEATURE_ICONS = [
 ];
 
 export function WallMountingClient() {
+  const { data: product } = useProduct("indoor-digital-signage");
+  const features = product?.features ?? [];
   return (
     <>
       <section className="bg-primary-500 text-white py-20 md:py-28 relative overflow-hidden">
@@ -53,7 +53,7 @@ export function WallMountingClient() {
         <div className="container-page">
           <h2 className="heading-md text-primary-500 mb-8">Main Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((feature, idx) => (
+            {features.map((feature: any, idx: number) => (
               <div key={feature.title} className="border border-gray-100 p-6 group hover:-translate-y-1 hover:border-label/40 transition-all duration-200">
                 <div className="mb-4 text-label">
                   {FEATURE_ICONS[idx] || <Monitor size={24} />}

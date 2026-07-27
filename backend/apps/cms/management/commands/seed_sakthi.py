@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from apps.cms.models import *
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -7,21 +8,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._seed_company_info()
-        self._seed_product_categories()
+        self._seed_brands_and_categories()
         self._seed_products()
+        self._seed_product_images()
         self._seed_product_features()
         self._seed_specs()
         self._seed_services()
         self._seed_service_items()
         self._seed_industries()
+        self._seed_services_page()
         self._seed_enquiry_types()
         self._seed_testimonials()
         self._seed_partners()
         self._seed_navigation()
         self._seed_footer()
         self._seed_case_study()
-        self._seed_childwood()
+        # Childwood data migrated to ProductGroup + Product hierarchy (see migrate_childwood)
         self._seed_clients()
+        self._seed_team()
         self.stdout.write(self.style.SUCCESS("Database seeded completely"))
 
     # ─── helpers ────────────────────────────────────────────────
@@ -60,7 +64,7 @@ class Command(BaseCommand):
         CompanyInfo.objects.update_or_create(pk=1, defaults={
             "company_name": "Sakthi Solutions",
             "tagline": "Digital Signage, Kiosks & IT Solutions",
-            "logo": "settings/ss-logo.svg",
+            "logo": "settings/sslogo.png",
             "phone_primary": "04426420089",
             "phone_secondary": "+91 9840057127",
             "email_primary": "info@sakthisolutions.in",
@@ -90,54 +94,183 @@ class Command(BaseCommand):
                 {"title": "End-to-End IT Consulting", "description": "From setting up hospitality POS & KOT environments to designing high-speed network infrastructures, we offer expert consulting and clear roadmaps."},
                 {"title": "Vandal-Proof Engineering", "description": "All our public-facing signage devices feature heavy-duty commercial bodies and tempered protective glass surfaces built for high-traffic operations."}
             ],
+            "hero_tagline": "Since 2014 — Chennai • Hospitality & Retail IT Partner",
+            "stats": [
+                {"value": "12+", "label": "Years Experience"},
+                {"value": "500+", "label": "Projects Completed"},
+                {"value": "150+", "label": "Happy Clients"},
+                {"value": "24/7", "label": "On-Ground Support"}
+            ],
+            "about_image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
+            "about_heading": "Your Reliable Technology Partner Since 2014",
+            "about_body": "Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces, customer feedback consoles, and structured network engineering across India. Founded by a dynamic leadership team combining sales, automation, and customer relationship expertise. As the primary representative of Godspeed displays, we customize, deploy, and service heavy-duty, outdoor, and indoor digital signage solutions designed to operate continuously under rigorous environmental conditions.",
+            "cta_title": "Ready to Transform Your Business?",
+            "cta_subtitle": "Get a free consultation and discover how Sakthi Solutions can streamline your operations with the right technology.",
+            "timeline": [
+                {"year": "2014", "title": "Founded", "description": "Sakthi Solutions was established by Jayakumar (25+ years in sales, retail, automation & hospitality) and Vidya Rani (sales & financial products)."},
+                {"year": "2015", "title": "Godspeed Partnership", "description": "Partnered with Godspeed for world-class digital signage products manufactured in Hong Kong and China."},
+                {"year": "2016", "title": "Full-Stack IT Consulting", "description": "Expanded to provide complete IT infrastructure consulting for the hospitality industry including networking, WiFi, and hardware."},
+                {"year": "2018", "title": "Tellus & Childwood", "description": "Added Tellus feedback solutions and Childwood children's play equipment to the product portfolio."},
+                {"year": "Present", "title": "Growing Strong", "description": "Continuing to serve corporates, hospitals, hotels, restaurants, malls and more across the region."}
+            ],
+            "why_items": [
+                {"icon": "Award", "title": "End-to-End Provider", "description": "Hardware, installation, digital signage and IT consulting end-to-end solution for hospitality, retail and corporate sectors."},
+                {"icon": "Clock", "title": "Prompt Service", "description": "Prompt service on all days, even after office hours. We understand that business never stops."},
+                {"icon": "HeartHandshake", "title": "Reliable Partner", "description": "Reliable partner for regular updates, maintenance and consumables for day-to-day operations."},
+                {"icon": "Users", "title": "Customer-First Approach", "description": "We put ourselves in your shoes so that the client gets the best solution for their business."},
+                {"icon": "ShieldCheck", "title": "Quality Hardware", "description": "World-class products from Samsung, LG, Godspeed and other reputed global brands."},
+                {"icon": "Wifi", "title": "Free IT Consulting", "description": "Professional IT networking consulting at no cost for new businesses. Complete guidance from planning to execution."}
+            ],
+            "enquiry_types": [
+                {"name": "Godspeed Digital Signage", "sort_order": 1},
+                {"name": "Smart Touch Table", "sort_order": 2},
+                {"name": "Wayfinding Kiosk", "sort_order": 3},
+                {"name": "Touch Screen Kiosk", "sort_order": 4},
+                {"name": "Video Wall", "sort_order": 5},
+                {"name": "Tellus Feedback", "sort_order": 6},
+                {"name": "Childwood", "sort_order": 7},
+                {"name": "Hardware Supply", "sort_order": 8},
+                {"name": "IT Networking Consulting", "sort_order": 9},
+                {"name": "General Enquiry", "sort_order": 10}
+            ],
+            "callback_slots": [
+                {"label": "Morning (9 AM – 12 PM)", "value": "morning"},
+                {"label": "Afternoon (12 PM – 3 PM)", "value": "afternoon"},
+                {"label": "Evening (3 PM – 6 PM)", "value": "evening"},
+                {"label": "Anytime", "value": "anytime"}
+            ],
+            "business_hours": "Mon – Sat: 9:00 AM – 6:30 PM",
+            "phone_jayakumar": "+91 98400 57127",
+            "phone_vidya": "+91 93814 59199",
+            "why_us_bullets": [
+                "Direct Godspeed OEM partner — authentic products with warranty",
+                "On-site installation & support across Chennai and Tamil Nadu",
+                "24/7 maintenance SLA for all deployed hardware",
+                "Hospitality-grade hardware designed for 24x7 operations"
+            ],
         })
 
-    # ─── product categories ─────────────────────────────────────
+    # ─── brands & product categories ────────────────────────────
+    #
+    # Architecture: Brand → ProductCategory → Product
+    #   Godspeed    → Digital Signage, Video Wall          → Indoor Signage, Touch Table, etc.
+    #   Tellus      → Feedback Kiosk, Customer Experience  → Tellus Feedback Solution
+    #   Childwood   → Indoor Play, Outdoor Play, Gym,      → Playstations, Rockers, etc.
+    #                 School Furniture
+    #
 
-    def _seed_product_categories(self):
-        categories_data = [
-            {
-                "name": "Digital Signages and Video Wall",
-                "slug": "godspeed",
-                "tagline": "World Class Digital Displays",
-                "description": "World class digital signage with extra ordinary features heavy duty body and toughened glass surface can withstand impact, User changeable images.",
-                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/05/pro3.png",
-                "filename": "godspeed_category.png",
-                "sort_order": 1
-            },
-            {
-                "name": "Customer feedback kiosk",
-                "slug": "tellus",
-                "tagline": "Guest Feedback Solutions",
-                "description": "The purpose of business can be measured only with the Guest feedback i.e Restaurant should meet the purpose of customer walk in.",
-                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png",
-                "filename": "tellus_category.png",
-                "sort_order": 2
-            },
-            {
-                "name": "Childwood children play equipment",
-                "slug": "childwood",
-                "tagline": "Indoor & Outdoor Play Solutions",
-                "description": "Childwood children play equipment indoor / outdoor and gym equipments.",
-                "image_url": "https://www.sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg",
-                "filename": "childwood_category.jpg",
-                "sort_order": 3
-            },
+    def _seed_brands_and_categories(self):
+        # Don't delete — use get_or_create to preserve logo files
+        ProductCategory.objects.all().delete()
+        Product.objects.all().delete()
+
+        godspeed, _ = Brand.objects.get_or_create(slug="godspeed", defaults={
+            "name": "Godspeed",
+            "tagline": "World Class Digital Displays",
+            "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface.",
+            "icon": "Monitor", "sort_order": 1, "is_published": True,
+        })
+
+        tellus, _ = Brand.objects.get_or_create(slug="tellus", defaults={
+            "name": "Tellus",
+            "tagline": "Guest Feedback Solutions",
+            "description": "Customer feedback kiosk solution for restaurants and retail outlets. Instant SMS alerts and detailed analytics.",
+            "icon": "MessageSquare", "sort_order": 2, "is_published": True,
+        })
+
+        childwood, _ = Brand.objects.get_or_create(slug="childwood", defaults={
+            "name": "Childwood",
+            "tagline": "Indoor & Outdoor Play Solutions",
+            "description": "Children's play equipment for indoor and outdoor spaces including gym equipment and school furniture.",
+            "icon": "Baby", "sort_order": 3, "is_published": True,
+        })
+
+        # ── Godspeed Categories ──
+        cat_digital_signage = ProductCategory.objects.create(
+            brand=godspeed, name="Digital Signage", slug="digital-signage",
+            tagline="Premium Digital Displays",
+            description="Indoor and outdoor digital signage solutions including floor standing, wall mounting and LG commercial displays.",
+            sort_order=1, is_published=True)
+        cat_video_wall = ProductCategory.objects.create(
+            brand=godspeed, name="Video Wall", slug="video-wall-cat",
+            tagline="Ultra-Thin Bezel Displays",
+            description="Samsung and LG LCD video wall solutions in 42\", 46\" and 55\" with ultra-thin bezel splicing.",
+            sort_order=2, is_published=True)
+        cat_interactive = ProductCategory.objects.create(
+            brand=godspeed, name="Interactive Displays", slug="interactive-displays",
+            tagline="Touch & Interactive Solutions",
+            description="Smart touch tables, wayfinding kiosks and touch screen kiosks for retail, hospitality and corporate.",
+            sort_order=3, is_published=True)
+
+        # ── Tellus Categories ──
+        cat_feedback = ProductCategory.objects.create(
+            brand=tellus, name="Feedback Kiosk", slug="feedback-kiosk",
+            tagline="Electronic Feedback Collection",
+            description="Stainless steel floor standing feedback kiosks for restaurants and retail. Customizable questions, SMS alerts.",
+            sort_order=1, is_published=True)
+        cat_cx = ProductCategory.objects.create(
+            brand=tellus, name="Customer Experience Solutions", slug="customer-experience",
+            tagline="Measure & Improve CX",
+            description="Tablet-based feedback collection and analytics platform for chain outlets and multi-branch operations.",
+            sort_order=2, is_published=True)
+
+        # ── Childwood Categories ──
+        cat_indoor = ProductCategory.objects.create(
+            brand=childwood, name="Indoor Play Equipment", slug="indoor-play",
+            tagline="Safe Indoor Play",
+            description="Indoor playstations, rideons, tunnels, slides, soft play structures and EVA floorings for indoor play areas.",
+            sort_order=1, is_published=True)
+        cat_outdoor = ProductCategory.objects.create(
+            brand=childwood, name="Outdoor Play Equipment", slug="outdoor-play",
+            tagline="Adventure Outdoor Play",
+            description="Multi-level playstations, spring rockers, see-saws and swings for parks, schools and playgrounds.",
+            sort_order=2, is_published=True)
+        cat_gym = ProductCategory.objects.create(
+            brand=childwood, name="Gym Equipment", slug="gym-equipment",
+            tagline="Fitness & Gym Solutions",
+            description="Children's gym and fitness equipment for schools and indoor play centers.",
+            sort_order=3, is_published=True)
+        cat_furniture = ProductCategory.objects.create(
+            brand=childwood, name="School Furniture", slug="school-furniture",
+            tagline="Classroom & School Furniture",
+            description="Durable and child-friendly furniture for schools, preschools and daycare centers.",
+            sort_order=4, is_published=True)
+
+        self._cat_map = {
+            "godspeed": cat_digital_signage,
+            "tellus": cat_feedback,
+            "childwood": cat_indoor,
+            "digital-signage": cat_digital_signage,
+            "video-wall": cat_video_wall,
+            "interactive": cat_interactive,
+            "feedback": cat_feedback,
+            "cx": cat_cx,
+            "indoor": cat_indoor,
+            "outdoor": cat_outdoor,
+            "gym": cat_gym,
+            "furniture": cat_furniture,
+        }
+
+    def _cat(self, key):
+        return self._cat_map.get(key)
+
+    def _seed_products(self):
+        products_data = [
+            {"cat": "digital-signage", "name": "Indoor Digital Signage", "slug": "indoor-digital-signage", "tagline": "Revolutionary Digital Communication", "short_description": "Digital signage with floor standing, wall mountable and LG options.", "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface. User changeable images and videos using exclusive software.", "is_featured": True, "sort_order": 1},
+            {"cat": "digital-signage", "name": "Smart Touch Table", "slug": "smart-touch-table", "tagline": "Next Generation Human-Machine Interaction", "short_description": "Multi-touch interactive tables in 32\", 42\" and 46\" sizes.", "description": "Multi-touch tables enabling advanced and intelligent interaction between human and machine. Available with foil touch, IR touch and capacitive touch options.", "is_featured": False, "sort_order": 2},
+            {"cat": "interactive", "name": "Interactive Wayfinding Kiosk", "slug": "wayfinding-kiosk", "tagline": "Navigate with Ease", "short_description": "Interactive wayfinding with directory, map and route guidance.", "description": "Interactive wayfinding with intuitive interface, directory listing, shortest route guidance and attractive branding. Deployed at Phoenix Marketcity malls in Mumbai, Pune and Bangalore.", "is_featured": False, "sort_order": 3},
+            {"cat": "interactive", "name": "Speed Touch Series Touch Screen Kiosk", "slug": "touch-screen-kiosk", "tagline": "Versatile Touch Solutions", "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.", "description": "Touch screen kiosk with high quality IR, resistance and capacitive touch options. Floor standing and half standing configurations. Industrial mother board with Windows/Android support.", "is_featured": False, "sort_order": 4},
+            {"cat": "video-wall", "name": "Video Wall", "slug": "video-wall", "tagline": "Perfect Visual Experience", "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.", "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG. Perfect visual experience with ultra thin splicing technology and intelligent controlling system.", "is_featured": False, "sort_order": 5},
+            {"cat": "feedback", "name": "Tellus Feedback Solution", "slug": "tellus", "tagline": "Measure Your Business by Guest Feedback", "short_description": "Electronic customer feedback kiosks with instant alerts and reporting.", "description": "Customer feedback kiosk for restaurants and retail. Collects feedback electronically, sends instant text alerts for poor ratings with customer name and mobile number. Less than Rs 20 per day per branch.", "is_featured": True, "sort_order": 6},
+            {"cat": "indoor", "name": "Childwood Children's Play Equipment", "slug": "childwood", "tagline": "Indoor & Outdoor Play Solutions", "short_description": "Children's play equipment for indoor and outdoor spaces.", "description": "Childwood children play equipment indoor / outdoor and gym equipments.", "is_featured": False, "sort_order": 7},
         ]
-        
-        for data in categories_data:
-            image_url = data.pop("image_url", None)
-            filename = data.pop("filename", None)
-            cat, created = ProductCategory.objects.update_or_create(
-                slug=data["slug"],
-                defaults={**data, "is_published": True}
-            )
-            # Fetch from live server if not set
-            if not cat.image or str(cat.image) == "" or "tellus" in cat.slug:
-                if image_url and filename:
-                    self._download_and_save_category_image(cat, image_url, filename)
+        for data in products_data:
+            category_key = data.pop("cat")
+            cat = self._cat(category_key)
+            if cat:
+                Product.objects.update_or_create(slug=data["slug"], defaults={**data, "category": cat, "is_published": True})
 
-    # ─── products ───────────────────────────────────────────────
+    # ─── product images (download from prod server) ────────────
 
     def _download_and_save_product_image(self, product_instance, url, filename):
         import urllib.request
@@ -161,22 +294,22 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
             return False
 
-    def _seed_products(self):
+    def _seed_product_images(self):
         for data in [
-            {"category": "godspeed", "name": "Indoor Digital Signage", "slug": "indoor-digital-signage", "tagline": "Revolutionary Digital Communication", "short_description": "Digital signage with floor standing, wall mountable and LG options.", "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface.", "is_featured": True, "sort_order": 1, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/lcd.jpg", "filename": "indoor_digital_signage.jpg"},
-            {"category": "godspeed", "name": "Smart Touch Table", "slug": "smart-touch-table", "tagline": "Next Generation Human-Machine Interaction", "short_description": "Multi-touch interactive tables in 32\", 42\" and 46\" sizes.", "description": "Multi-touch tables enabling advanced interaction between human and machine.", "is_featured": False, "sort_order": 2, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/pro3.png", "filename": "smart_touch_table.png"},
-            {"category": "godspeed", "name": "Interactive Wayfinding Kiosk", "slug": "wayfinding-kiosk", "tagline": "Navigate with Ease", "short_description": "Interactive wayfinding with directory, map and route guidance.", "description": "Interactive wayfinding with directory listing, shortest route guidance. Deployed at Phoenix Marketcity.", "is_featured": False, "sort_order": 3, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/image1.jpg", "filename": "wayfinding_kiosk.jpg"},
-            {"category": "godspeed", "name": "Speed Touch Series Touch Screen Kiosk", "slug": "touch-screen-kiosk", "tagline": "Versatile Touch Solutions", "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.", "description": "High quality IR, resistance and capacitive touch kiosk. Floor standing and half standing configurations.", "is_featured": False, "sort_order": 4, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/intra-kisosk-usibility.png", "filename": "touch_screen_kiosk.png"},
-            {"category": "godspeed", "name": "Video Wall", "slug": "video-wall", "tagline": "Perfect Visual Experience", "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.", "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG.", "is_featured": False, "sort_order": 5, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/video-wall3.jpg", "filename": "video_wall.jpg"},
-            {"category": "tellus", "name": "Tellus Feedback Solution", "slug": "tellus", "tagline": "Measure Your Business by Guest Feedback", "short_description": "Customer feedback kiosks with instant alerts and reporting.", "description": "Electronic feedback collection with instant SMS alerts for poor ratings. Less than Rs 20 per day per branch.", "is_featured": True, "sort_order": 6, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png", "filename": "tellus_feedback.png"},
-            {"category": "childwood", "name": "Childwood Children's Play Equipment", "slug": "childwood", "tagline": "Indoor & Outdoor Play Solutions", "short_description": "Children's play equipment for indoor and outdoor spaces.", "description": "Childwood children play equipment indoor / outdoor and gym equipments.", "is_featured": False, "sort_order": 7, "image_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg", "filename": "childwood_play.jpg"},
+            {"slug": "indoor-digital-signage", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/lcd.jpg", "filename": "indoor_digital_signage.jpg"},
+            {"slug": "smart-touch-table", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/pro3.png", "filename": "smart_touch_table.png"},
+            {"slug": "wayfinding-kiosk", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/image1.jpg", "filename": "wayfinding_kiosk.jpg"},
+            {"slug": "touch-screen-kiosk", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/intra-kisosk-usibility.png", "filename": "touch_screen_kiosk.png"},
+            {"slug": "video-wall", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/video-wall3.jpg", "filename": "video_wall.jpg"},
+            {"slug": "tellus", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png", "filename": "tellus_feedback.png"},
+            {"slug": "childwood", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg", "filename": "childwood_play.jpg"},
         ]:
-            image_url = data.pop("image_url", None)
-            filename = data.pop("filename", None)
-            d = {**data, "category": self._cat(data["category"]), "is_published": True}
-            prod, created = Product.objects.update_or_create(slug=d["slug"], defaults=d)
-            if image_url and filename and (not prod.image or str(prod.image) == ""):
-                self._download_and_save_product_image(prod, image_url, filename)
+            try:
+                prod = Product.objects.get(slug=data["slug"])
+                if not prod.image or str(prod.image) == "":
+                    self._download_and_save_product_image(prod, data["url"], data["filename"])
+            except Product.DoesNotExist:
+                pass
 
     # ─── product features ───────────────────────────────────────
 
@@ -361,6 +494,20 @@ class Command(BaseCommand):
         for i, (name, desc) in enumerate(items):
             ServiceItem.objects.update_or_create(service=hardware, title=name, defaults={"description": desc, "image": "", "sort_order": i})
 
+        it_consulting = Service.objects.get(slug="it-networking")
+        consulting_items = [
+            ("Free Professional Consulting", "Offered at zero cost for new restaurants, cafes, and bars to plan their tech infrastructure."),
+            ("Multi-Floor Network Architecture", "Tailored cable laying, network switch racking, and router sizing based on layout and node count."),
+            ("WiFi Site Survey & AP Selection", "Determining precise access point counts for uninterrupted mobile/tablet order taking via KOT."),
+            ("Online UPS Power Backup", "Guaranteed power breakdown-free daily operations, seamlessly bridging generator switchovers."),
+            ("Server & Node Sizing", "Right-sizing HP ML10 servers, DELL workstations, and POS nodes based on transaction volume."),
+            ("Kitchen & Bar Printers", "Selection of water-proof POS machines and spill-proof thermal printers (Epson TM-T82 II, M30)."),
+            ("Digital Signage & Menu Displays", "Heavy-duty ad players and wall-mounted menu displays for in-house dish and offer promotions."),
+            ("Restaurant Chain Solutions", "End-to-end scalable hardware, software and consulting for multi-outlet restaurant chains."),
+        ]
+        for i, (name, desc) in enumerate(consulting_items):
+            ServiceItem.objects.update_or_create(service=it_consulting, title=name, defaults={"description": desc, "image": "", "sort_order": i})
+
     # ─── industries ─────────────────────────────────────────────
 
     def _seed_industries(self):
@@ -379,6 +526,27 @@ class Command(BaseCommand):
             {"name": "Entertainment Centers", "slug": "entertainment"},
         ]:
             Industry.objects.update_or_create(slug=data["slug"], defaults={**data, "is_published": True})
+
+    # ─── services page (for usePage hook) ─────────────────────
+
+    def _seed_services_page(self):
+        page, _ = Page.objects.update_or_create(slug="services", defaults={
+            "title": "Hardware Supply & IT Networking Consulting",
+            "hero_title": "Our Services",
+            "hero_subtitle": "Hardware supply and professional IT consulting for the hospitality industry",
+            "meta_description": "Complete hardware supply and professional IT networking consulting for the hospitality industry. Free consulting for new restaurants and bars.",
+            "content": "We provide end-to-end hardware and IT consulting for restaurants, bars, cafes, and hotels across India.",
+            "is_published": True,
+        })
+        # Hero section
+        PageSection.objects.update_or_create(
+            page=page, section_type="hero",
+            defaults={
+                "title": "Hardware Supply & IT Networking",
+                "content": "Complete hardware supply and professional IT networking consulting for the hospitality industry. Free consulting for new restaurants and bars.",
+                "sort_order": 0, "is_visible": True,
+            }
+        )
 
     # ─── enquiry types ──────────────────────────────────────────
 
@@ -431,11 +599,12 @@ class Command(BaseCommand):
         products_parent = NavigationItem.objects.update_or_create(menu=menu, label="Products", defaults={"url": "/products", "sort_order": 3, "is_visible": True})[0]
         services_parent = NavigationItem.objects.update_or_create(menu=menu, label="Services", defaults={"url": "/services", "sort_order": 4, "is_visible": True})[0]
         contact = NavigationItem.objects.update_or_create(menu=menu, label="Contact Us", defaults={"url": "/contact", "sort_order": 5, "is_visible": True})[0]
+        blog = NavigationItem.objects.update_or_create(menu=menu, label="Blog", defaults={"url": "/blog", "sort_order": 6, "is_visible": True})[0]
 
-        # Products → Godspeed → sub-products
+        # Products → Godspeed (Brand) → sub-products
         godspeed = NavigationItem.objects.update_or_create(menu=menu, label="Godspeed", parent=products_parent, defaults={"url": "/products/godspeed", "sort_order": 1, "is_visible": True})[0]
         for i, (label, url) in enumerate([
-            ("Indoor Digital Signage", "/products/indoor-digital-signage"),
+            ("Digital Signage", "/products/indoor-digital-signage"),
             ("Smart Touch Table", "/products/smart-touch-table"),
             ("Wayfinding Kiosk", "/products/wayfinding-kiosk"),
             ("Touch Screen Kiosk", "/products/touch-screen-kiosk"),
@@ -444,7 +613,7 @@ class Command(BaseCommand):
             NavigationItem.objects.update_or_create(menu=menu, label=label, parent=godspeed, defaults={"url": url, "sort_order": i, "is_visible": True})
 
         NavigationItem.objects.update_or_create(menu=menu, label="Tellus Feedback", parent=products_parent, defaults={"url": "/products/tellus", "sort_order": 2, "is_visible": True})
-        NavigationItem.objects.update_or_create(menu=menu, label="Childwood", parent=products_parent, defaults={"url": "/products/childwood", "sort_order": 3, "is_visible": True})
+        NavigationItem.objects.update_or_create(menu=menu, label="Childwood Play Equipment", parent=products_parent, defaults={"url": "/products/childwood", "sort_order": 3, "is_visible": True})
 
         # Services → sub-items
         for i, (label, url) in enumerate([
@@ -694,6 +863,8 @@ class Command(BaseCommand):
                                 pass
 
     def _download_and_save_client_logo(self, client_instance, url, filename):
+        if not url:
+            return False
         import urllib.request
         import ssl
         from django.core.files.base import ContentFile
@@ -716,26 +887,131 @@ class Command(BaseCommand):
             return False
 
     def _seed_clients(self):
+        Client.objects.all().delete()
         clients_data = [
             {"name": "Cibo", "website": "", "industry": "Hospitality", "brand_color": "#2C5E3B", "sort_order": 1, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo0.jpg", "filename": "cibo_logo.jpg"},
             {"name": "Ajnabi", "website": "", "industry": "Hospitality", "brand_color": "#D35400", "sort_order": 2, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo1.jpg", "filename": "ajnabi_logo.jpg"},
             {"name": "Box Out", "website": "", "industry": "Cafe", "brand_color": "#D35400", "sort_order": 3, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo2.jpg", "filename": "boxout_logo.jpg"},
             {"name": "Zamrud", "website": "", "industry": "Hospitality", "brand_color": "#27AE60", "sort_order": 4, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo3.jpg", "filename": "zamrud_logo.jpg"},
-            {"name": "Buhari Restaurant", "website": "", "industry": "Hospitality", "brand_color": "#C8922A", "sort_order": 5},
-            {"name": "Matsya Egmore", "website": "", "industry": "Hospitality", "brand_color": "#1A5276", "sort_order": 6},
-            {"name": "Doveton Cafe", "website": "", "industry": "Hospitality", "brand_color": "#6E2F1A", "sort_order": 7},
-            {"name": "Phoenix Marketcity Chennai", "website": "https://www.phoenixmarketcity.com/chennai", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 8},
-            {"name": "Phoenix Marketcity Bangalore", "website": "https://www.phoenixmarketcity.com/bangalore", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 9},
-            {"name": "Phoenix Marketcity Pune", "website": "https://www.phoenixmarketcity.com/pune", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 10},
-            {"name": "High Street Phoenix Mumbai", "website": "https://www.highstreetphoenix.com", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 11},
-            {"name": "Hotel Savera", "website": "", "industry": "Hospitality", "brand_color": "#1B4F72", "sort_order": 12},
-            {"name": "Sangeetha Mobiles", "website": "", "industry": "Retail", "brand_color": "#E74C3C", "sort_order": 13},
-            {"name": "GRT Jewellers", "website": "", "industry": "Retail", "brand_color": "#B8860B", "sort_order": 14},
+            {"name": "Buhari Restaurant", "website": "", "industry": "Hospitality", "brand_color": "#C8922A", "sort_order": 5, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/04/logo5.jpg", "filename": "buhari_logo.jpg"},
+            {"name": "Matsya Egmore", "website": "", "industry": "Hospitality", "brand_color": "#1A5276", "sort_order": 6, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/4.jpg", "filename": "matsya_logo.jpg"},
+            {"name": "Doveton Cafe", "website": "", "industry": "Hospitality", "brand_color": "#6E2F1A", "sort_order": 7, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/1.jpg", "filename": "doveton_logo.jpg"},
+            {"name": "Phoenix Marketcity Chennai", "website": "https://www.phoenixmarketcity.com/chennai", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 8, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/2.jpg", "filename": "phoenix_chennai_logo.jpg"},
+            {"name": "Phoenix Marketcity Bangalore", "website": "https://www.phoenixmarketcity.com/bangalore", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 9, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/3.jpg", "filename": "phoenix_blr_logo.jpg"},
+            {"name": "Phoenix Marketcity Pune", "website": "https://www.phoenixmarketcity.com/pune", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 10, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/5.jpg", "filename": "phoenix_pune_logo.jpg"},
+            {"name": "High Street Phoenix Mumbai", "website": "https://www.highstreetphoenix.com", "industry": "Retail & Mall", "brand_color": "#8B0000", "sort_order": 11, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/6.jpg", "filename": "phoenix_mumbai_logo.jpg"},
+            {"name": "Hotel Savera", "website": "", "industry": "Hospitality", "brand_color": "#1B4F72", "sort_order": 12, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/7.jpg", "filename": "savera_logo.jpg"},
+            {"name": "Sangeetha Mobiles", "website": "", "industry": "Retail", "brand_color": "#E74C3C", "sort_order": 13, "logo_url": "", "filename": ""},
+            {"name": "GRT Jewellers", "website": "", "industry": "Retail", "brand_color": "#B8860B", "sort_order": 14, "logo_url": "", "filename": ""},
+            {"name": "Suprabaa", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 15, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/8.jpg", "filename": "suprabaa_logo.jpg"},
+            {"name": "Superstar Pizza", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 16, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/9.jpg", "filename": "superstar_pizza_logo.jpg"},
+            {"name": "Stuffles", "website": "", "industry": "Cafe", "brand_color": "#1A5276", "sort_order": 17, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/10.jpg", "filename": "stuffles_logo.jpg"},
+            {"name": "South Kitchen by Annalaya", "website": "", "industry": "Restaurant", "brand_color": "#6E2F1A", "sort_order": 18, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/11.jpg", "filename": "south_kitchen_by_annalaya_logo.jpg"},
+            {"name": "Soul Garden Bistro", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 19, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/12.jpg", "filename": "soul_garden_bistro_logo.jpg"},
+            {"name": "Something Different", "website": "", "industry": "Restaurant", "brand_color": "#C8922A", "sort_order": 20, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/13.jpg", "filename": "something_different_logo.jpg"},
+            {"name": "Smoke Factory", "website": "", "industry": "Restaurant", "brand_color": "#1B4F72", "sort_order": 21, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/14.jpg", "filename": "smoke_factory_logo.jpg"},
+            {"name": "Thambi Vilas", "website": "", "industry": "Restaurant", "brand_color": "#E74C3C", "sort_order": 22, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/15.jpg", "filename": "thambi_vilas_logo.jpg"},
+            {"name": "Something Different (Branch)", "website": "", "industry": "Restaurant", "brand_color": "#B8860B", "sort_order": 23, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/16.jpg", "filename": "something_different_branch_logo.jpg"},
+            {"name": "SVP Sangeetha", "website": "", "industry": "Restaurant", "brand_color": "#333333", "sort_order": 24, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/17.jpg", "filename": "svp_sangeetha_logo.jpg"},
+            {"name": "Hotel Rayyan", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 25, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/18.jpg", "filename": "hotel_rayyan_logo.jpg"},
+            {"name": "Pongal Unavagam", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 26, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/19.jpg", "filename": "pongal_unavagam_logo.jpg"},
+            {"name": "Pollastro Pasta Grill", "website": "", "industry": "Restaurant", "brand_color": "#1A5276", "sort_order": 27, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/20.jpg", "filename": "pollastro_pasta_grill_logo.jpg"},
+            {"name": "The Padrino", "website": "", "industry": "Restaurant", "brand_color": "#6E2F1A", "sort_order": 28, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/21.jpg", "filename": "the_padrino_logo.jpg"},
+            {"name": "Spice Trail", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 29, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/22.jpg", "filename": "spice_trail_logo.jpg"},
+            {"name": "NSA No Strings Attached", "website": "", "industry": "Cafe", "brand_color": "#C8922A", "sort_order": 30, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/23.jpg", "filename": "nsa_no_strings_attached_logo.jpg"},
+            {"name": "Nickys Cafe and Fine Pastries", "website": "", "industry": "Cafe", "brand_color": "#1B4F72", "sort_order": 31, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/24.jpg", "filename": "nickys_cafe_and_fine_pastries_logo.jpg"},
+            {"name": "Nava Ruchi", "website": "", "industry": "Restaurant", "brand_color": "#E74C3C", "sort_order": 32, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/25.jpg", "filename": "nava_ruchi_logo.jpg"},
+            {"name": "The Miner Diner", "website": "", "industry": "Restaurant", "brand_color": "#B8860B", "sort_order": 33, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/26.jpg", "filename": "the_miner_diner_logo.jpg"},
+            {"name": "Mathsya", "website": "", "industry": "Restaurant", "brand_color": "#333333", "sort_order": 34, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/27.jpg", "filename": "mathsya_logo.jpg"},
+            {"name": "Hotel Sri Mahalakshmi", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 35, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/28.jpg", "filename": "hotel_sri_mahalakshmi_logo.jpg"},
+            {"name": "The Madras Diner", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 36, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/29.jpg", "filename": "the_madras_diner_logo.jpg"},
+            {"name": "Burgerman", "website": "", "industry": "Restaurant", "brand_color": "#1A5276", "sort_order": 37, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/30.jpg", "filename": "burgerman_logo.jpg"},
+            {"name": "Krishnavillasam", "website": "", "industry": "Restaurant", "brand_color": "#6E2F1A", "sort_order": 38, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/31.jpg", "filename": "krishnavillasam_logo.jpg"},
+            {"name": "Hotel Sri Shanthi Bhavan", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 39, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/32.jpg", "filename": "hotel_sri_shanthi_bhavan_logo.jpg"},
+            {"name": "Star Cafe", "website": "", "industry": "Cafe", "brand_color": "#C8922A", "sort_order": 40, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/33.jpg", "filename": "star_cafe_logo.jpg"},
+            {"name": "Hotel Shrii Balaji Bhavan", "website": "", "industry": "Restaurant", "brand_color": "#1B4F72", "sort_order": 41, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/34.jpg", "filename": "hotel_shrii_balaji_bhavan_logo.jpg"},
+            {"name": "Hamsa", "website": "", "industry": "Restaurant", "brand_color": "#E74C3C", "sort_order": 42, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/35.jpg", "filename": "hamsa_logo.jpg"},
+            {"name": "Hajiali Juice Centre", "website": "", "industry": "Cafe", "brand_color": "#B8860B", "sort_order": 43, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/36.jpg", "filename": "hajiali_juice_centre_logo.jpg"},
+            {"name": "Grace Residency", "website": "", "industry": "Hotel", "brand_color": "#333333", "sort_order": 44, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/37.jpg", "filename": "grace_residency_logo.jpg"},
+            {"name": "Fu Silli Reasons", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 45, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/38.jpg", "filename": "fu_silli_reasons_logo.jpg"},
+            {"name": "Firdouse", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 46, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/39.jpg", "filename": "firdouse_logo.jpg"},
+            {"name": "The Madras Diner (Branch)", "website": "", "industry": "Restaurant", "brand_color": "#1A5276", "sort_order": 47, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/40.jpg", "filename": "the_madras_diner_branch_logo.jpg"},
+            {"name": "The Fat Boy", "website": "", "industry": "Restaurant", "brand_color": "#6E2F1A", "sort_order": 48, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/41.jpg", "filename": "the_fat_boy_logo.jpg"},
+            {"name": "Evoke", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 49, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/42.jpg", "filename": "evoke_logo.jpg"},
+            {"name": "Entremets", "website": "", "industry": "Cafe", "brand_color": "#C8922A", "sort_order": 50, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/43.jpg", "filename": "entremets_logo.jpg"},
+            {"name": "Elate Palace", "website": "", "industry": "Hotel", "brand_color": "#1B4F72", "sort_order": 51, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/44.jpg", "filename": "elate_palace_logo.jpg"},
+            {"name": "Doveton Cafe", "website": "", "industry": "Cafe", "brand_color": "#E74C3C", "sort_order": 52, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/45.jpg", "filename": "doveton_cafe_logo.jpg"},
+            {"name": "Dot Berrys", "website": "", "industry": "Cafe", "brand_color": "#B8860B", "sort_order": 53, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/46.jpg", "filename": "dot_berrys_logo.jpg"},
+            {"name": "Krishnas Dosa Kadai", "website": "", "industry": "Restaurant", "brand_color": "#333333", "sort_order": 54, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/47.jpg", "filename": "krishnas_dosa_kadai_logo.jpg"},
+            {"name": "Dine Square", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 55, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/48.jpg", "filename": "dine_square_logo.jpg"},
+            {"name": "Pollastro", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 56, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/49.jpg", "filename": "pollastro_logo.jpg"},
+            {"name": "Besant Cozee", "website": "", "industry": "Restaurant", "brand_color": "#1A5276", "sort_order": 57, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/50.jpg", "filename": "besant_cozee_logo.jpg"},
+            {"name": "Chai Gup Shup", "website": "", "industry": "Cafe", "brand_color": "#6E2F1A", "sort_order": 58, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/51.jpg", "filename": "chai_gup_shup_logo.jpg"},
+            {"name": "Chinese Story", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 59, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/52.jpg", "filename": "chinese_story_logo.jpg"},
+            {"name": "CG", "website": "", "industry": "Restaurant", "brand_color": "#C8922A", "sort_order": 60, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/53.jpg", "filename": "cg_logo.jpg"},
+            {"name": "Chai Gup Shup (Branch)", "website": "", "industry": "Cafe", "brand_color": "#1B4F72", "sort_order": 61, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/54.jpg", "filename": "chai_gup_shup_branch_logo.jpg"},
+            {"name": "Ceyone", "website": "", "industry": "Restaurant", "brand_color": "#E74C3C", "sort_order": 62, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/55.jpg", "filename": "ceyone_logo.jpg"},
+            {"name": "Capsi", "website": "", "industry": "Restaurant", "brand_color": "#B8860B", "sort_order": 63, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/56.jpg", "filename": "capsi_logo.jpg"},
+            {"name": "Buhari 1951", "website": "", "industry": "Restaurant", "brand_color": "#333333", "sort_order": 64, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/57.jpg", "filename": "buhari_1951_logo.jpg"},
+            {"name": "Nava Ruchi (Branch)", "website": "", "industry": "Restaurant", "brand_color": "#2C5E3B", "sort_order": 65, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/58.jpg", "filename": "nava_ruchi_branch_logo.jpg"},
+            {"name": "Bistro", "website": "", "industry": "Restaurant", "brand_color": "#D35400", "sort_order": 66, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/59.jpg", "filename": "bistro_logo.jpg"},
+            {"name": "Beans & Leaves", "website": "", "industry": "Cafe", "brand_color": "#1A5276", "sort_order": 67, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/60.jpg", "filename": "beans_and_leaves_logo.jpg"},
+            {"name": "Boats", "website": "", "industry": "Restaurant", "brand_color": "#6E2F1A", "sort_order": 68, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/61.jpg", "filename": "boats_logo.jpg"},
+            {"name": "Balaji Bhavan", "website": "", "industry": "Restaurant", "brand_color": "#8B0000", "sort_order": 69, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/62.jpg", "filename": "balaji_bhavan_logo.jpg"},
+            {"name": "Arusuvai Amirtham", "website": "", "industry": "Restaurant", "brand_color": "#C8922A", "sort_order": 70, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/63.jpg", "filename": "arusuvai_amirtham_logo.jpg"},
+            {"name": "Apollo Sindoori", "website": "", "industry": "Restaurant", "brand_color": "#1B4F72", "sort_order": 71, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/64.jpg", "filename": "apollo_sindoori_logo.jpg"},
+            {"name": "Abids", "website": "", "industry": "Restaurant", "brand_color": "#E74C3C", "sort_order": 72, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/65.jpg", "filename": "abids_logo.jpg"},
+            {"name": "Assife", "website": "", "industry": "Restaurant", "brand_color": "#B8860B", "sort_order": 73, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/66.jpg", "filename": "assife_logo.jpg"},
+            {"name": "196 Below", "website": "", "industry": "Cafe", "brand_color": "#333333", "sort_order": 74, "logo_url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/67.jpg", "filename": "196_below_logo.jpg"},
         ]
         for data in clients_data:
             logo_url = data.pop("logo_url", None)
             filename = data.pop("filename", None)
             client, created = Client.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
-            if logo_url and filename and (not client.logo or str(client.logo) == ""):
-                self._download_and_save_client_logo(client, logo_url, filename)
+            if filename:
+                import os
+                from django.conf import settings
+                local_path = os.path.join(settings.MEDIA_ROOT, "clients", filename)
+                if os.path.exists(local_path):
+                    client.logo = f"clients/{filename}"
+                    client.save()
+                elif logo_url and (not client.logo or str(client.logo) == ""):
+                    self._download_and_save_client_logo(client, logo_url, filename)
+
+    def _seed_team(self):
+        TeamMember.objects.all().delete()
+        team_data = [
+            {
+                "name": "Jayakumar",
+                "designation": "Director – Sales & Operations",
+                "brief": "With over 25 years of experience spanning retail, packaging, industrial automation, and hospitality, Jayakumar co-founded Sakthi Solutions in 2014. He leads sales strategy, OEM partnerships, and on-ground operations across South India.",
+                "photo_filename": "jayakumar.jpg",
+                "sort_order": 1
+            },
+            {
+                "name": "Vidya Rani",
+                "designation": "Director – Customer Relations & Finance",
+                "brief": "Vidya Rani brings deep expertise in sales and financial products. She oversees client onboarding, customer relationships, and financial operations at Sakthi Solutions, ensuring every client receives personalised, end-to-end support.",
+                "photo_filename": "",
+                "sort_order": 2
+            }
+        ]
+        
+        import os
+        from django.conf import settings
+        team_media_dir = os.path.join(settings.MEDIA_ROOT, "team")
+        os.makedirs(team_media_dir, exist_ok=True)
+        
+        for data in team_data:
+            filename = data.pop("photo_filename", None)
+            member, created = TeamMember.objects.update_or_create(
+                name=data["name"],
+                defaults={**data, "is_published": True}
+            )
+            if filename:
+                local_path = os.path.join(team_media_dir, filename)
+                if os.path.exists(local_path):
+                    member.photo = f"team/{filename}"
+                    member.save()
+
 

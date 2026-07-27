@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { useChildwood } from "@/hooks/useQueries";
+import { useProductGroups } from "@/hooks/useQueries";
 import { ArrowLeft } from "lucide-react";
 
 const SKU_NAMES: Record<string, string> = {
@@ -105,22 +105,18 @@ function CatalogSection({ title, items, materialNote }: { title: string; items: 
 }
 
 export function IndoorPlayClient() {
-  const { data: apiData } = useChildwood();
-  const catalog = apiData ?? [];
+  const { data: apiData } = useProductGroups("indoor-play");
+  const groups = Array.isArray(apiData) ? apiData : [];
 
-  const indoor = (Array.isArray(catalog) ? catalog.filter((c: { type: string }) => c.type === "indoor") : []) as Array<{ type: string; groups?: Array<{ name: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }> }>;
-
-  const getSections = (items: Array<{ groups?: Array<{ name: string; items: Array<any> }> }>) => {
-    if (!Array.isArray(items)) return [];
-    return items.flatMap((cat) =>
-      (cat.groups ?? []).map((g: { name: string; items: Array<any> }) => ({
-        title: g.name,
-        items: g.items,
-      }))
-    );
-  };
-
-  const indoorSections = getSections(indoor);
+  const indoorSections = groups.map((g: any) => ({
+    title: g.name,
+    items: (g.products ?? []).map((p: any) => ({
+      sku: p.sku,
+      name: p.name,
+      image: p.image,
+      dimensions: p.dimensions,
+    })),
+  }));
 
   return (
     <>

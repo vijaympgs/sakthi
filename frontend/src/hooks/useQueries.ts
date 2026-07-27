@@ -92,6 +92,14 @@ export function usePage(slug: string) {
   });
 }
 
+export function useBrands() {
+  return useQuery({
+    queryKey: ["brands"],
+    queryFn: () => cmsApi.getBrands().then((res) => res.data),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
 export function usePartners() {
   return useQuery({
     queryKey: ["partners"],
@@ -100,10 +108,10 @@ export function usePartners() {
   });
 }
 
-export function useChildwood(type?: string) {
+export function useProductGroups(categorySlug?: string) {
   return useQuery({
-    queryKey: ["childwood", type],
-    queryFn: () => cmsApi.getChildwood(type).then((res) => res.data),
+    queryKey: ["product-groups", categorySlug],
+    queryFn: () => cmsApi.getProductGroups(categorySlug).then((res) => res.data),
     staleTime: 10 * 60 * 1000,
   });
 }
@@ -130,6 +138,23 @@ export function useFooter() {
     queryKey: ["footer"],
     queryFn: () => cmsApi.getFooter().then((res) => res.data),
     staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useBlogPosts() {
+  return useQuery({
+    queryKey: ["blog-posts"],
+    queryFn: () => cmsApi.getBlogPosts().then((res) => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useBlogPost(slug: string) {
+  return useQuery({
+    queryKey: ["blog-post", slug],
+    queryFn: () => cmsApi.getBlogPost(slug).then((res) => res.data),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

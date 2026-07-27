@@ -31,6 +31,21 @@ class CompanyInfo(models.Model):
     trust_chips = models.JSONField(default=list, blank=True)
     advantages = models.JSONField(default=list, blank=True)
     hero_bg_image = models.URLField(max_length=500, default="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80", blank=True)
+    hero_tagline = models.CharField(max_length=300, default="Since 2014 — Chennai • Hospitality & Retail IT Partner", blank=True)
+    stats = models.JSONField(default=list, blank=True, help_text="Trust strip stats: [{value, label}]")
+    about_image = models.URLField(max_length=500, default="", blank=True)
+    about_heading = models.CharField(max_length=300, default="Your Reliable Technology Partner Since 2014", blank=True)
+    about_body = models.TextField(blank=True)
+    cta_title = models.CharField(max_length=300, default="Ready to Transform Your Business?", blank=True)
+    cta_subtitle = models.TextField(blank=True)
+    timeline = models.JSONField(default=list, blank=True, help_text="About page timeline: [{year, title, description}]")
+    why_items = models.JSONField(default=list, blank=True, help_text="About page Why Us items: [{icon, title, description}]")
+    enquiry_types = models.JSONField(default=list, blank=True, help_text="Contact form enquiry types: [{name, sort_order}]")
+    callback_slots = models.JSONField(default=list, blank=True, help_text="Contact form callback slots: [{label, value}]")
+    business_hours = models.CharField(max_length=200, default="Mon – Sat: 9:00 AM – 6:30 PM", blank=True)
+    why_us_bullets = models.JSONField(default=list, blank=True, help_text="Contact page 'Why Us' bullet points")
+    phone_jayakumar = models.CharField(max_length=20, blank=True, help_text="Jayakumar's direct line")
+    phone_vidya = models.CharField(max_length=20, blank=True, help_text="Vidya Rani's direct line")
 
     class Meta:
         verbose_name = "Company Information"

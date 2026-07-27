@@ -21,6 +21,11 @@ class PageDetailView(PublicMixin, generics.RetrieveAPIView):
     queryset = Page.objects.filter(is_published=True)
 
 
+class BrandListView(PublicMixin, generics.ListAPIView):
+    serializer_class = BrandSerializer
+    queryset = Brand.objects.filter(is_published=True)
+
+
 class ProductCategoryListView(PublicMixin, generics.ListAPIView):
     serializer_class = ProductCategorySerializer
     queryset = ProductCategory.objects.filter(is_published=True)
@@ -150,6 +155,7 @@ class HomePageView(PublicMixin, APIView):
     def get(self, request):
         data = {
             "site_settings": CompanyInfoSerializer(CompanyInfo.objects.first()).data if CompanyInfo.objects.exists() else {},
+            "brands": BrandSerializer(Brand.objects.filter(is_published=True), many=True).data,
             "products": ProductSerializer(Product.objects.filter(is_published=True, is_featured=True)[:6], many=True).data,
             "product_categories": ProductCategorySerializer(ProductCategory.objects.filter(is_published=True), many=True).data,
             "services": ServiceSerializer(Service.objects.filter(is_published=True), many=True).data,
@@ -199,15 +205,15 @@ class PartnerListView(PublicMixin, generics.ListAPIView):
     queryset = Partner.objects.filter(is_published=True)
 
 
-class ChildwoodCategoryListView(PublicMixin, generics.ListAPIView):
-    serializer_class = ChildwoodCategorySerializer
-    queryset = ChildwoodCategory.objects.all()
+class ProductGroupListView(PublicMixin, generics.ListAPIView):
+    serializer_class = ProductGroupSerializer
+    queryset = ProductGroup.objects.all()
 
     def get_queryset(self):
-        qs = ChildwoodCategory.objects.prefetch_related("groups__items")
-        type_filter = self.request.query_params.get("type")
-        if type_filter:
-            qs = qs.filter(type=type_filter)
+        qs = ProductGroup.objects.prefetch_related("products")
+        category_slug = self.request.query_params.get("category")
+        if category_slug:
+            qs = qs.filter(category__slug=category_slug)
         return qs
 
 

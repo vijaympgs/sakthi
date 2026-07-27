@@ -2,127 +2,23 @@
 
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { useChildwood } from "@/hooks/useQueries";
-//
+import { useProductGroups } from "@/hooks/useQueries";
+import { Ruler } from "lucide-react";
 
-const SKU_NAMES: Record<string, string> = {
-  "CWP001": "Multi-Level Playstation",
-  "CWP002": "Compact Play Structure",
-  "CWP003": "Adventure Tower",
-  "CWP004": "Slide Combo Unit",
-  "CWP005": "Junior Play Zone",
-  "CWP006": "Narrow Corridor Play",
-  "CWP007": "Extended Play Arena",
-  "CWP008": "Deluxe Playstation",
-  "CWP009": "Family Fun Center",
-  "CWP010": "Grand Play Structure",
-  "CWP011": "Mega Play Tunnel",
-  "CWP012": "Triple Deck Play",
-  "CWP013": "Multi-Level Playstation",
-  "CWP014": "Custom Play Setup",
-  "CWP015": "Premium Play Fortress",
-  "CWP016": "Dual Zone Play",
-  "CWP017": "Jumbo Adventure Park",
-  "CWP018": "Triple Slide Tower",
-  "CWP019": "Climbing Frame Combo",
-  "CWP020": "Multi-Activity Station",
-  "CWP021": "Double Deck Play Zone",
-  "CWP022": "Compact Adventure Frame",
-  "CWP023": "Wide Play Arena",
-  "CWP024": "Low Profile Play Unit",
-  "CWP025": "Extended Slide Complex",
-  "CWP026": "Dual Level Play Structure",
-  "CWP027": "Triple Level Play Frame",
-  "CWP028": "Climbing Adventure Combo",
-  "CWP029": "Large Multi-Play Unit",
-  "CWP030": "Junior Adventure Tower",
-  "CWP031": "Deluxe Play Fortress",
-  "CWP032": "Compact Slide Tower",
-  "CWP033": "Family Play Center",
-  "CWP034": "Square Play Station",
-  "CWP035": "Tall Multi-Deck Play",
-  "CWP036": "Standard Play Structure",
-  "CWP037": "Mega Adventure Complex",
-  "CWP038": "Premium Multi-Level Play",
-  "CWP039": "Grand Slide Fortress",
-  "CWP040": "Wide Play Arena",
-  "CWP041": "Jumbo Play Castle",
-  "CW0027": "Large Indoor Playstation",
-  "CW0028": "Extended Indoor Play Frame",
-  "CW0029": "Compact Indoor Play Unit",
-  "CW0030": "Multi-Activity Indoor Play",
-};
-
-const MATERIAL_NOTES: Record<string, string> = {
-  "Playstations": "MS structure, PVC coating, SS bolts",
-  "Spring Rockers": "MS spring, HDPE seat, powder coated",
-  "See Saw": "MS pipe structure, powder coated",
-  "Swings": "MS chain, HDPE/MS seat, powder coated",
-  "Rideons": "HDPE body, MS base, powder coated",
-  "Tunnels": "PVC coated MS frame, net tunnel",
-  "Slides, Slides & Swing Combo": "MS slide, HDPE platform, powder coated",
-  "Floorings": "EVA foam / artificial grass",
-};
-
-const getPlayEquipmentImage = (item: any) => {
-  if (!item.image) {
-    return "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=400&q=80";
-  }
-  if (item.image.startsWith("http://") || item.image.startsWith("https://")) {
-    return item.image;
-  }
-  const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
-  return `${apiBase}${item.image.startsWith("/") ? "" : "/"}${item.image}`;
-};
-
-function CatalogSection({ title, items, materialNote }: { title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }>; materialNote?: string }) {
-  return (
-    <div className="mb-16">
-      <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-gray-200">
-        <h3 className="heading-sm text-primary-500">{title}</h3>
-        {materialNote && <span className="text-[10px] text-gray-400 uppercase tracking-wider">{materialNote}</span>}
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((item) => {
-          const displayName = item.name || item.sku;
-          const imageSrc = getPlayEquipmentImage(item);
-          return (
-            <div key={item.sku} className="border border-gray-100 overflow-hidden group hover:-translate-y-1 transition-transform duration-200">
-              <div className="aspect-square bg-gray-50 overflow-hidden">
-                <img src={imageSrc} alt={displayName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-              </div>
-              <div className="p-3">
-                <p className="text-sm font-medium text-primary-500 mb-1">{displayName}</p>
-                {item.dimensions && <p className="text-xs text-gray-500">{item.dimensions}</p>}
-                <p className="text-[10px] text-gray-400 font-mono mt-1">{item.sku}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
 export function ChildwoodClient() {
-  const { data: apiData } = useChildwood();
-  const catalog = apiData ?? [];
+  const { data: groups, isLoading } = useProductGroups();
 
-  const outdoor = (Array.isArray(catalog) ? catalog.filter((c: { type: string }) => c.type === "outdoor") : []) as Array<{ type: string; groups?: Array<{ name: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }> }>;
-  const indoor = (Array.isArray(catalog) ? catalog.filter((c: { type: string }) => c.type === "indoor") : []) as Array<{ type: string; groups?: Array<{ name: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }> }>;
-
-  const getSections = (items: Array<{ groups?: Array<{ name: string; items: Array<unknown> }> }>) => {
-    if (!Array.isArray(items)) return [];
-    return items.flatMap((cat) =>
-      (cat.groups ?? []).map((g: { name: string; items: Array<unknown> }) => ({
-        title: g.name,
-        items: g.items,
-      }))
+  if (isLoading) {
+    return (
+      <section className="section-padding bg-white">
+        <div className="container-page text-center"><p className="text-gray-400">Loading catalog...</p></div>
+      </section>
     );
-  };
+  }
 
-  const outdoorSections = getSections(outdoor);
-  const indoorSections = getSections(indoor);
+  const productGroups = Array.isArray(groups) ? groups : [];
 
   return (
     <>
@@ -134,19 +30,8 @@ export function ChildwoodClient() {
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Childwood</p>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Children&apos;s Play Equipment</h1>
               <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">
-                Indoor and outdoor children&apos;s play equipment, gym equipment, spring rockers,
-                see-saws, swings, slides, rideons, tunnels and floorings. Customizable solutions
-                for restaurants, malls, schools and entertainment centers.
+                Complete range of indoor and outdoor children&apos;s play equipment including playstations, spring rockers, swings, slides, tunnels and floorings.
               </p>
-            </div>
-            <div className="hidden lg:block">
-              <div className="aspect-[4/3] bg-primary-600 border border-gray-700/50 overflow-hidden">
-                <img
-                  src="/assets/products/about_images.jpg"
-                  alt="Childwood Play Equipment"
-                  className="w-full h-full object-cover opacity-80"
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -154,50 +39,55 @@ export function ChildwoodClient() {
 
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-      <section className="section-padding bg-white">
-        <div className="container-page">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            <div className="border border-gray-100 p-6 hover:border-label/40 transition-colors">
-              <h2 className="heading-sm text-primary-500 mb-3">Outdoor Play Equipment</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Complete range of outdoor play equipment including playstations, spring rockers,
-                see-saws and swings. 62 products available with various sizes and configurations.
-              </p>
-              <a href="#outdoor" className="text-sm font-medium text-label hover:text-label/80">View Outdoor Products</a>
+      {productGroups.map((group: any) => {
+        const products = group.products ?? [];
+        if (products.length === 0) return null;
+        return (
+          <section key={group.id || group.name} className="section-padding bg-white border-b border-gray-100">
+            <div className="container-page">
+              <h2 className="heading-md text-primary-500 mb-2">{group.name}</h2>
+              <p className="text-gray-500 text-sm mb-8">{group.category_name || ""}</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {products.map((product: any) => {
+                  const imgUrl = product.image
+                    ? (product.image.startsWith("http") ? product.image : `${API_BASE}${product.image.startsWith("/") ? "" : "/"}${product.image}`)
+                    : null;
+                  return (
+                    <div key={product.id || product.sku} className="border border-gray-100 overflow-hidden group hover:border-[#B89A4A] transition-all duration-200 bg-white">
+                      <div className="aspect-square bg-gray-50 overflow-hidden flex items-center justify-center">
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={product.name} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                        ) : (
+                          <div className="text-2xl font-black text-gray-200">{product.sku || "IMG"}</div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <p className="text-xs font-semibold text-primary-500 leading-tight line-clamp-2">{product.name}</p>
+                        {product.sku && (
+                          <p className="text-[10px] text-gray-400 mt-1 font-mono">{product.sku}</p>
+                        )}
+                        {product.dimensions && (
+                          <p className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1">
+                            <Ruler size={10} /> {product.dimensions}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="border border-gray-100 p-6 hover:border-label/40 transition-colors">
-              <h2 className="heading-sm text-primary-500 mb-3">Indoor Play Equipment</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Complete range of indoor play equipment including playstations, rideons, tunnels,
-                slides, swing combos and floorings. 34 products available.
-              </p>
-              <a href="#indoor" className="text-sm font-medium text-label hover:text-label/80">View Indoor Products</a>
-            </div>
-          </div>
+          </section>
+        );
+      })}
 
-          <div id="outdoor">
-            <h2 className="heading-lg text-primary-500 mb-12">Outdoor Play Equipment</h2>
-            {(outdoorSections as Array<{ title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }>).map((section) => (
-              <CatalogSection key={section.title} title={section.title} items={section.items} materialNote={MATERIAL_NOTES[section.title]} />
-            ))}
+      {productGroups.length === 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-page text-center">
+            <p className="text-gray-400">No play equipment catalog items found.</p>
           </div>
-
-          <div id="indoor" className="mt-20">
-            <h2 className="heading-lg text-primary-500 mb-12">Indoor Play Equipment</h2>
-            {(indoorSections as Array<{ title: string; items: Array<{ sku: string; name?: string; image: string; dimensions?: string }> }>).map((section) => (
-              <CatalogSection key={section.title} title={section.title} items={section.items} materialNote={MATERIAL_NOTES[section.title]} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section-padding bg-surface-muted">
-        <div className="container-page text-center max-w-2xl">
-          <h2 className="heading-sm text-primary-500 mb-4">Need Play Equipment for Your Space?</h2>
-          <p className="text-gray-500 mb-6">Contact us for custom configurations, site planning and bulk pricing.</p>
-          <Link href="/contact" className="btn-primary">Request a Quote</Link>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

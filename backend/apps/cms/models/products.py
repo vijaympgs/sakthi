@@ -1,9 +1,26 @@
 from django.db import models
 
 
+class ProductGroup(models.Model):
+    category = models.ForeignKey(
+        "ProductCategory", on_delete=models.CASCADE, related_name="groups"
+    )
+    name = models.CharField(max_length=200)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "name"]
+
+    def __str__(self):
+        return f"{self.category.name} → {self.name}"
+
+
 class ProductCategory(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
+    brand = models.ForeignKey(
+        "Brand", on_delete=models.CASCADE, null=True, blank=True, related_name="categories"
+    )
     description = models.TextField(blank=True)
     tagline = models.CharField(max_length=300, blank=True)
     icon = models.ImageField(upload_to="products/icons/", blank=True)
@@ -24,11 +41,16 @@ class Product(models.Model):
     category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, related_name="products"
     )
+    group = models.ForeignKey(
+        "ProductGroup", on_delete=models.SET_NULL, null=True, blank=True, related_name="products"
+    )
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
+    sku = models.CharField(max_length=50, blank=True, help_text="Stock Keeping Unit e.g. CWP001")
+    dimensions = models.CharField(max_length=200, blank=True, help_text="e.g. 80x2x32\"")
     tagline = models.CharField(max_length=300, blank=True)
     short_description = models.TextField(blank=True)
     description = models.TextField(blank=True)

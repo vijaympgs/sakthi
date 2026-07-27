@@ -23,7 +23,7 @@ export function CTA({ title, subtitle, primaryLabel = "Contact Us", primaryHref 
             <ArrowRight size={16} className="ml-2" />
           </Link>
           {secondaryLabel && secondaryHref && (
-            <Link href={secondaryHref} className="border-2 border-white text-white px-8 py-3 font-medium hover:bg-white hover:text-primary-500 transition-colors">
+            <Link href={secondaryHref} className="btn-outline-white">
               {secondaryLabel}
             </Link>
           )}

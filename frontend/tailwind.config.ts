@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
   content: [
@@ -37,16 +38,26 @@ const config: Config = {
         },
         label: {
           DEFAULT: "var(--color-label)",
+          light: "var(--color-label-light)",
+        },
+        cream: {
+          DEFAULT: "var(--color-cream)",
+          border: "var(--color-cream-border)",
         },
       },
       fontFamily: {
-        heading: "var(--font-heading)",
-        body: "var(--font-body)",
+        heading: ["var(--font-heading)", "Georgia", "serif"],
+        body: ["var(--font-body)", "system-ui", "sans-serif"],
+        accent: ["var(--font-accent)", "Georgia", "serif"],
+        ui: ["var(--font-ui)", "system-ui", "sans-serif"],
+      },
+      spacing: {
+        section: "var(--section-gap)",
       },
     },
   },
   plugins: [
-    require("@tailwindcss/typography"),
+    typography,
   ],
 };
 
