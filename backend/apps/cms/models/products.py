@@ -26,7 +26,8 @@ class ProductCategory(models.Model):
     icon = models.ImageField(upload_to="products/icons/", blank=True)
     image = models.ImageField(upload_to="products/categories/", blank=True)
     sort_order = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
+    show_brand_logo = models.BooleanField(default=True, verbose_name="Show Brand Logo on Category")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -57,7 +58,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to="products/", blank=True)
     brochure = models.FileField(upload_to="products/brochures/", blank=True)
     is_featured = models.BooleanField(default=False)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

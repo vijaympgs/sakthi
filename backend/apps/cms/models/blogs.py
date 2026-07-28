@@ -29,7 +29,7 @@ class BlogPost(models.Model):
     )
     meta_title = models.CharField(max_length=200, blank=True)
     meta_description = models.TextField(blank=True)
-    is_published = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     published_at = models.DateTimeField(null=True, blank=True)
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

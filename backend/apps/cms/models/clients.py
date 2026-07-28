@@ -8,7 +8,7 @@ class Client(models.Model):
     industry = models.CharField(max_length=100, blank=True)
     brand_color = models.CharField(max_length=20, blank=True, help_text="Hex color e.g. #C8922A")
     sort_order = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
 
     class Meta:
         ordering = ["sort_order", "name"]

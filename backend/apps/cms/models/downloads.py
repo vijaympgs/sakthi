@@ -23,7 +23,7 @@ class Download(models.Model):
     file = models.FileField(upload_to="downloads/")
     file_type = models.CharField(max_length=20, blank=True)
     file_size = models.PositiveIntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     download_count = models.PositiveIntegerField(default=0)
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

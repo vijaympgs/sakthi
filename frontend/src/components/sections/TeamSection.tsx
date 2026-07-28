@@ -14,20 +14,7 @@ function getPhotoUrl(photo: string | null) {
 export function TeamSection() {
   const { data: apiTeam } = useTeam();
 
-  const fallbackTeam = [
-    {
-      name: "Jayakumar",
-      designation: "Director – Sales & Operations",
-      brief: "Over 15 years of experience in hospitality IT, driving Sakthi Solutions' expansion across South India.",
-      photo: null,
-    },
-    {
-      name: "Vidya Rani",
-      designation: "Director – Customer Relations",
-      brief: "Leads client onboarding and long-term account management for restaurant and hotel chains.",
-      photo: null,
-    },
-  ];
+  const fallbackTeam: any[] = [];
 
   const team = apiTeam && apiTeam.length > 0 ? apiTeam : fallbackTeam;
 

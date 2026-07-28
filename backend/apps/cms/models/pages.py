@@ -10,7 +10,7 @@ class Page(models.Model):
     hero_subtitle = models.TextField(blank=True)
     hero_image = models.ImageField(upload_to="pages/hero/", blank=True)
     content = models.TextField(blank=True)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

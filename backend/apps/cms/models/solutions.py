@@ -8,7 +8,7 @@ class Solution(models.Model):
     image = models.ImageField(upload_to="solutions/", blank=True)
     icon = models.CharField(max_length=50, blank=True)
     products = models.ManyToManyField("Product", blank=True, related_name="solutions")
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

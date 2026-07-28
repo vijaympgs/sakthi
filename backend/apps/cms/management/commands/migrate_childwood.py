@@ -43,7 +43,7 @@ class Command(BaseCommand):
                             "slug": slug,
                             "dimensions": old_eq.dimensions,
                             "sort_order": old_eq.sort_order,
-                            "is_published": True,
+                            "is_active": True,
                             "image": old_eq.image,
                         },
                     )

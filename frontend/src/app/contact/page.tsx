@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import { getCompanyInfo } from "@/lib/server";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { ContactPage } from "@/components/sections/ContactPage";
 
-export const metadata: Metadata = {
-  title: "Contact Us - Sakthi Solutions | Digital Signage, Kiosks & IT Solutions",
-  description: "Contact Sakthi Solutions for digital signage, interactive kiosks, Tellus feedback solutions, Childwood play equipment and IT networking consulting. Chennai-based with pan-India service.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const company = await getCompanyInfo();
+  const name = company?.company_name || "Sakthi Solutions";
+  return {
+    title: `Contact Us - ${name} | Digital Signage, Kiosks & IT Solutions`,
+    description: `Contact ${name} for digital signage, interactive kiosks and IT networking consulting.`,
+  };
+}
 
 export default function Page() {
   return (

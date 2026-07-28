@@ -10,7 +10,7 @@ class Brand(models.Model):
     icon = models.CharField(max_length=50, blank=True, help_text="Lucide icon name e.g. Monitor, Baby, Users")
     website = models.URLField(blank=True)
     sort_order = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

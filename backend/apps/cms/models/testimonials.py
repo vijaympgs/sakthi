@@ -8,7 +8,7 @@ class Testimonial(models.Model):
     author_photo = models.ImageField(upload_to="testimonials/", blank=True)
     content = models.TextField()
     rating = models.IntegerField(default=5)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

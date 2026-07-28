@@ -6,7 +6,7 @@ class Gallery(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True)
     cover_image = models.ImageField(upload_to="gallery/covers/", blank=True)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -26,18 +26,6 @@
       "slug": "godspeed",
       "description": "World class digital signage with manufacturing unit in Hong Kong and China. Heavy duty body with toughened glass surface.",
       "sort_order": 1
-    },
-    {
-      "name": "Tellus",
-      "slug": "tellus",
-      "description": "Customer feedback kiosk solution for restaurants and retail outlets.",
-      "sort_order": 2
-    },
-    {
-      "name": "Childwood",
-      "slug": "childwood",
-      "description": "Children's play equipment for indoor and outdoor spaces.",
-      "sort_order": 3
     }
   ],
   "products": [
@@ -90,26 +78,6 @@
       "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG. Perfect visual experience with ultra thin splicing technology and intelligent controlling system.",
       "is_featured": false,
       "sort_order": 5
-    },
-    {
-      "category": "tellus",
-      "name": "Tellus Feedback Solution",
-      "slug": "tellus",
-      "tagline": "Measure Your Business by Guest Feedback",
-      "short_description": "Electronic customer feedback kiosks with instant alerts and reporting.",
-      "description": "Customer feedback kiosk for restaurants and retail. Collects feedback electronically, sends instant text alerts for poor ratings with customer name and mobile number. Less than Rs 20 per day per branch.",
-      "is_featured": true,
-      "sort_order": 6
-    },
-    {
-      "category": "childwood",
-      "name": "Childwood Children's Play Equipment",
-      "slug": "childwood",
-      "tagline": "Indoor & Outdoor Play Solutions",
-      "short_description": "Children's play equipment for indoor and outdoor spaces.",
-      "description": "Childwood children play equipment indoor / outdoor and gym equipments.",
-      "is_featured": false,
-      "sort_order": 7
     }
   ],
   "services": [
@@ -126,15 +94,58 @@
       "sort_order": 2
     }
   ],
+  "serviceItems": [
+    {
+      "service": "hardware",
+      "title": "POS Terminal",
+      "description": "Full-touch POS terminals from Posiflex for seamless billing and KOT management.",
+      "sort_order": 1
+    },
+    {
+      "service": "hardware",
+      "title": "Server (HP ML10)",
+      "description": "Entry-level tower server for small business operations.",
+      "sort_order": 2
+    },
+    {
+      "service": "hardware",
+      "title": "10\" Tablet",
+      "description": "Android tablet for home delivery order management.",
+      "sort_order": 3
+    },
+    {
+      "service": "hardware",
+      "title": "7\" Tablet",
+      "description": "Compact tablet for KOT display in kitchen.",
+      "sort_order": 4
+    },
+    {
+      "service": "hardware",
+      "title": "Thermal Roll Printer",
+      "description": "Epson thermal printers for billing and kitchen orders.",
+      "sort_order": 5
+    },
+    {
+      "service": "hardware",
+      "title": "WiFi Router",
+      "description": "Enterprise-grade WiFi router for restaurant connectivity.",
+      "sort_order": 6
+    },
+    {
+      "service": "hardware",
+      "title": "UPS Battery Backup",
+      "description": "UPS backup for uninterrupted restaurant operations.",
+      "sort_order": 7
+    }
+  ],
   "industries": [
-    { "name": "Corporate Offices", "slug": "corporate" },
+    { "name": "Corporate Offices & Enterprise", "slug": "corporate" },
     { "name": "Hospitals & Healthcare", "slug": "healthcare" },
     { "name": "Shopping Malls & Retail", "slug": "retail" },
     { "name": "Hotels & Resorts", "slug": "hotels" },
-    { "name": "Restaurants & Fine Dining", "slug": "restaurants" },
-    { "name": "Event Management", "slug": "events" },
-    { "name": "Airports", "slug": "airports" },
-    { "name": "Museums", "slug": "museums" },
+    { "name": "Restaurants & Dining", "slug": "restaurants" },
+    { "name": "Event Venues & Museums", "slug": "events" },
+    { "name": "Airports & Transportation", "slug": "airports" },
     { "name": "Cafes & Coffee Shops", "slug": "cafes" },
     { "name": "Bars & Nightclubs", "slug": "bars" },
     { "name": "Food Courts & QSR", "slug": "food-courts" },
@@ -146,10 +157,8 @@
     { "name": "Wayfinding Kiosk", "sort_order": 3 },
     { "name": "Touch Screen Kiosk", "sort_order": 4 },
     { "name": "Video Wall", "sort_order": 5 },
-    { "name": "Tellus Feedback", "sort_order": 6 },
-    { "name": "Childwood", "sort_order": 7 },
-    { "name": "Hardware Supply", "sort_order": 8 },
-    { "name": "IT Networking Consulting", "sort_order": 9 },
-    { "name": "General Enquiry", "sort_order": 10 }
+    { "name": "Hardware Supply", "sort_order": 6 },
+    { "name": "IT Networking Consulting", "sort_order": 7 },
+    { "name": "General Enquiry", "sort_order": 8 }
   ]
 }

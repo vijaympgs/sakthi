@@ -4,6 +4,7 @@ import Script from "next/script";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import { FloatingContactBar } from "@/components/layout/FloatingContactBar";
+import { getCompanyInfo, getSiteUrl } from "@/lib/server";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,47 +26,53 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sakthisolutions.in";
+const siteUrl = getSiteUrl();
 
-export const metadata: Metadata = {
-  title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
-  description:
-    "Sakthi Solutions provides digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. Godspeed Digital Signage, Tellus Feedback, Childwood and more.",
-  keywords: [
-    "digital signage Chennai",
-    "video wall India",
+export async function generateMetadata(): Promise<Metadata> {
+  const company = await getCompanyInfo();
+  const name = company?.company_name || "Sakthi Solutions";
+  const tagline = company?.site_tagline || "Digital Signage, Kiosks & IT Solutions";
+  const title = `${name} - ${tagline}`;
+  const description = company?.seo_description || `${name} provides digital signage, interactive kiosks and IT solutions for hospitality, retail and corporate sectors.`;
+  const keywords = company?.seo_keywords?.split(",").map(k => k.trim()) || [
+    "digital signage",
     "interactive kiosk",
+    "IT consulting",
+    "video wall",
     "touch screen kiosk",
-    "Godspeed digital signage",
-    "wayfinding kiosk",
-    "smart touch table",
-    "feedback kiosk",
-    "Tellus feedback solution",
-    "IT consulting Chennai",
-    "hospitality technology",
-  ],
-  metadataBase: new URL(siteUrl),
-  openGraph: {
-    type: "website",
-    locale: "en_IN",
-    siteName: "Sakthi Solutions",
-    title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
-    description: "Digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. Serving Chennai and pan-India since 2014.",
-    url: siteUrl,
-    images: [{ url: `${siteUrl}/assets/logo/ss-logo.png`, width: 200, height: 67, alt: "Sakthi Solutions" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Sakthi Solutions - Digital Signage, Kiosks & IT Solutions",
-    description: "Digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors.",
-    images: [`${siteUrl}/assets/logo/ss-logo.png`],
-  },
-};
+  ];
+  
+  return {
+    title,
+    description,
+    keywords,
+    metadataBase: new URL(siteUrl),
+    openGraph: {
+      type: "website",
+      locale: "en_IN",
+      siteName: name,
+      title,
+      description,
+      url: siteUrl,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const company = await getCompanyInfo();
+  const name = company?.company_name || "Sakthi Solutions";
+  const logoUrl = company?.logo
+    ? `${siteUrl}${company.logo.startsWith("/") ? "" : "/"}${company.logo}`
+    : "";
+
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${cormorant.variable}`} data-theme="sakthi" data-typography="editorial">
-      <body>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${cormorant.variable}`} data-theme="sakthi" data-typography="editorial" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary-500 focus:text-white focus:px-4 focus:py-2 focus:text-sm"
@@ -78,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "Sakthi Solutions",
+              name,
               url: siteUrl,
               potentialAction: {
                 "@type": "SearchAction",
@@ -97,8 +104,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              name: "Sakthi Solutions",
-              image: `${siteUrl}/assets/logo/ss-logo.png`,
+              name,
+              image: logoUrl,
               url: siteUrl,
             }),
           }}

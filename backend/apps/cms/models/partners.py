@@ -7,7 +7,7 @@ class Partner(models.Model):
     logo = models.ImageField(upload_to="partners/", blank=True)
     website = models.URLField(blank=True)
     sort_order = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
 
     class Meta:
         ordering = ["sort_order", "name"]

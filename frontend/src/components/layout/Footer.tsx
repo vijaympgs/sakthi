@@ -36,7 +36,7 @@ export function Footer() {
 
   const getLogoUrl = () => {
     if (!companyInfo?.logo) {
-      return "/assets/products/ss-logo.png";
+      return "";
     }
     if (companyInfo.logo.startsWith("http://") || companyInfo.logo.startsWith("https://")) {
       return companyInfo.logo;
@@ -46,16 +46,16 @@ export function Footer() {
   };
 
   const logoUrl = getLogoUrl();
-  const addressLine1 = companyInfo?.address_line1 || "1/1, 1st Floor, General Collins Road";
-  const addressLine2 = companyInfo?.address_line2 || "Choolai";
-  const city = companyInfo?.city || "Chennai";
-  const postalCode = companyInfo?.postal_code || "600112";
+  const addressLine1 = companyInfo?.address_line1 || "";
+  const addressLine2 = companyInfo?.address_line2 || "";
+  const city = companyInfo?.city || "";
+  const postalCode = companyInfo?.postal_code || "";
 
-  const phonePrimary = companyInfo?.phone_primary || "04426420089";
-  const phoneSecondary = companyInfo?.phone_secondary || "+91 9840057127";
+  const phonePrimary = companyInfo?.phone_primary || "";
+  const phoneSecondary = companyInfo?.phone_secondary || "";
   
-  const emailPrimary = companyInfo?.email_primary || "info@sakthisolutions.in";
-  const emailSupport = companyInfo?.email_support || "support@sakthisolutions.in";
+  const emailPrimary = companyInfo?.email_primary || "";
+  const emailSupport = companyInfo?.email_support || "";
 
   return (
     <footer className="bg-[#2b323e] text-white border-t border-gray-800">
@@ -64,21 +64,23 @@ export function Footer() {
           
           <div>
             <Link href="/" className="inline-flex items-center gap-3 mb-6 group transition-opacity hover:opacity-90">
+            {logoUrl && (
               <img 
                 src={logoUrl} 
-                alt={companyInfo?.company_name || "Sakthi Solutions"} 
+                alt={companyInfo?.company_name || ""}
                 className="h-8 w-auto object-contain brightness-0 invert select-none transition-transform duration-300 group-hover:scale-[1.02]" 
                 decoding="async"
                 style={{ imageRendering: "auto" }}
               />
+            )}
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              {companyInfo?.about_content || "Digital signage, interactive kiosks, feedback solutions, and IT consulting for hospitality, retail, and corporate sectors since 2014."}
+              {companyInfo?.about_content || ""}
             </p>
             <div className="flex items-center gap-3">
-              {(companyInfo?.facebook_url || !companyInfo) && (
+              {companyInfo?.facebook_url && (
                 <a
-                  href={companyInfo?.facebook_url || "https://www.facebook.com/Sakthi-Solutions-276890643116200/"}
+                  href={companyInfo.facebook_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 border border-gray-600 flex items-center justify-center hover:bg-[#f54337] hover:border-[#f54337] transition-colors"
@@ -87,9 +89,9 @@ export function Footer() {
                   <Facebook size={15} />
                 </a>
               )}
-              {(companyInfo?.linkedin_url || !companyInfo) && (
+              {companyInfo?.linkedin_url && (
                 <a
-                  href={companyInfo?.linkedin_url || "https://www.linkedin.com/company/sakthi-solutions/"}
+                  href={companyInfo.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 border border-gray-600 flex items-center justify-center hover:bg-[#f54337] hover:border-[#f54337] transition-colors"
@@ -98,9 +100,9 @@ export function Footer() {
                   <Linkedin size={15} />
                 </a>
               )}
-              {(companyInfo?.youtube_url || !companyInfo) && (
+              {companyInfo?.youtube_url && (
                 <a
-                  href={companyInfo?.youtube_url || "https://www.youtube.com/channel/UCxRoJTQKDHkLFj6hFCTHW0g"}
+                  href={companyInfo.youtube_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 border border-gray-600 flex items-center justify-center hover:bg-[#f54337] hover:border-[#f54337] transition-colors"
@@ -113,7 +115,7 @@ export function Footer() {
           </div>
 
           <FooterColumn
-            title="Godspeed"
+            title={footerColumns[0]?.title || ""}
             links={footerColumns[0]?.links ?? []}
           />
 
@@ -174,7 +176,7 @@ export function Footer() {
 
       <div className="border-t border-gray-700/60 bg-[#212630]">
         <div className="container-page py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Sakthi Solutions. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {companyInfo?.company_name || ""}. All rights reserved.</p>
           <p>
             Powered by <span className="text-white font-medium">Olivine AI Technologies</span>
           </p>

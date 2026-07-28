@@ -43,10 +43,9 @@ def custom_get_app_list(self, request, app_label=None):
         ]),
 
         # ── NAV: Products ( /products ) ──────────────────────
-        # Three sub-groups matching the Products nav hierarchy:
-        #   Products > Godspeed, Tellus, Childwood
+        # Products > Godspeed (Digital Signage, Video Wall, Interactive Displays)
         ('[Products] Brands', [
-            'Brand',             # Godspeed, Tellus, Childwood — top-level brand entities
+            'Brand',             # Godspeed — top-level brand entity
         ]),
         ('[Products] Product Catalog', [
             'ProductCategory',   # Digital Signage, Video Wall, Feedback Kiosk, Indoor Play, etc.
@@ -69,7 +68,7 @@ def custom_get_app_list(self, request, app_label=None):
         # ── NAV: Contact Us ( /contact ) ─────────────────────
         ('[Contact Us] Inquiries & Forms', [
             'ContactSubmission', # Visitor form submissions with enquiry type tracking
-            'EnquiryType',       # Dropdown options: Godspeed, Tellus, Hardware Supply, etc.
+            'EnquiryType',       # Dropdown options: Godspeed, Hardware Supply, etc.
         ]),
 
         # ── Site Structure (appears on all pages) ────────────
@@ -143,8 +142,8 @@ admin.AdminSite.get_app_list = custom_get_app_list
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    list_display = ["title", "slug", "is_published", "sort_order", "updated_at"]
-    list_filter = ["is_published"]
+    list_display = ["title", "slug", "is_active", "sort_order", "updated_at"]
+    list_filter = ["is_active"]
     search_fields = ["title", "slug"]
     prepopulated_fields = {"slug": ("title",)}
 
@@ -157,7 +156,7 @@ class PageSectionAdmin(admin.ModelAdmin):
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "sort_order", "is_published"]
+    list_display = ["name", "slug", "sort_order", "is_active"]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -169,15 +168,15 @@ class ProductGroupAdmin(admin.ModelAdmin):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "brand", "slug", "sort_order", "is_published"]
-    list_filter = ["brand"]
+    list_display = ["name", "brand", "slug", "sort_order", "is_active", "show_brand_logo"]
+    list_filter = ["brand", "is_active", "show_brand_logo"]
     prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "parent", "is_featured", "is_published", "sort_order"]
-    list_filter = ["category", "is_featured", "is_published"]
+    list_display = ["name", "category", "parent", "is_featured", "is_active", "sort_order"]
+    list_filter = ["category", "is_featured", "is_active"]
     search_fields = ["name"]
     prepopulated_fields = {"slug": ("name",)}
 
@@ -194,20 +193,22 @@ class ProductGalleryAdmin(admin.ModelAdmin):
 
 @admin.register(Solution)
 class SolutionAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "is_published", "sort_order"]
+    list_display = ["name", "slug", "is_active", "sort_order"]
+    list_filter = ["is_active"]
     prepopulated_fields = {"slug": ("name",)}
     filter_horizontal = ["products"]
 
 
 @admin.register(Industry)
 class IndustryAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "is_published", "sort_order"]
+    list_display = ["name", "slug", "is_active", "sort_order"]
     prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "is_published", "sort_order"]
+    list_display = ["name", "slug", "is_active", "sort_order"]
+    list_filter = ["is_active"]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -218,8 +219,8 @@ class ServiceItemAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ["name", "industry", "brand_color", "logo_preview", "sort_order", "is_published"]
-    list_filter = ["is_published", "industry"]
+    list_display = ["name", "industry", "brand_color", "logo_preview", "sort_order", "is_active"]
+    list_filter = ["is_active", "industry"]
 
     @admin.display(description="Logo")
     def logo_preview(self, obj):
@@ -237,13 +238,13 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
-    list_display = ["author_name", "author_company", "rating", "is_published", "sort_order"]
-    list_filter = ["is_published", "rating"]
+    list_display = ["author_name", "author_company", "rating", "is_active", "sort_order"]
+    list_filter = ["is_active", "rating"]
 
 
 @admin.register(Gallery)
 class GalleryAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "is_published", "sort_order"]
+    list_display = ["name", "slug", "is_active", "sort_order"]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -260,8 +261,8 @@ class DownloadCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Download)
 class DownloadAdmin(admin.ModelAdmin):
-    list_display = ["title", "category", "is_published", "download_count", "sort_order"]
-    list_filter = ["category", "is_published"]
+    list_display = ["title", "category", "is_active", "download_count", "sort_order"]
+    list_filter = ["category", "is_active"]
 
 
 @admin.register(BlogCategory)
@@ -272,8 +273,8 @@ class BlogCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
-    list_display = ["title", "author", "category", "is_published", "published_at"]
-    list_filter = ["is_published", "category"]
+    list_display = ["title", "author", "category", "is_active", "published_at"]
+    list_filter = ["is_active", "category"]
     search_fields = ["title"]
     prepopulated_fields = {"slug": ("title",)}
 
@@ -329,22 +330,22 @@ class ContactSubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ["name", "designation", "sort_order", "is_published"]
-    list_filter = ["is_published"]
+    list_display = ["name", "designation", "sort_order", "is_active"]
+    list_filter = ["is_active"]
     search_fields = ["name", "designation"]
 
 
 @admin.register(CaseStudy)
 class CaseStudyAdmin(admin.ModelAdmin):
-    list_display = ["title", "client_name", "product", "is_published"]
-    list_filter = ["is_published", "product"]
+    list_display = ["title", "client_name", "product", "is_active"]
+    list_filter = ["is_active", "product"]
     search_fields = ["title", "client_name"]
 
 
 @admin.register(Partner)
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ["name", "type", "sort_order", "is_published"]
-    list_filter = ["is_published"]
+    list_display = ["name", "type", "sort_order", "is_active"]
+    list_filter = ["is_active"]
     search_fields = ["name"]
 
 

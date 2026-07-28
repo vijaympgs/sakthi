@@ -7,7 +7,7 @@ class TeamMember(models.Model):
     brief = models.TextField(blank=True)
     photo = models.ImageField(upload_to="team/", blank=True)
     sort_order = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Is Active (Yes/No)")
 
     class Meta:
         ordering = ["sort_order", "name"]

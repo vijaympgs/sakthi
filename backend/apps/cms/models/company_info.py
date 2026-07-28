@@ -46,6 +46,12 @@ class CompanyInfo(models.Model):
     why_us_bullets = models.JSONField(default=list, blank=True, help_text="Contact page 'Why Us' bullet points")
     phone_jayakumar = models.CharField(max_length=20, blank=True, help_text="Jayakumar's direct line")
     phone_vidya = models.CharField(max_length=20, blank=True, help_text="Vidya Rani's direct line")
+    contact_section_title = models.CharField(max_length=300, blank=True, default="Contact Us")
+    contact_section_heading = models.CharField(max_length=300, blank=True, default="Visit or Call Us")
+    cta_subtitle_title = models.CharField(max_length=300, blank=True, default="Request a Consultation")
+    testimonials_section_title = models.CharField(max_length=300, blank=True, default="Testimonials")
+    clients_section_title = models.CharField(max_length=300, blank=True, default="Our Clients")
+    products_section_title = models.CharField(max_length=300, blank=True, default="Our Products")
 
     class Meta:
         verbose_name = "Company Information"

@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -12,98 +13,124 @@ class PublicMixin:
 
 class PageListView(PublicMixin, generics.ListAPIView):
     serializer_class = PageSerializer
-    queryset = Page.objects.filter(is_published=True)
+    queryset = Page.objects.filter(is_active=True)
 
 
 class PageDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = PageSerializer
     lookup_field = "slug"
-    queryset = Page.objects.filter(is_published=True)
+    queryset = Page.objects.filter(is_active=True)
 
 
 class BrandListView(PublicMixin, generics.ListAPIView):
     serializer_class = BrandSerializer
-    queryset = Brand.objects.filter(is_published=True)
+    queryset = Brand.objects.filter(is_active=True)
 
 
 class ProductCategoryListView(PublicMixin, generics.ListAPIView):
     serializer_class = ProductCategorySerializer
-    queryset = ProductCategory.objects.filter(is_published=True)
+
+    def get_queryset(self):
+        return ProductCategory.objects.filter(
+            is_active=True
+        ).filter(
+            models.Q(brand__isnull=True) | models.Q(brand__is_active=True)
+        )
 
 
 class ProductCategoryDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = ProductCategorySerializer
     lookup_field = "slug"
-    queryset = ProductCategory.objects.filter(is_published=True)
+
+    def get_queryset(self):
+        return ProductCategory.objects.filter(
+            is_active=True
+        ).filter(
+            models.Q(brand__isnull=True) | models.Q(brand__is_active=True)
+        )
 
 
 class ProductListView(PublicMixin, generics.ListAPIView):
     serializer_class = ProductSerializer
-    queryset = Product.objects.filter(is_published=True)
+    
+    def get_queryset(self):
+        return Product.objects.filter(
+            is_active=True,
+            category__is_active=True
+        ).filter(
+            models.Q(category__brand__isnull=True) | models.Q(category__brand__is_active=True)
+        )
 
 
 class ProductDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = ProductSerializer
     lookup_field = "slug"
-    queryset = Product.objects.filter(is_published=True)
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            is_active=True,
+            category__is_active=True
+        ).filter(
+            models.Q(category__brand__isnull=True) | models.Q(category__brand__is_active=True)
+        )
 
 
 class SolutionListView(PublicMixin, generics.ListAPIView):
     serializer_class = SolutionSerializer
-    queryset = Solution.objects.filter(is_published=True)
+    queryset = Solution.objects.filter(is_active=True)
 
 
 class IndustryListView(PublicMixin, generics.ListAPIView):
     serializer_class = IndustrySerializer
-    queryset = Industry.objects.filter(is_published=True)
+    queryset = Industry.objects.filter(is_active=True)
 
 
 class ServiceListView(PublicMixin, generics.ListAPIView):
     serializer_class = ServiceSerializer
-    queryset = Service.objects.filter(is_published=True)
+    queryset = Service.objects.filter(is_active=True)
 
 
 class ServiceDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = ServiceSerializer
     lookup_field = "slug"
-    queryset = Service.objects.filter(is_published=True)
+    queryset = Service.objects.filter(is_active=True)
 
 
 class ClientListView(PublicMixin, generics.ListAPIView):
     serializer_class = ClientSerializer
-    queryset = Client.objects.filter(is_published=True)
+    queryset = Client.objects.filter(is_active=True)
 
 
 class TestimonialListView(PublicMixin, generics.ListAPIView):
     serializer_class = TestimonialSerializer
-    queryset = Testimonial.objects.filter(is_published=True)
+    queryset = Testimonial.objects.filter(is_active=True)
 
 
 class GalleryListView(PublicMixin, generics.ListAPIView):
     serializer_class = GallerySerializer
-    queryset = Gallery.objects.filter(is_published=True)
+    queryset = Gallery.objects.filter(is_active=True)
 
 
 class GalleryDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = GallerySerializer
     lookup_field = "slug"
-    queryset = Gallery.objects.filter(is_published=True)
+    queryset = Gallery.objects.filter(is_active=True)
 
 
 class DownloadListView(PublicMixin, generics.ListAPIView):
     serializer_class = DownloadSerializer
-    queryset = Download.objects.filter(is_published=True)
+    queryset = Download.objects.filter(is_active=True)
 
 
 class BlogPostListView(PublicMixin, generics.ListAPIView):
     serializer_class = BlogPostSerializer
-    queryset = BlogPost.objects.filter(is_published=True)
+    queryset = BlogPost.objects.filter(is_active=True)
 
 
 class BlogPostDetailView(PublicMixin, generics.RetrieveAPIView):
     serializer_class = BlogPostSerializer
     lookup_field = "slug"
-    queryset = BlogPost.objects.filter(is_published=True)
+    queryset = BlogPost.objects.filter(is_active=True)
 
 
 class NavigationMenuDetailView(PublicMixin, generics.RetrieveAPIView):
@@ -153,15 +180,27 @@ class ContactSubmissionCreateView(PublicMixin, generics.CreateAPIView):
 
 class HomePageView(PublicMixin, APIView):
     def get(self, request):
+        active_cats = ProductCategory.objects.filter(
+            is_active=True
+        ).filter(
+            models.Q(brand__isnull=True) | models.Q(brand__is_active=True)
+        )
+        active_products = Product.objects.filter(
+            is_active=True,
+            is_featured=True,
+            category__is_active=True
+        ).filter(
+            models.Q(category__brand__isnull=True) | models.Q(category__brand__is_active=True)
+        )[:6]
         data = {
             "site_settings": CompanyInfoSerializer(CompanyInfo.objects.first()).data if CompanyInfo.objects.exists() else {},
-            "brands": BrandSerializer(Brand.objects.filter(is_published=True), many=True).data,
-            "products": ProductSerializer(Product.objects.filter(is_published=True, is_featured=True)[:6], many=True).data,
-            "product_categories": ProductCategorySerializer(ProductCategory.objects.filter(is_published=True), many=True).data,
-            "services": ServiceSerializer(Service.objects.filter(is_published=True), many=True).data,
-            "testimonials": TestimonialSerializer(Testimonial.objects.filter(is_published=True)[:6], many=True).data,
-            "clients": ClientSerializer(Client.objects.filter(is_published=True), many=True).data,
-            "industries": IndustrySerializer(Industry.objects.filter(is_published=True), many=True).data,
+            "brands": BrandSerializer(Brand.objects.filter(is_active=True), many=True).data,
+            "products": ProductSerializer(active_products, many=True).data,
+            "product_categories": ProductCategorySerializer(active_cats, many=True).data,
+            "services": ServiceSerializer(Service.objects.filter(is_active=True), many=True).data,
+            "testimonials": TestimonialSerializer(Testimonial.objects.filter(is_active=True)[:6], many=True).data,
+            "clients": ClientSerializer(Client.objects.filter(is_active=True), many=True).data,
+            "industries": IndustrySerializer(Industry.objects.filter(is_active=True), many=True).data,
         }
         return Response(data)
 
@@ -182,7 +221,7 @@ class CaseStudyDetailView(PublicMixin, generics.RetrieveAPIView):
     lookup_field = "id"
 
     def get_queryset(self):
-        qs = CaseStudy.objects.filter(is_published=True)
+        qs = CaseStudy.objects.filter(is_active=True)
         product_slug = self.request.query_params.get("product")
         if product_slug:
             qs = qs.filter(product__slug=product_slug)
@@ -193,7 +232,7 @@ class CaseStudyListView(PublicMixin, generics.ListAPIView):
     serializer_class = CaseStudySerializer
 
     def get_queryset(self):
-        qs = CaseStudy.objects.filter(is_published=True)
+        qs = CaseStudy.objects.filter(is_active=True)
         product_slug = self.request.query_params.get("product")
         if product_slug:
             qs = qs.filter(product__slug=product_slug)
@@ -202,7 +241,7 @@ class CaseStudyListView(PublicMixin, generics.ListAPIView):
 
 class PartnerListView(PublicMixin, generics.ListAPIView):
     serializer_class = PartnerSerializer
-    queryset = Partner.objects.filter(is_published=True)
+    queryset = Partner.objects.filter(is_active=True)
 
 
 class ProductGroupListView(PublicMixin, generics.ListAPIView):
@@ -219,4 +258,4 @@ class ProductGroupListView(PublicMixin, generics.ListAPIView):
 
 class TeamMemberListView(PublicMixin, generics.ListAPIView):
     serializer_class = TeamMemberSerializer
-    queryset = TeamMember.objects.filter(is_published=True)
+    queryset = TeamMember.objects.filter(is_active=True)

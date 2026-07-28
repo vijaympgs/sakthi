@@ -23,7 +23,6 @@ class Command(BaseCommand):
         self._seed_navigation()
         self._seed_footer()
         self._seed_case_study()
-        # Childwood data migrated to ProductGroup + Product hierarchy (see migrate_childwood)
         self._seed_clients()
         self._seed_team()
         self.stdout.write(self.style.SUCCESS("Database seeded completely"))
@@ -76,9 +75,15 @@ class Command(BaseCommand):
             "linkedin_url": "https://www.linkedin.com/company/sakthi-solutions/?lipi=urn%3Ali%3Apage%3Ad_flagship3_company_admin%3BLNHvzou%2FRO6VF1l8%2FVJD7A%3D%3D",
             "youtube_url": "https://www.youtube.com/channel/UCxRoJTQKDHkLFj6hFCTHW0g",
             "founded_year": 2014,
-            "about_content": "Sakthi Solutions provides digital signage, interactive kiosks, feedback solutions and IT consulting for hospitality, retail and corporate sectors. The company was formed in the year 2014 by a dynamic couple — Jayakumar with 25+ years of experience in sales, hospitality, automation and Vidya Rani with expertise in financial products and customer relations.",
+            "about_content": "Sakthi Solutions provides digital signage, interactive kiosks, and IT consulting for hospitality, retail and corporate sectors. The company was formed in the year 2014 by a dynamic couple — Jayakumar with 25+ years of experience in sales, hospitality, automation and Vidya Rani with expertise in financial products and customer relations.",
             "mission": "To provide complete hardware, digital signage and IT consulting end-to-end solutions for hospitality, retail and corporate sectors, enabling businesses to operate efficiently with the right technology.",
             "vision": "To be the most trusted technology partner for digital signage and IT solutions, known for prompt service, reliable partnerships and innovative solutions.",
+            "contact_section_title": "Contact Us",
+            "contact_section_heading": "Visit or Call Us",
+            "cta_subtitle_title": "Request a Consultation",
+            "testimonials_section_title": "Testimonials",
+            "clients_section_title": "Our Clients",
+            "products_section_title": "Our Products",
             "hero_title": "Digital Signage, Kiosks & IT Solutions",
             "hero_description": "We help retail & hospitality brands boost customer engagement and streamline operations with premium digital signage, interactive kiosks, and 24/7 on-ground IT support.",
             "hero_bg_image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80",
@@ -103,14 +108,13 @@ class Command(BaseCommand):
             ],
             "about_image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
             "about_heading": "Your Reliable Technology Partner Since 2014",
-            "about_body": "Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces, customer feedback consoles, and structured network engineering across India. Founded by a dynamic leadership team combining sales, automation, and customer relationship expertise. As the primary representative of Godspeed displays, we customize, deploy, and service heavy-duty, outdoor, and indoor digital signage solutions designed to operate continuously under rigorous environmental conditions.",
+            "about_body": "Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces, and structured network engineering across India. Founded by a dynamic leadership team combining sales, automation, and customer relationship expertise. As the primary representative of Godspeed displays, we customize, deploy, and service heavy-duty, outdoor, and indoor digital signage solutions designed to operate continuously under rigorous environmental conditions.",
             "cta_title": "Ready to Transform Your Business?",
             "cta_subtitle": "Get a free consultation and discover how Sakthi Solutions can streamline your operations with the right technology.",
             "timeline": [
                 {"year": "2014", "title": "Founded", "description": "Sakthi Solutions was established by Jayakumar (25+ years in sales, retail, automation & hospitality) and Vidya Rani (sales & financial products)."},
                 {"year": "2015", "title": "Godspeed Partnership", "description": "Partnered with Godspeed for world-class digital signage products manufactured in Hong Kong and China."},
                 {"year": "2016", "title": "Full-Stack IT Consulting", "description": "Expanded to provide complete IT infrastructure consulting for the hospitality industry including networking, WiFi, and hardware."},
-                {"year": "2018", "title": "Tellus & Childwood", "description": "Added Tellus feedback solutions and Childwood children's play equipment to the product portfolio."},
                 {"year": "Present", "title": "Growing Strong", "description": "Continuing to serve corporates, hospitals, hotels, restaurants, malls and more across the region."}
             ],
             "why_items": [
@@ -127,11 +131,9 @@ class Command(BaseCommand):
                 {"name": "Wayfinding Kiosk", "sort_order": 3},
                 {"name": "Touch Screen Kiosk", "sort_order": 4},
                 {"name": "Video Wall", "sort_order": 5},
-                {"name": "Tellus Feedback", "sort_order": 6},
-                {"name": "Childwood", "sort_order": 7},
-                {"name": "Hardware Supply", "sort_order": 8},
-                {"name": "IT Networking Consulting", "sort_order": 9},
-                {"name": "General Enquiry", "sort_order": 10}
+                {"name": "Hardware Supply", "sort_order": 6},
+                {"name": "IT Networking Consulting", "sort_order": 7},
+                {"name": "General Enquiry", "sort_order": 8}
             ],
             "callback_slots": [
                 {"label": "Morning (9 AM – 12 PM)", "value": "morning"},
@@ -153,10 +155,8 @@ class Command(BaseCommand):
     # ─── brands & product categories ────────────────────────────
     #
     # Architecture: Brand → ProductCategory → Product
-    #   Godspeed    → Digital Signage, Video Wall          → Indoor Signage, Touch Table, etc.
-    #   Tellus      → Feedback Kiosk, Customer Experience  → Tellus Feedback Solution
-    #   Childwood   → Indoor Play, Outdoor Play, Gym,      → Playstations, Rockers, etc.
-    #                 School Furniture
+    #   Godspeed    → Digital Signage, Video Wall,     → Indoor Signage, Touch Table, etc.
+    #                 Interactive Displays
     #
 
     def _seed_brands_and_categories(self):
@@ -168,21 +168,7 @@ class Command(BaseCommand):
             "name": "Godspeed",
             "tagline": "World Class Digital Displays",
             "description": "World class digital signage with extraordinary features. Heavy duty body and toughened glass surface.",
-            "icon": "Monitor", "sort_order": 1, "is_published": True,
-        })
-
-        tellus, _ = Brand.objects.get_or_create(slug="tellus", defaults={
-            "name": "Tellus",
-            "tagline": "Guest Feedback Solutions",
-            "description": "Customer feedback kiosk solution for restaurants and retail outlets. Instant SMS alerts and detailed analytics.",
-            "icon": "MessageSquare", "sort_order": 2, "is_published": True,
-        })
-
-        childwood, _ = Brand.objects.get_or_create(slug="childwood", defaults={
-            "name": "Childwood",
-            "tagline": "Indoor & Outdoor Play Solutions",
-            "description": "Children's play equipment for indoor and outdoor spaces including gym equipment and school furniture.",
-            "icon": "Baby", "sort_order": 3, "is_published": True,
+            "icon": "Monitor", "sort_order": 1, "is_active": True,
         })
 
         # ── Godspeed Categories ──
@@ -190,65 +176,23 @@ class Command(BaseCommand):
             brand=godspeed, name="Digital Signage", slug="digital-signage",
             tagline="Premium Digital Displays",
             description="Indoor and outdoor digital signage solutions including floor standing, wall mounting and LG commercial displays.",
-            sort_order=1, is_published=True)
+            sort_order=1, is_active=True)
         cat_video_wall = ProductCategory.objects.create(
             brand=godspeed, name="Video Wall", slug="video-wall-cat",
             tagline="Ultra-Thin Bezel Displays",
             description="Samsung and LG LCD video wall solutions in 42\", 46\" and 55\" with ultra-thin bezel splicing.",
-            sort_order=2, is_published=True)
+            sort_order=2, is_active=True)
         cat_interactive = ProductCategory.objects.create(
             brand=godspeed, name="Interactive Displays", slug="interactive-displays",
             tagline="Touch & Interactive Solutions",
-            description="Smart touch tables, wayfinding kiosks and touch screen kiosks for retail, hospitality and corporate.",
-            sort_order=3, is_published=True)
-
-        # ── Tellus Categories ──
-        cat_feedback = ProductCategory.objects.create(
-            brand=tellus, name="Feedback Kiosk", slug="feedback-kiosk",
-            tagline="Electronic Feedback Collection",
-            description="Stainless steel floor standing feedback kiosks for restaurants and retail. Customizable questions, SMS alerts.",
-            sort_order=1, is_published=True)
-        cat_cx = ProductCategory.objects.create(
-            brand=tellus, name="Customer Experience Solutions", slug="customer-experience",
-            tagline="Measure & Improve CX",
-            description="Tablet-based feedback collection and analytics platform for chain outlets and multi-branch operations.",
-            sort_order=2, is_published=True)
-
-        # ── Childwood Categories ──
-        cat_indoor = ProductCategory.objects.create(
-            brand=childwood, name="Indoor Play Equipment", slug="indoor-play",
-            tagline="Safe Indoor Play",
-            description="Indoor playstations, rideons, tunnels, slides, soft play structures and EVA floorings for indoor play areas.",
-            sort_order=1, is_published=True)
-        cat_outdoor = ProductCategory.objects.create(
-            brand=childwood, name="Outdoor Play Equipment", slug="outdoor-play",
-            tagline="Adventure Outdoor Play",
-            description="Multi-level playstations, spring rockers, see-saws and swings for parks, schools and playgrounds.",
-            sort_order=2, is_published=True)
-        cat_gym = ProductCategory.objects.create(
-            brand=childwood, name="Gym Equipment", slug="gym-equipment",
-            tagline="Fitness & Gym Solutions",
-            description="Children's gym and fitness equipment for schools and indoor play centers.",
-            sort_order=3, is_published=True)
-        cat_furniture = ProductCategory.objects.create(
-            brand=childwood, name="School Furniture", slug="school-furniture",
-            tagline="Classroom & School Furniture",
-            description="Durable and child-friendly furniture for schools, preschools and daycare centers.",
-            sort_order=4, is_published=True)
+            description="Interactive touch kiosks, smart tables and wayfinding solutions with IR, resistive and capacitive touch options.",
+            sort_order=3, is_active=True)
 
         self._cat_map = {
             "godspeed": cat_digital_signage,
-            "tellus": cat_feedback,
-            "childwood": cat_indoor,
             "digital-signage": cat_digital_signage,
             "video-wall": cat_video_wall,
             "interactive": cat_interactive,
-            "feedback": cat_feedback,
-            "cx": cat_cx,
-            "indoor": cat_indoor,
-            "outdoor": cat_outdoor,
-            "gym": cat_gym,
-            "furniture": cat_furniture,
         }
 
     def _cat(self, key):
@@ -261,14 +205,12 @@ class Command(BaseCommand):
             {"cat": "interactive", "name": "Interactive Wayfinding Kiosk", "slug": "wayfinding-kiosk", "tagline": "Navigate with Ease", "short_description": "Interactive wayfinding with directory, map and route guidance.", "description": "Interactive wayfinding with intuitive interface, directory listing, shortest route guidance and attractive branding. Deployed at Phoenix Marketcity malls in Mumbai, Pune and Bangalore.", "is_featured": False, "sort_order": 3},
             {"cat": "interactive", "name": "Speed Touch Series Touch Screen Kiosk", "slug": "touch-screen-kiosk", "tagline": "Versatile Touch Solutions", "short_description": "Touch screen kiosks from 19\" to 55\" for various applications.", "description": "Touch screen kiosk with high quality IR, resistance and capacitive touch options. Floor standing and half standing configurations. Industrial mother board with Windows/Android support.", "is_featured": False, "sort_order": 4},
             {"cat": "video-wall", "name": "Video Wall", "slug": "video-wall", "tagline": "Perfect Visual Experience", "short_description": "Samsung/LG LCD video walls in 42\", 46\" and 55\" sizes.", "description": "Godspeed LCD video wall with original A+ LCD Panel from Samsung and LG. Perfect visual experience with ultra thin splicing technology and intelligent controlling system.", "is_featured": False, "sort_order": 5},
-            {"cat": "feedback", "name": "Tellus Feedback Solution", "slug": "tellus", "tagline": "Measure Your Business by Guest Feedback", "short_description": "Electronic customer feedback kiosks with instant alerts and reporting.", "description": "Customer feedback kiosk for restaurants and retail. Collects feedback electronically, sends instant text alerts for poor ratings with customer name and mobile number. Less than Rs 20 per day per branch.", "is_featured": True, "sort_order": 6},
-            {"cat": "indoor", "name": "Childwood Children's Play Equipment", "slug": "childwood", "tagline": "Indoor & Outdoor Play Solutions", "short_description": "Children's play equipment for indoor and outdoor spaces.", "description": "Childwood children play equipment indoor / outdoor and gym equipments.", "is_featured": False, "sort_order": 7},
         ]
         for data in products_data:
             category_key = data.pop("cat")
             cat = self._cat(category_key)
             if cat:
-                Product.objects.update_or_create(slug=data["slug"], defaults={**data, "category": cat, "is_published": True})
+                Product.objects.update_or_create(slug=data["slug"], defaults={**data, "category": cat, "is_active": True})
 
     # ─── product images (download from prod server) ────────────
 
@@ -301,8 +243,6 @@ class Command(BaseCommand):
             {"slug": "wayfinding-kiosk", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/image1.jpg", "filename": "wayfinding_kiosk.jpg"},
             {"slug": "touch-screen-kiosk", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/intra-kisosk-usibility.png", "filename": "touch_screen_kiosk.png"},
             {"slug": "video-wall", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/05/video-wall3.jpg", "filename": "video_wall.jpg"},
-            {"slug": "tellus", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/pro-1-1.png", "filename": "tellus_feedback.png"},
-            {"slug": "childwood", "url": "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/03-300x2931.jpg", "filename": "childwood_play.jpg"},
         ]:
             try:
                 prod = Product.objects.get(slug=data["slug"])
@@ -353,19 +293,6 @@ class Command(BaseCommand):
                 ("Ultra Thin Splicing", "Latest ultra thin splicing technology with intelligent control system."),
                 ("Wide Application", "Security systems, shopping malls, hotels, exhibition centers, banks worldwide."),
                 ("Custom Solutions", "The most suitable video wall solution given for your specific requirements."),
-            ],
-            "tellus": [
-                ("Digital Collection", "All feedback collected electronically — no paper forms."),
-                ("Custom Questions", "Customize your own questions for different outlets."),
-                ("Excel Reports", "Download feedback in Excel and perform detailed analyses."),
-                ("Affordable", "Less than Rs 20 per day per branch — cost of one water bottle."),
-                ("Instant Alerts", "Instant SMS alert for negative feedback to owners."),
-                ("Chain Management", "Portal access option for chain of outlets."),
-                ("Service Improvement", "Improve customer service approach with data-driven insights."),
-                ("Staff Performance", "Measure which staff performs better in which branch."),
-                ("Quality Control", "Product quality and consistency can be maintained across outlets."),
-                ("Repeat Customers", "Increase repeat customers and increase profit."),
-                ("Customer Data", "Capture customer data for personalised marketing and loyalty programs."),
             ],
         }
         for slug, features in FEATURES.items():
@@ -476,7 +403,7 @@ class Command(BaseCommand):
             {"name": "Hardware for Restaurant and Bar", "slug": "hardware", "description": "Complete hardware solutions for the hospitality industry including POS terminals, servers, printers, and peripherals.", "sort_order": 1},
             {"name": "Consulting for IT Networking", "slug": "it-networking", "description": "Professional free consulting for new restaurants and bars. Network setup, infrastructure planning and technology roadmap.", "sort_order": 2},
         ]:
-            Service.objects.update_or_create(slug=data["slug"], defaults={**data, "is_published": True})
+            Service.objects.update_or_create(slug=data["slug"], defaults={**data, "is_active": True})
 
     def _seed_service_items(self):
         hardware = Service.objects.get(slug="hardware")
@@ -525,7 +452,7 @@ class Command(BaseCommand):
             {"name": "Food Courts & QSR", "slug": "food-courts"},
             {"name": "Entertainment Centers", "slug": "entertainment"},
         ]:
-            Industry.objects.update_or_create(slug=data["slug"], defaults={**data, "is_published": True})
+            Industry.objects.update_or_create(slug=data["slug"], defaults={**data, "is_active": True})
 
     # ─── services page (for usePage hook) ─────────────────────
 
@@ -536,7 +463,7 @@ class Command(BaseCommand):
             "hero_subtitle": "Hardware supply and professional IT consulting for the hospitality industry",
             "meta_description": "Complete hardware supply and professional IT networking consulting for the hospitality industry. Free consulting for new restaurants and bars.",
             "content": "We provide end-to-end hardware and IT consulting for restaurants, bars, cafes, and hotels across India.",
-            "is_published": True,
+            "is_active": True,
         })
         # Hero section
         PageSection.objects.update_or_create(
@@ -557,11 +484,9 @@ class Command(BaseCommand):
             {"name": "Wayfinding Kiosk", "sort_order": 3},
             {"name": "Touch Screen Kiosk", "sort_order": 4},
             {"name": "Video Wall", "sort_order": 5},
-            {"name": "Tellus Feedback", "sort_order": 6},
-            {"name": "Childwood", "sort_order": 7},
-            {"name": "Hardware Supply", "sort_order": 8},
-            {"name": "IT Networking Consulting", "sort_order": 9},
-            {"name": "General Enquiry", "sort_order": 10},
+            {"name": "Hardware Supply", "sort_order": 6},
+            {"name": "IT Networking Consulting", "sort_order": 7},
+            {"name": "General Enquiry", "sort_order": 8},
         ]:
             EnquiryType.objects.update_or_create(name=data["name"], defaults={**data, "is_active": True})
 
@@ -573,7 +498,7 @@ class Command(BaseCommand):
             {"author_name": "Mr. Prasana Butt", "author_title": "Owner", "author_company": "Matsya, Egmore", "content": "Sakthi Solutions guided us through a complete technology upgrade from legacy PC-based systems to modern tablet-based KOT and touch POS machines at both our restaurants. The transition was smooth.", "rating": 5, "sort_order": 2},
             {"author_name": "Mr. Ramesh", "author_title": "Manager", "author_company": "Doveton Cafe, Purasaiwakkam", "content": "We moved from a 10-year-old ECR system to modern technology. The tablet-based KOT, automatic email reporting and user-friendly interface made a real difference to our daily operations.", "rating": 5, "sort_order": 3},
         ]:
-            Testimonial.objects.update_or_create(author_name=data["author_name"], defaults={**data, "is_published": True})
+            Testimonial.objects.update_or_create(author_name=data["author_name"], defaults={**data, "is_active": True})
 
     # ─── partners ───────────────────────────────────────────────
 
@@ -587,7 +512,7 @@ class Command(BaseCommand):
             {"name": "Epson", "type": "Printers", "website": "https://www.epson.com", "sort_order": 6},
             {"name": "Posiflex", "type": "POS Hardware", "website": "https://www.posiflex.com", "sort_order": 7},
         ]:
-            Partner.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
+            Partner.objects.update_or_create(name=data["name"], defaults={**data, "is_active": True})
 
     # ─── navigation ─────────────────────────────────────────────
 
@@ -612,12 +537,9 @@ class Command(BaseCommand):
         ]):
             NavigationItem.objects.update_or_create(menu=menu, label=label, parent=godspeed, defaults={"url": url, "sort_order": i, "is_visible": True})
 
-        NavigationItem.objects.update_or_create(menu=menu, label="Tellus Feedback", parent=products_parent, defaults={"url": "/products/tellus", "sort_order": 2, "is_visible": True})
-        NavigationItem.objects.update_or_create(menu=menu, label="Childwood Play Equipment", parent=products_parent, defaults={"url": "/products/childwood", "sort_order": 3, "is_visible": True})
-
         # Services → sub-items
         for i, (label, url) in enumerate([
-            ("Hardware for Restaurant & Bar", "/services/hardware"),
+            ("Hardware Supply", "/services/hardware"),
             ("IT Networking Consulting", "/services/it-networking"),
         ]):
             NavigationItem.objects.update_or_create(menu=menu, label=label, parent=services_parent, defaults={"url": url, "sort_order": i, "is_visible": True})
@@ -638,11 +560,9 @@ class Command(BaseCommand):
                 ("/products/video-wall", "Video Wall"),
             ]),
             (col2, [
-                ("/products/tellus", "Tellus Feedback Solution"),
-                ("/products/childwood", "Childwood Play Equipment"),
-                ("/services", "Hardware Supply for Restaurant & Bar"),
+                ("/services", "Hardware Supply"),
                 ("/services", "IT Networking Consulting"),
-                ("/about", "About Sakthi Solutions"),
+                ("/about", "About Us"),
                 ("/contact", "Contact Us"),
             ]),
         ]:
@@ -666,201 +586,9 @@ class Command(BaseCommand):
                         {"location": "Bangalore - Phoenix Marketcity", "details": "8 Kiosks deployed"},
                     ]
                 },
-                "is_published": True,
+                "is_active": True,
             },
         )
-
-    # ─── childwood catalog ──────────────────────────────────────
-
-    def _seed_childwood(self):
-        OUTDOOR = {
-            "Playstations": [
-                ("CWP001", "Multi-Level Playstation"), ("CWP002", "Kids Playstation"), ("CWP003", "Triple Playstation"),
-                ("CWP004", "Playstation with Roof"), ("CWP005", "Playstation with 2 Slides"), ("CWP006", "Kiddies Playstation"),
-                ("CWP007", "Playstation with Roof & Bridge"), ("CWP008", "Playstation Set"), ("CWP009", "Junior Playstation"),
-                ("CWP010", "Triple Playstation Set"), ("CWP011", "Double Playstation"), ("CWP012", "Combo Playstation"),
-                ("CWP013", "Playstation XL"), ("CWP014", "Premium Playstation"), ("CWP015", "Multi-Activity Playstation"),
-                ("CWP016", "Playstation with Tunnel"), ("CWP017", "Large Playstation"), ("CWP018", "Playstation Tower"),
-                ("CWP019", "Playstation Deluxe"), ("CWP020", "Adventure Playstation"), ("CWP021", "Playstation with Swings"),
-                ("CWP022", "Fun Castle"), ("CWP023", "Playstation Fort"), ("CWP024", "Playstation Kingdom"),
-                ("CWP025", "Playstation Paradise"), ("CWP026", "Playstation Wonder"), ("CWP027", "Playstation Magic"),
-                ("CWP028", "Jungle Playstation"), ("CWP029", "Playstation Express"), ("CWP030", "Playstation Explorer"),
-                ("CWP031", "Playstation Voyager"), ("CWP032", "Playstation Champion"), ("CWP033", "Playstation Hero"),
-                ("CWP034", "Playstation Star"), ("CWP035", "Playstation Combo"), ("CWP036", "Playstation Supreme"),
-                ("CWP037", "Toddler Playstation"), ("CWP038", "Mini Playstation"), ("CWP039", "Playstation with Bridge"),
-                ("CWP040", "Playstation Double Slide"), ("CWP041", "Playstation Triple Slide"),
-            ],
-            "Spring Rockers": [
-                ("CW0018", "Single Spring Rocker - Horse"), ("CW0019", "Single Spring Rocker - Car"),
-                ("CW0020", "Single Spring Rocker - Bike"), ("CW0021", "Single Spring Rocker - Train"),
-                ("CW0022", "Single Spring Rocker - Plane"), ("CW0023", "Single Spring Rocker - Elephant"),
-                ("CW0024", "Single Spring Rocker - Duck"), ("CW0025", "Single Spring Rocker - Giraffe"),
-                ("CW0026", "Single Spring Rocker - Lion"), ("CW0027", "Single Spring Rocker - Tiger"),
-                ("CW0028", "Double Spring Rocker"), ("CW0029", "Spring Rocker - Helicopter"),
-                ("CW0030", "Spring Rocker - Motorcycle"), ("CW0031", "Spring Rocker - Unicorn"),
-                ("CW0032", "Spring Rocker - Dinosaur"), ("CW0033", "Spring Rocker - Boat"),
-                ("CW0034", "Spring Rocker - Butterfly"), ("CW0035", "Spring Rocker - Frog"),
-                ("CW0036", "Spring Rocker - Panda"), ("CW0037", "Spring Rocker - Rabbit"),
-                ("CW0038", "Spring Rocker - Penguin"),
-            ],
-            "See Saw": [("CW0040", "See Saw - 2 Seater"), ("CW0041", "See Saw - 4 Seater")],
-            "Swings": [
-                ("CW0042", "Swing Set - 2 Seat"), ("CW0043", "Swing Set - 4 Seat"),
-                ("CW0043B", "Swing Set with Belt Seats"), ("CW0043C", "Swing Set with Toddler Seats"),
-            ],
-        }
-        INDOOR = {
-            "Indoor Playstations": [
-                ("CWI001", "Indoor Playstation - Small"), ("CWI002", "Indoor Playstation - Medium"),
-                ("CWI003", "Indoor Playstation - Large"), ("CWI004", "Indoor Playstation - Deluxe"),
-            ],
-            "Rockons & Rideons": [
-                ("CW2001", "Rockon - Horse"), ("CW2002", "Rockon - Car"), ("CW2003", "Rockon - Bike"),
-                ("CW2004", "Rockon - Train"), ("CW2005", "Rockon - Elephant"), ("CW2006", "Rockon - Duck"),
-                ("CW2007", "Rideon - Car"), ("CW2008", "Rideon - Bike"), ("CW2009", "Rideon - Train"),
-                ("CW2010", "Rideon - Animal"), ("CW2011", "Rideon - Vehicle"),
-            ],
-            "Tunnels": [("CW2012", "Crawl Tunnel - Straight"), ("CW2013", "Crawl Tunnel - Curved")],
-            "Slides & Combos": [
-                ("CW2017", "Indoor Slide - Small"), ("CW2018", "Indoor Slide - Medium"),
-                ("CW2019", "Indoor Slide - Large"), ("CW2020", "Indoor Slide - Wave"),
-                ("CW2021", "Slide Combo - Single"), ("CW2022", "Slide Combo - Double"),
-                ("CW2023", "Slide Combo - Triple"), ("CW2024", "Slide with Ball Pool"),
-                ("CW2025", "Play Structure with Slide"), ("CW2026", "Play Structure Combo"),
-                ("CW2027", "Indoor Play Structure"), ("CW2028", "Soft Play Structure"),
-            ],
-            "Floorings": [
-                ("CW2042", "EVA Mat - 30x30cm"), ("CW2043", "EVA Mat - 60x60cm"),
-                ("CW2044", "EVA Mat - Alphabet"), ("CW2045", "EVA Mat - Number"),
-                ("CW2067", "EVA Mat - Puzzle"),
-            ],
-        }
-
-        import urllib.request
-        import ssl
-        from django.core.files.base import ContentFile
-        
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        upload_base = "https://sakthisolutions.in/sakthisolutions/uploads/2018/11/"
-
-        SKU_NAMES = {
-            "CWP001": "Multi-Level Playstation",
-            "CWP002": "Compact Play Structure",
-            "CWP003": "Adventure Tower",
-            "CWP004": "Slide Combo Unit",
-            "CWP005": "Junior Play Zone",
-            "CWP006": "Narrow Corridor Play",
-            "CWP007": "Extended Play Arena",
-            "CWP008": "Deluxe Playstation",
-            "CWP009": "Family Fun Center",
-            "CWP010": "Grand Play Structure",
-            "CWP011": "Mega Play Tunnel",
-            "CWP012": "Triple Deck Play",
-            "CWP013": "Multi-Level Playstation",
-            "CWP014": "Custom Play Setup",
-            "CWP015": "Premium Play Fortress",
-            "CWP016": "Dual Zone Play",
-            "CWP017": "Jumbo Adventure Park",
-            "CWP018": "Triple Slide Tower",
-            "CWP019": "Climbing Frame Combo",
-            "CWP020": "Multi-Activity Station",
-            "CWP021": "Double Deck Play Zone",
-            "CWP022": "Compact Adventure Frame",
-            "CWP023": "Wide Play Arena",
-            "CWP024": "Low Profile Play Unit",
-            "CWP025": "Extended Slide Complex",
-            "CWP026": "Dual Level Play Structure",
-            "CWP027": "Triple Level Play Frame",
-            "CWP028": "Climbing Adventure Combo",
-            "CWP029": "Large Multi-Play Unit",
-            "CWP030": "Junior Adventure Tower",
-            "CWP031": "Deluxe Play Fortress",
-            "CWP032": "Compact Slide Tower",
-            "CWP033": "Family Play Center",
-            "CWP034": "Square Play Station",
-            "CWP035": "Tall Multi-Deck Play",
-            "CWP036": "Standard Play Structure",
-            "CWP037": "Mega Adventure Complex",
-            "CWP038": "Premium Multi-Level Play",
-            "CWP039": "Grand Slide Fortress",
-            "CWP040": "Wide Play Arena",
-            "CWP041": "Jumbo Play Castle",
-            "CW0027": "Large Indoor Playstation",
-            "CW0028": "Extended Indoor Play Frame",
-            "CW0029": "Compact Indoor Play Unit",
-            "CW0030": "Multi-Activity Indoor Play",
-        }
-
-        DIMENSIONS = {
-            "CW0040": "80x2x32\"",
-            "CW0041": "136x20x32\"",
-            "CW0042": "260x120x88\"",
-        }
-
-        for cat_type, cat_name in [("outdoor", "Outdoor"), ("indoor", "Indoor")]:
-            cat, _ = ChildwoodCategory.objects.update_or_create(name=cat_name, defaults={"type": cat_type, "sort_order": 1 if cat_type == "outdoor" else 2})
-            groups = OUTDOOR if cat_type == "outdoor" else INDOOR
-            for gorder, (group_name, items) in enumerate(groups.items()):
-                group, _ = ChildwoodGroup.objects.update_or_create(category=cat, name=group_name, defaults={"sort_order": gorder})
-                for iorder, (sku, name) in enumerate(items):
-                    resolved_name = SKU_NAMES.get(sku, name)
-                    dims = DIMENSIONS.get(sku, "")
-                    eq, created = PlayEquipment.objects.update_or_create(
-                        group=group, sku=sku,
-                        defaults={"name": resolved_name, "dimensions": dims, "sort_order": iorder}
-                    )
-                    
-                    # Download image if not yet populated in the model
-                    if not eq.image or str(eq.image) == "":
-                        image_url = None
-                        filename = f"{sku}.jpg"
-                        
-                        if sku.startswith("CWP"):
-                            try:
-                                num = int(sku.replace("CWP", ""))
-                                image_url = f"{upload_base}{num}.jpg"
-                            except: pass
-                        elif sku.startswith("CW"):
-                            try:
-                                num = int(sku.replace("CW", ""))
-                                if num >= 18 and num <= 38:
-                                    image_url = f"{upload_base}{num - 17}-1.jpg"
-                                elif num == 40:
-                                    image_url = f"{upload_base}02-1.jpg"
-                                elif num == 41:
-                                    image_url = f"{upload_base}03-1.jpg"
-                                elif num == 42:
-                                    image_url = f"{upload_base}01-3.jpg"
-                                elif num == 43:
-                                    image_url = f"{upload_base}02-3.jpg"
-                                elif num >= 2001 and num <= 2011:
-                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
-                                elif num >= 2012 and num <= 2016:
-                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
-                                elif num >= 2017 and num <= 2041:
-                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
-                                elif num >= 2042:
-                                    image_url = f"{upload_base}{num - 2000}-2.jpg"
-                            except: pass
-                        elif sku.startswith("CWI"):
-                            try:
-                                num = int(sku.replace("CWI", ""))
-                                image_url = f"{upload_base}i{num}.jpg"
-                            except: pass
-                            
-                        if image_url:
-                            try:
-                                req = urllib.request.Request(
-                                    image_url,
-                                    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-                                )
-                                with urllib.request.urlopen(req, context=ctx, timeout=6) as response:
-                                    content = response.read()
-                                    eq.image.save(filename, ContentFile(content), save=True)
-                            except Exception as e:
-                                pass
 
     def _download_and_save_client_logo(self, client_instance, url, filename):
         if not url:
@@ -967,7 +695,7 @@ class Command(BaseCommand):
         for data in clients_data:
             logo_url = data.pop("logo_url", None)
             filename = data.pop("filename", None)
-            client, created = Client.objects.update_or_create(name=data["name"], defaults={**data, "is_published": True})
+            client, created = Client.objects.update_or_create(name=data["name"], defaults={**data, "is_active": True})
             if filename:
                 import os
                 from django.conf import settings
@@ -1006,7 +734,7 @@ class Command(BaseCommand):
             filename = data.pop("photo_filename", None)
             member, created = TeamMember.objects.update_or_create(
                 name=data["name"],
-                defaults={**data, "is_published": True}
+                defaults={**data, "is_active": True}
             )
             if filename:
                 local_path = os.path.join(team_media_dir, filename)

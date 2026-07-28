@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { SITE_CONFIG } from "@/config/siteConfig";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -74,27 +73,7 @@ function ScrollReveal({ children, className = "", stagger = false }: { children:
 }
 
 const getCategoryFallbackImage = (slug?: string) => {
-  // 4K Unsplash images mapped to product category slugs
-  const images: Record<string, string> = {
-    // Godspeed
-    "digital-signage": "https://images.unsplash.com/photo-1507215210622-539686c4bfaa?auto=format&fit=crop&w=3840&q=80",
-    "video-wall-cat": "https://images.unsplash.com/photo-1589186161289-9eb8898086df?auto=format&fit=crop&w=3840&q=80",
-    "interactive-displays": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=3840&q=80",
-    // Tellus
-    "feedback-kiosk": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=3840&q=80",
-    "customer-experience": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=3840&q=80",
-    // Childwood
-    "indoor-play": "https://images.unsplash.com/photo-1759330203240-b89ccee8840f?auto=format&fit=crop&w=3840&q=80",
-    "outdoor-play": "https://images.unsplash.com/photo-1575783970733-1aaedde1db74?auto=format&fit=crop&w=3840&q=80",
-    "gym-equipment": "https://images.unsplash.com/photo-1720729706612-040e610e611c?auto=format&fit=crop&w=3840&q=80",
-    "school-furniture": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=3840&q=80",
-  };
-  if (slug && images[slug]) return images[slug];
-  // Brand-level fallbacks
-  if (slug === "godspeed") return images["digital-signage"];
-  if (slug === "tellus") return images["feedback-kiosk"];
-  if (slug === "childwood") return images["indoor-play"];
-  return "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=3840&q=80";
+  return "";
 };
 
 const getCategoryImage = (cat: any) => {
@@ -210,28 +189,23 @@ export function HomePage() {
     }
   };
 
-  const phonePrimary = companyInfo?.phone_primary || SITE_CONFIG.contact.phonePrimary;
-  const phoneSecondary = companyInfo?.phone_secondary || SITE_CONFIG.contact.phoneSecondary;
-  const emailPrimary = companyInfo?.email_primary || SITE_CONFIG.contact.emailPrimary;
+  const phonePrimary = companyInfo?.phone_primary || "";
+  const phoneSecondary = companyInfo?.phone_secondary || "";
+  const emailPrimary = companyInfo?.email_primary || "";
   const phoneJayakumar = (companyInfo as any)?.phone_jayakumar || phonePrimary;
   const phoneVidya = (companyInfo as any)?.phone_vidya || phoneSecondary;
   const salesAddress = companyInfo?.address_line1
     ? `${companyInfo.address_line1}, ${companyInfo.address_line2 || ""}, ${companyInfo.city || ""} – ${companyInfo.postal_code || ""}`
-    : SITE_CONFIG.contact.salesOffice.formatted;
-  const registeredAddress = SITE_CONFIG.contact.registeredOffice.formatted;
-  const mapUrl = (companyInfo as any)?.google_maps_embed || SITE_CONFIG.contact.mapEmbedUrl;
-  const googleMapsDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Sakthi+Solutions+Chennai";
+    : "";
+  const registeredAddress = companyInfo?.address_line1 ? salesAddress : "";
+  const mapUrl = (companyInfo as any)?.google_maps_embed || "";
+  const googleMapsDirectionsUrl = companyInfo?.company_name
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(companyInfo.company_name)}`
+    : "";
   const whatsappUrl = `https://wa.me/${phonePrimary.replace(/[\s+\-]/g, "")}`;
 
-  const yearsOfExperience = companyInfo?.founded_year
-    ? new Date().getFullYear() - companyInfo.founded_year
-    : 12;
-  const productLines = categories.length || 3;
-  const industriesServed = industries.length || 12;
-  const technologyPartners = partners.length || 7;
-
-  const heroTitle = companyInfo?.hero_title || "Digital Signage, Kiosks\n& IT Solutions";
-  const heroDescription = companyInfo?.hero_description || "Complete end-to-end technology partner for restaurants, hotels, retail outlets, and corporate spaces. High-performance hardware, customized digital displays, and 24/7 on-ground support.";
+  const heroTitle = companyInfo?.hero_title || "";
+  const heroDescription = companyInfo?.hero_description || "";
 
   const trustChips = companyInfo?.trust_chips && companyInfo.trust_chips.length > 0
     ? companyInfo.trust_chips
@@ -267,7 +241,7 @@ export function HomePage() {
         <div className="container-page flex flex-col items-center justify-center text-center z-10 w-full mx-auto pb-10">
           <div className="max-w-4xl mx-auto animate-fade-up flex flex-col items-center">
             <p className="text-xs font-bold italic uppercase tracking-[0.22em] text-[#E4C36A] mb-4">
-              {companyInfo?.hero_tagline || "Since 2014 — Chennai • Hospitality & Retail IT Partner"}
+              {companyInfo?.hero_tagline || ""}
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.1] tracking-tight mb-4 whitespace-pre-line text-white">
               {heroTitle.includes("&") ? (
@@ -382,7 +356,7 @@ export function HomePage() {
                 <path d="m3.3 7 8.7 5 8.7-5" />
                 <path d="M12 22V12" />
               </svg>
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Product Range</span>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">{companyInfo?.hero_tagline?.split("—")[0]?.trim() || ""}</span>
             </div>
 
             {/* Primary Heading */}
@@ -393,10 +367,10 @@ export function HomePage() {
             {/* Sub-headline + Description — gold left bar */}
             <div className="border-l-2 border-[#B89A4A] pl-4 mt-2">
               <h4 className="font-heading text-lg md:text-xl font-normal italic text-gray-600">
-                Engineered for hospitality, retail, and corporate environments.
+                {companyInfo?.products_section_heading || ""}
               </h4>
               <p className="font-body text-sm text-gray-500 whitespace-nowrap overflow-hidden text-ellipsis mt-1">
-                International-grade hardware and digital signage solutions custom-engineered for modern hospitality, retail, and corporate sectors.
+                {companyInfo?.products_section_title || ""}
               </p>
             </div>
 
@@ -420,7 +394,7 @@ export function HomePage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                         />
                         <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/20 transition-colors duration-300" />
-                        {brandLogoUrl && (
+                        {brandLogoUrl && cat.show_brand_logo !== false && (
                           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm p-1.5 shadow-md z-20">
                             <img src={brandLogoUrl} alt={cat.brand_name || cat.name} className="h-5 w-auto object-contain" />
                           </div>
@@ -499,10 +473,10 @@ export function HomePage() {
                 {/* Story */}
                 <div className="border-l-2 border-[#B89A4A] pl-4 space-y-3">
                   <p className="font-body text-sm text-gray-600 leading-relaxed">
-                    Sakthi Solutions was founded in 2014 by a dynamic couple bringing together decades of combined expertise in sales, retail, automation, and hospitality.
+                    {companyInfo?.about_content || ""}
                   </p>
                   <p className="font-body text-sm text-gray-600 leading-relaxed">
-                    We provide end-to-end IT consulting and digital signage solutions for hospitality, retail and corporate sectors. We represent Godspeed, a world-class digital signage brand with manufacturing units in Hong Kong and China.
+                    {companyInfo?.about_body || ""}
                   </p>
                 </div>
 
@@ -630,10 +604,10 @@ export function HomePage() {
               <svg className="w-4 h-4 text-[#B89A4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
               </svg>
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">Why Choose Us</span>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">{(companyInfo?.why_items?.[0]?.title) || ""}</span>
             </div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-2">
-              The Sakthi Advantage
+              {companyInfo?.advantages_section_title || ""}
             </h2>
             <p className="font-body text-sm text-gray-500 max-w-2xl mb-8">
               Why hospitality, retail, and corporate leaders partner with us for their mission-critical technology setups.
@@ -642,12 +616,7 @@ export function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {(companyInfo?.advantages && companyInfo.advantages.length > 0
                 ? companyInfo.advantages
-                : [
-                  { title: "Direct OEM Collaborations", description: "We partner directly with leading international manufacturers to deliver authentic, world-class digital displays and custom interactive hardware solutions." },
-                  { title: "24/7 On-Ground Support", description: "Our team of certified, locally stationed technicians provides round-the-clock proactive monitoring and prompt maintenance support." },
-                  { title: "End-to-End IT Consulting", description: "From setting up hospitality POS & KOT environments to designing high-speed network infrastructures, we offer expert consulting and clear roadmaps." },
-                  { title: "Vandal-Proof Engineering", description: "All our public-facing signage devices feature heavy-duty commercial bodies and tempered protective glass surfaces built for high-traffic operations." }
-                ]
+                : []
               ).map((item: any, i: number) => {
                 const icons = [
                   <Award key={1} className="w-6 h-6 text-[#B89A4A]" />,
@@ -753,21 +722,21 @@ export function HomePage() {
               <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#B89A4A] font-ui">About the Company</span>
             </div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-500 leading-tight mb-6">
-              {companyInfo?.about_heading || "Your Reliable Technology Partner Since 2014"}
+              {companyInfo?.about_heading || ""}
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-start">
               <div className="lg:col-span-5 relative">
                 <div className="border-4 border-[#B89A4A]/20 p-2 aspect-[4/3] overflow-hidden">
                   <img
-                    src={companyInfo?.about_image || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80"}
-                    alt={companyInfo?.company_name || "Sakthi Solutions"}
+                    src={companyInfo?.about_image || ""}
+                    alt={companyInfo?.company_name || ""}
                     className="w-full h-full object-cover select-none"
                   />
                 </div>
                 <div className="absolute -bottom-6 -right-6 hidden sm:block bg-slate-950 text-white p-6 max-w-xs border-l-4 border-[#B89A4A]">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#B89A4A] mb-1">Our Core Focus</p>
                   <p className="font-serif text-sm italic font-normal text-gray-200">
-                    {companyInfo?.tagline || "Chennai's trusted enterprise hospitality and retail system integrator since 2014."}
+                    {companyInfo?.tagline || ""}
                   </p>
                 </div>
               </div>
@@ -776,19 +745,15 @@ export function HomePage() {
               <div className="lg:col-span-7">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#B89A4A] mb-3">About the Company</p>
                 <h2 className="font-serif font-extrabold text-3xl md:text-4xl text-slate-950 mb-6 leading-tight">
-                  {companyInfo?.about_heading || "Your Reliable Technology Partner Since 2014"}
+                  {companyInfo?.about_heading || ""}
                 </h2>
                 <p className="text-slate-600 text-sm leading-relaxed mb-4 font-normal">
-                  {companyInfo?.about_body || "Sakthi Solutions delivers commercial hardware integrations, interactive touch interfaces..."}
+                  {companyInfo?.about_body || ""}
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {(companyInfo?.stats && companyInfo.stats.length > 0 ? companyInfo.stats : [
-                    { value: `${yearsOfExperience}+`, label: "Years Experience" },
-                    { value: `${productLines}`, label: "Product Lines" },
-                    { value: `${industriesServed}+`, label: "Sectors Served" },
-                    { value: `${technologyPartners}+`, label: "OEM Partners" },
-                  ]).map((stat: any) => (
+                  {(companyInfo?.stats && companyInfo.stats.length > 0 ? companyInfo.stats : []
+                  ).map((stat: any) => (
                     <div
                       key={stat.label}
                       className="bg-slate-50 border border-gray-200/80 p-4 transition-all duration-300 hover:bg-white hover:border-[#B89A4A] group"
@@ -948,8 +913,8 @@ export function HomePage() {
               {/* ── LEFT: Office Contact Info ── */}
               <div className="space-y-8">
                 <div>
-                  <p className="section-label">Our Offices</p>
-                  <h2 className="heading-md text-primary-500 mb-1">Visit or Call Us</h2>
+                  <p className="section-label">{companyInfo?.contact_section_title}</p>
+                  <h2 className="heading-md text-primary-500 mb-1">{companyInfo?.contact_section_heading}</h2>
                   <div className="gold-divider" />
                 </div>
 
@@ -1099,9 +1064,9 @@ export function HomePage() {
                 <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#B89A4A]/5 rounded-full blur-xl pointer-events-none" />
 
                 <div className="mb-6 relative z-10">
-                  <p className="section-label text-[#B89A4A]/90">Request a Consultation</p>
+                  <p className="section-label text-[#B89A4A]/90">{companyInfo?.cta_subtitle_title}</p>
                   <p className="font-accent italic text-xl md:text-2xl text-primary-500/85">
-                    Start your project journey
+                    {companyInfo?.cta_subtitle}
                   </p>
                 </div>
 

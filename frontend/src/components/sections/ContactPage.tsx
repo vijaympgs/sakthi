@@ -16,24 +16,6 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCompanyInfo } from "@/hooks/useQueries";
-import { SITE_CONFIG } from "@/config/siteConfig";
-
-const FALLBACK_ENQUIRY_TYPES = [
-  "Digital Signage & Video Wall",
-  "Interactive Kiosk / Wayfinding",
-  "IT Networking Consulting",
-  "Hardware Supply (POS / KOT)",
-  "Customer Feedback Solution",
-  "Smart Touch Table",
-  "General Inquiry",
-];
-
-const FALLBACK_CALLBACK_SLOTS = [
-  "Morning (9 AM – 12 PM)",
-  "Afternoon (12 PM – 3 PM)",
-  "Evening (3 PM – 6 PM)",
-  "Anytime",
-];
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -50,12 +32,13 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { data: companyInfo } = useCompanyInfo();
+
   const enquiryTypes: string[] = (companyInfo?.enquiry_types && companyInfo.enquiry_types.length > 0)
     ? companyInfo.enquiry_types.map((e: any) => typeof e === "string" ? e : e.name)
-    : FALLBACK_ENQUIRY_TYPES;
+    : [];
   const callbackSlots: string[] = (companyInfo?.callback_slots && companyInfo.callback_slots.length > 0)
     ? companyInfo.callback_slots.map((s: any) => typeof s === "string" ? s : s.label)
-    : FALLBACK_CALLBACK_SLOTS;
+    : [];
 
   const {
     register,
@@ -83,22 +66,24 @@ export function ContactPage() {
     }
   };
 
-  // ── Derived contact data (API → fallback to SITE_CONFIG) ──
-  const phonePrimary = companyInfo?.phone_primary || SITE_CONFIG.contact.phonePrimary;
-  const phoneSecondary = companyInfo?.phone_secondary || SITE_CONFIG.contact.phoneSecondary;
-  const emailPrimary = companyInfo?.email_primary || SITE_CONFIG.contact.emailPrimary;
+  // ── Derived contact data (API only) ──
+  const phonePrimary = companyInfo?.phone_primary || "";
+  const phoneSecondary = companyInfo?.phone_secondary || "";
+  const emailPrimary = companyInfo?.email_primary || "";
   const phoneJayakumar = (companyInfo as any)?.phone_jayakumar || phonePrimary;
   const phoneVidya = (companyInfo as any)?.phone_vidya || phoneSecondary;
 
   const salesAddress = companyInfo?.address_line1
     ? `${companyInfo.address_line1}, ${companyInfo.address_line2 || ""}, ${companyInfo.city || ""} – ${companyInfo.postal_code || ""}`
-    : SITE_CONFIG.contact.salesOffice.formatted;
+    : "";
 
-  const registeredAddress = SITE_CONFIG.contact.registeredOffice.formatted;
+  const registeredAddress = companyInfo?.address_line1 ? salesAddress : "";
 
-  const mapUrl = (companyInfo as any)?.google_maps_embed || SITE_CONFIG.contact.mapEmbedUrl;
+  const mapUrl = (companyInfo as any)?.google_maps_embed || "";
 
-  const googleMapsDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Sakthi+Solutions+Chennai";
+  const googleMapsDirectionsUrl = companyInfo?.company_name
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(companyInfo.company_name)}`
+    : "";
   const whatsappUrl = `https://wa.me/${phonePrimary.replace(/[\s+\-]/g, "")}`;
 
   if (isSubmitted) {
@@ -465,7 +450,7 @@ export function ContactPage() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Sakthi Solutions Location"
+              title={companyInfo?.company_name ? `${companyInfo.company_name} Location` : "Location"}
             />
           </div>
         </div>

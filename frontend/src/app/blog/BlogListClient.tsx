@@ -4,11 +4,12 @@ import Link from "next/link";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { useBlogPosts } from "@/hooks/useQueries";
+import { useBlogPosts, useCompanyInfo } from "@/hooks/useQueries";
 import { Calendar, User, ArrowRight } from "lucide-react";
 
 export function BlogListClient() {
   const { data: posts, isLoading } = useBlogPosts();
+  const { data: companyInfo } = useCompanyInfo();
 
   return (
     <>
@@ -21,7 +22,7 @@ export function BlogListClient() {
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-label mb-4">Insights & Updates</p>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Blog</h1>
               <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
-                Latest news, technology insights, and updates from Sakthi Solutions.
+                {companyInfo?.company_name ? `Latest news and updates from ${companyInfo.company_name}.` : ""}
               </p>
             </div>
           </div>

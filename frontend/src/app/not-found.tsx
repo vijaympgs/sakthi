@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Page Not Found - Sakthi Solutions",
+  title: "Page Not Found",
 };
 
 export default function NotFound() {
@@ -11,7 +11,7 @@ export default function NotFound() {
       <header className="bg-white border-b border-gray-100">
         <div className="container-page flex items-center h-16">
           <Link href="/" className="text-xl font-bold text-primary-500 tracking-tight">
-            <span className="text-[#f54337]">S</span>akthi <span className="text-[#f54337]">S</span>olutions
+            Home
           </Link>
         </div>
       </header>
@@ -30,11 +30,10 @@ export default function NotFound() {
           <div className="text-sm text-gray-400">
             <p className="mb-2">Popular pages:</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1">
-              <Link href="/products/godspeed" className="text-gray-500 hover:text-primary-500 underline">Godspeed</Link>
-              <Link href="/products/tellus" className="text-gray-500 hover:text-primary-500 underline">Tellus Feedback</Link>
-              <Link href="/products/childwood" className="text-gray-500 hover:text-primary-500 underline">Childwood</Link>
+              <Link href="/products" className="text-gray-500 hover:text-primary-500 underline">Products</Link>
               <Link href="/services" className="text-gray-500 hover:text-primary-500 underline">Services</Link>
               <Link href="/about" className="text-gray-500 hover:text-primary-500 underline">About Us</Link>
+              <Link href="/contact" className="text-gray-500 hover:text-primary-500 underline">Contact</Link>
             </div>
           </div>
         </div>

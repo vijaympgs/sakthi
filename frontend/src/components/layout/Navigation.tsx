@@ -30,7 +30,7 @@ export function Navigation() {
 
   const getLogoUrl = () => {
     if (!companyInfo?.logo) {
-      return "/assets/products/ss-logo.png";
+      return "";
     }
     if (companyInfo.logo.startsWith("http://") || companyInfo.logo.startsWith("https://")) {
       return companyInfo.logo;
@@ -44,17 +44,18 @@ export function Navigation() {
   return (
     <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 border-b border-gray-100 shadow-sm h-16 lg:h-20 flex items-center backdrop-blur-md">
         <div className="w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group transition-opacity hover:opacity-90">
-            <img 
-              src={logoUrl} 
-              alt={companyInfo?.company_name || "Sakthi Solutions"} 
-              className="h-12 lg:h-16 w-auto object-contain select-none transition-transform duration-300 group-hover:scale-[1.02]"
-              decoding="async"
-              style={{ imageRendering: "auto" }}
-            />
-            <div className="hidden sm:flex flex-row items-baseline gap-1.5 leading-none">
-              <span className="text-2xl lg:text-3xl font-extrabold tracking-tight text-red-600 font-heading">SAKTHI</span>
-              <span className="text-2xl lg:text-3xl font-extrabold tracking-tight text-[#B89A4A] font-heading">SOLUTIONS</span>
+          <Link href="/" className="flex items-center gap-0.5 group transition-opacity hover:opacity-90">
+            {logoUrl && (
+              <img 
+                src={logoUrl} 
+                alt={companyInfo?.company_name || ""}
+                className="h-12 lg:h-16 w-auto object-contain select-none transition-transform duration-300 group-hover:scale-[1.02]"
+                decoding="async"
+                style={{ imageRendering: "auto" }}
+              />
+            )}
+            <div className="hidden sm:flex flex-row items-baseline gap-1.5 leading-none -ml-3">
+              <span className="text-[37px] lg:text-[49px] font-extrabold tracking-tight text-red-600 font-heading">{companyInfo?.company_name?.toLowerCase() || ''}</span>
             </div>
           </Link>
 

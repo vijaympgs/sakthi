@@ -42,7 +42,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     ...(heroImage ? { image: heroImage.startsWith("http") ? heroImage : `${siteUrl}${heroImage}` } : {}),
     brand: {
       "@type": "Brand",
-      name: product.category_name || "Sakthi Solutions",
+      name: product.category_name || "",
     },
     offers: {
       "@type": "Offer",
@@ -74,7 +74,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             name: product.name,
             description: heroDesc,
             ...(jsonLdImage ? { image: jsonLdImage } : {}),
-            brand: { "@type": "Brand", name: product.category_name || "Sakthi Solutions" },
+            brand: { "@type": "Brand", name: product.category_name || "" },
             offers: {
               "@type": "Offer",
               url: `${siteUrl}/products/${slug}`,

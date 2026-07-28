@@ -6,11 +6,11 @@ echo.
 
 cd /d "%~dp0"
 
-git add -A
+git add .
 echo [1/3] Staged all changes
 echo.
 
-set /p commit_msg=Commit message (default: "daily update"): 
+set /p commit_msg=Commit message (default: "daily update"):
 if "%commit_msg%"=="" set commit_msg=daily update
 
 git commit -m "%commit_msg%"

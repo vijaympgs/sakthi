@@ -16,7 +16,7 @@ class PageSerializer(serializers.ModelSerializer):
         fields = [
             "id", "title", "slug", "meta_title", "meta_description",
             "hero_title", "hero_subtitle", "hero_image", "content",
-            "is_published", "sort_order", "sections",
+            "is_active", "sort_order", "sections",
         ]
 
 
@@ -37,6 +37,10 @@ class ProductSerializer(serializers.ModelSerializer):
     gallery = ProductGallerySerializer(many=True, read_only=True)
     category_name = serializers.CharField(source="category.name", read_only=True)
     group_name = serializers.CharField(source="group.name", read_only=True, allow_null=True)
+    has_specs = serializers.SerializerMethodField()
+
+    def get_has_specs(self, obj):
+        return obj.spec_groups.exists()
 
     class Meta:
         model = Product
@@ -44,20 +48,20 @@ class ProductSerializer(serializers.ModelSerializer):
             "id", "category", "category_name", "group", "group_name", "parent", "name", "slug",
             "sku", "dimensions",
             "tagline", "short_description", "description", "image", "brochure",
-            "is_featured", "is_published", "sort_order", "features", "gallery",
+            "is_featured", "is_active", "sort_order", "features", "gallery", "has_specs",
         ]
 
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ["id", "name", "slug", "description", "tagline", "logo", "icon", "website", "sort_order"]
+        fields = ["id", "name", "slug", "description", "tagline", "logo", "icon", "website", "sort_order", "is_active"]
 
 
 class SolutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Solution
-        fields = ["id", "name", "slug", "description", "image", "icon", "sort_order"]
+        fields = ["id", "name", "slug", "description", "image", "icon", "sort_order", "is_active"]
 
 
 class IndustrySerializer(serializers.ModelSerializer):
@@ -132,7 +136,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
         fields = [
             "id", "title", "slug", "excerpt", "content", "featured_image",
             "author", "category", "meta_title", "meta_description",
-            "is_published", "published_at", "created_at",
+            "is_active", "published_at", "created_at",
         ]
 
 
@@ -251,7 +255,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductCategory
-        fields = ["id", "name", "slug", "brand", "brand_name", "brand_icon", "brand_logo", "description", "tagline", "icon", "image", "sort_order", "products", "groups"]
+        fields = ["id", "name", "slug", "brand", "brand_name", "brand_icon", "brand_logo", "description", "tagline", "icon", "image", "sort_order", "is_active", "show_brand_logo", "products", "groups"]
 
 
 class PartnerSerializer(serializers.ModelSerializer):
