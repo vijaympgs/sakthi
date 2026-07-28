@@ -7,6 +7,7 @@ class Command(BaseCommand):
     help = "Seed database with complete Sakthi Solutions content"
 
     def handle(self, *args, **options):
+        self._ensure_superuser()
         self._seed_company_info()
         self._seed_brands_and_categories()
         self._seed_products()
@@ -56,6 +57,20 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
             return False
+
+    # ─── superuser ──────────────────────────────────────────────
+
+    def _ensure_superuser(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(is_superuser=True).exists():
+            User.objects.create_superuser(
+                email="admin@sakthisolutions.in",
+                password="admin123",
+            )
+            self.stdout.write(self.style.SUCCESS("Superuser created (admin@sakthisolutions.in / admin123)"))
+        else:
+            self.stdout.write("Superuser already exists, skipping")
 
     # ─── company info ───────────────────────────────────────────
 
