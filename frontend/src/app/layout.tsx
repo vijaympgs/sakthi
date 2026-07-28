@@ -60,6 +60,11 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
     },
+    icons: {
+      icon: company?.logo
+        ? `${siteUrl}${company.logo.startsWith("/") ? "" : "/"}${company.logo}`
+        : `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>`,
+    },
   };
 }
 
