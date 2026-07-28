@@ -54,8 +54,8 @@ export function Navigation() {
                 style={{ imageRendering: "auto" }}
               />
             )}
-            <div className="hidden sm:flex flex-row items-baseline gap-1.5 leading-none -ml-3">
-              <span className="text-[37px] lg:text-[49px] font-extrabold tracking-tight text-red-600 font-heading">{companyInfo?.company_name?.toLowerCase() || ''}</span>
+            <div className="flex flex-row items-baseline gap-1.5 leading-none -ml-3">
+              <span className="text-xl sm:text-[37px] lg:text-[49px] font-extrabold tracking-tight text-red-600 font-heading">{companyInfo?.company_name?.toLowerCase() || ''}</span>
             </div>
           </Link>
 
