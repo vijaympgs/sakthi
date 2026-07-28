@@ -63,7 +63,7 @@ class Command(BaseCommand):
         CompanyInfo.objects.update_or_create(pk=1, defaults={
             "company_name": "Sakthi Solutions",
             "tagline": "Digital Signage, Kiosks & IT Solutions",
-            "logo": "settings/sslogo.png",
+            "logo": "",
             "phone_primary": "04426420089",
             "phone_secondary": "+91 9840057127",
             "email_primary": "info@sakthisolutions.in",
@@ -552,8 +552,6 @@ class Command(BaseCommand):
         for col, links in [
             (col1, [
                 ("/products/indoor-digital-signage", "Indoor Digital Signage"),
-                ("/products/indoor-digital-signage/floor-standing", "Floor Standing Series"),
-                ("/products/indoor-digital-signage/wall-mounting", "Wall Mounting Series"),
                 ("/products/smart-touch-table", "Smart Touch Table"),
                 ("/products/wayfinding-kiosk", "Wayfinding Kiosk"),
                 ("/products/touch-screen-kiosk", "Touch Screen Kiosk"),
