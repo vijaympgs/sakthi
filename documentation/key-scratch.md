@@ -218,3 +218,14 @@ The user wants a translucent navigation bar background - light black (dark) tran
 
 
 Refine the product category line into a premium micro-interaction. Increase the font size to 22–26px, use a refined semi-bold serif (Playfair Display/Cormorant) or elegant sans (Manrope), and apply the brand gold color with slightly increased letter spacing. Animate the text using a smooth left-to-right character reveal on page load (not a typing cursor), followed by a subtle shimmer/light sweep every 8–10 seconds. Use elegant gold dot separators that softly pulse, and add a gentle fade/translate-up animation while keeping the text perfectly centered with generous whitespace. The effect should feel luxurious, understated, and enterprise-grade—avoid flashy marquee, continuous scrolling, blinking, or typewriter effects.
+
+
+Yes, correct. `/end` is now a registered slash command in Agent chat.
+
+The pattern:
+- `~/.agents/skills/end/SKILL.md` → `/end` command
+- `~/.agents/skills/start/SKILL.md` → `/start` command
+
+When you type `/end` in Agent chat, it loads the `end` skill instructions and I follow them. Same for `/start`.
+
+So you can now use `/start` at session beginning and `/end` at session end, and I'll run the respective workflows.
