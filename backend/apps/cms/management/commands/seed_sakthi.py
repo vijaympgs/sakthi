@@ -115,9 +115,9 @@ class Command(BaseCommand):
                 {"title": "End-to-End IT Consulting", "description": "From setting up hospitality POS & KOT environments to designing high-speed network infrastructures, we offer expert consulting and clear roadmaps."},
                 {"title": "Vandal-Proof Engineering", "description": "All our public-facing signage devices feature heavy-duty commercial bodies and tempered protective glass surfaces built for high-traffic operations."}
             ],
-            "hero_tagline": "Since 2014 — Chennai • Hospitality & Retail IT Partner",
-            "hero_eyebrow": "Since 2014",
-            "hero_tagline_subtitle": "Chennai • Hospitality & Retail IT Partner",
+            "hero_tagline": "",
+            "hero_eyebrow": "",
+            "hero_tagline_subtitle": "",
             "stats": [
                 {"value": "12+", "label": "Years Experience"},
                 {"value": "500+", "label": "Projects Completed"},

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sakthi Solutions — Wordmark Explorations</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1B1B1B; color: #fff; font-family: system-ui, sans-serif; padding: 60px 40px; }
+.container { max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 14px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+h2 { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 48px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.card { background: #242424; border-radius: 12px; padding: 40px 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #666; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 10px; font-weight: 500; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 4px; background: #333; color: #999; }
+.wordmark { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 12px 0; }
+.wordmark .word { display: flex; align-items: baseline; flex-wrap: wrap; }
+.wordmark .r { color: #D63B3B; }
+.wordmark .w { color: #FFFFFF; }
+.wordmark .w2 { color: rgba(255,255,255,0.55); }
+.wordmark .w3 { color: rgba(255,255,255,0.35); }
+
+/* ── Variation-specific overrides ── */
+
+/* V1: Red first letter each word, Inter ExtraBold */
+.v1 { font-family: 'Inter', sans-serif; font-weight: 800; }
+.v1 .letter { font-size: 42px; line-height: 1.1; }
+.v1 .rest { font-weight: 500; }
+.v1 .word + .word { margin-top: 0; }
+
+/* V2: First word red, second white — Manrope Bold */
+.v2 { font-family: 'Manrope', sans-serif; }
+.v2 .word1 { font-size: 46px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+.v2 .word2 { font-size: 38px; font-weight: 300; }
+
+/* V3: Red initials, white uppercase remainder — Sora */
+.v3 { font-family: 'Sora', sans-serif; }
+.v3 .word { font-size: 44px; font-weight: 600; letter-spacing: 0.06em; line-height: 1.2; }
+
+/* V4: Bold S, regular rest — Outfit */
+.v4 { font-family: 'Outfit', sans-serif; }
+.v4 .first { font-size: 52px; font-weight: 800; }
+.v4 .word1-rest { font-size: 40px; font-weight: 300; }
+.v4 .first2 { font-size: 44px; font-weight: 800; }
+.v4 .word2-rest { font-size: 34px; font-weight: 300; }
+
+/* V5: Large initials + lighter body — Plus Jakarta Sans */
+.v5 { font-family: 'Plus Jakarta Sans', sans-serif; }
+.v5 .line { display: flex; align-items: baseline; gap: 12px; }
+.v5 .initials { font-size: 60px; font-weight: 800; letter-spacing: -0.02em; }
+.v5 .body { font-size: 28px; font-weight: 300; opacity: 0.5; letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* V6: Tracking variations — Montserrat */
+.v6 { font-family: 'Montserrat', sans-serif; }
+.v6 .word1 { font-size: 44px; font-weight: 600; letter-spacing: 0.15em; line-height: 1.2; }
+.v6 .word2 { font-size: 44px; font-weight: 300; letter-spacing: 0.25em; }
+
+/* V7: Different font weights — Inter variable */
+.v7 { font-family: 'Inter', sans-serif; }
+.v7 .word1 { font-size: 48px; font-weight: 900; letter-spacing: -0.03em; }
+.v7 .word2 { font-size: 36px; font-weight: 300; letter-spacing: 0.04em; }
+
+/* V8: Different capitalization — Manrope */
+.v8 { font-family: 'Manrope', sans-serif; }
+.v8 .word1 { font-size: 40px; font-weight: 700; text-transform: lowercase; }
+.v8 .word1 .init { font-size: 52px; }
+.v8 .word2 { font-size: 28px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.12em; }
+
+/* V9: Editorial — IBM Plex Sans */
+.v9 { font-family: 'IBM Plex Sans', sans-serif; }
+.v9 .word1 { font-size: 48px; font-weight: 300; line-height: 1.1; }
+.v9 .word1 .init { font-size: 56px; font-weight: 600; }
+.v9 .word2 { font-size: 36px; font-weight: 300; letter-spacing: 0.08em; }
+
+/* V10: Premium enterprise — Inter thin + bold contrast */
+.v10 { font-family: 'Inter', sans-serif; }
+.v10 .line1 { font-size: 14px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #666; margin-bottom: 8px; }
+.v10 .word1 { font-size: 52px; font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
+.v10 .word1 .init { font-weight: 700; }
+.v10 .word2 { font-size: 42px; font-weight: 200; letter-spacing: -0.01em; }
+.v10 .word2 .init { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Brand Identity</h1>
+  <h2>Sakthi Solutions · Wordmark Explorations</h2>
+  <div class="grid">
+
+    <!-- 01 -->
+    <div class="card">
+      <span class="card-label">01 · Red First Letter</span>
+      <div class="card-tags"><span class="tag">Inter</span><span class="tag">ExtraBold</span><span class="tag">Medium</span></div>
+      <div class="wordmark v1">
+        <div class="word">
+          <span class="letter r">S</span><span class="rest w">akthi</span>
+        </div>
+        <div class="word">
+          <span class="letter r">S</span><span class="rest w">olutions</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Inter'">Red initial anchors the eye. Remaining text in medium weight for contrast.</div>
+    </div>
+
+    <!-- 02 -->
+    <div class="card">
+      <span class="card-label">02 · Red First Word</span>
+      <div class="card-tags"><span class="tag">Manrope</span><span class="tag">Bold</span><span class="tag">Light</span></div>
+      <div class="wordmark v2">
+        <div class="word1 r">Sakthi</div>
+        <div class="word2 w">Solutions</div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Manrope'">First word commands attention in red. Second word recedes in light weight.</div>
+    </div>
+
+    <!-- 03 -->
+    <div class="card">
+      <span class="card-label">03 · Red Initials, Uppercase Remainder</span>
+      <div class="card-tags"><span class="tag">Sora</span><span class="tag">SemiBold</span><span class="tag">Wide tracking</span></div>
+      <div class="wordmark v3">
+        <div class="word"><span class="r">S</span><span class="w">AKTHI</span></div>
+        <div class="word"><span class="r">S</span><span class="w">OLUTIONS</span></div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Sora'">Uppercase remainder with wide tracking creates architectural feel.</div>
+    </div>
+
+    <!-- 04 -->
+    <div class="card">
+      <span class="card-label">04 · Bold S, Regular Rest</span>
+      <div class="card-tags"><span class="tag">Outfit</span><span class="tag">ExtraBold</span><span class="tag">Light</span></div>
+      <div class="wordmark v4">
+        <div class="word" style="display:flex;align-items:baseline">
+          <span class="first r">S</span><span class="word1-rest w">akthi</span>
+        </div>
+        <div class="word" style="display:flex;align-items:baseline">
+          <span class="first2 r">S</span><span class="word2-rest w">olutions</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Outfit'">Extreme weight contrast. The S dominates, the rest recedes elegantly.</div>
+    </div>
+
+    <!-- 05 -->
+    <div class="card">
+      <span class="card-label">05 · Large Initials + Lighter Body</span>
+      <div class="card-tags"><span class="tag">Plus Jakarta Sans</span><span class="tag">ExtraBold</span><span class="tag">Light</span></div>
+      <div class="wordmark v5">
+        <div class="line">
+          <span class="initials r">S</span>
+          <span class="body w">Sakthi</span>
+        </div>
+        <div class="line">
+          <span class="initials r">S</span>
+          <span class="body w">Solutions</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Plus Jakarta Sans'">Monogram-style initials anchor the wordmark. Body text in lightweight uppercase.</div>
+    </div>
+
+    <!-- 06 -->
+    <div class="card">
+      <span class="card-label">06 · Tracking Variations</span>
+      <div class="card-tags"><span class="tag">Montserrat</span><span class="tag">SemiBold</span><span class="tag">Light</span></div>
+      <div class="wordmark v6">
+        <div class="word1 r">S A K T H I</div>
+        <div class="word2 w">S O L U T I O N S</div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Montserrat'">Spaced uppercase. Red first word, open letter-spacing second word.</div>
+    </div>
+
+    <!-- 07 -->
+    <div class="card">
+      <span class="card-label">07 · Weight Contrast</span>
+      <div class="card-tags"><span class="tag">Inter</span><span class="tag">Black</span><span class="tag">Light</span></div>
+      <div class="wordmark v7">
+        <div class="word1 r">Sakthi</div>
+        <div class="word2 w">Solutions</div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Inter'">Black (900) vs Light (300) extreme contrast. Tight tracking on first, open on second.</div>
+    </div>
+
+    <!-- 08 -->
+    <div class="card">
+      <span class="card-label">08 · Mixed Case &amp; Size</span>
+      <div class="card-tags"><span class="tag">Manrope</span><span class="tag">Bold</span><span class="tag">Regular</span></div>
+      <div class="wordmark v8">
+        <div class="word1"><span class="init r">S</span><span class="w">akthi</span></div>
+        <div class="word2 r">SOLUTIONS</div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Manrope'">Lowercase "Sakthi" with large red S. Uppercase "SOLUTIONS" in red.</div>
+    </div>
+
+    <!-- 09 -->
+    <div class="card">
+      <span class="card-label">09 · Editorial</span>
+      <div class="card-tags"><span class="tag">IBM Plex Sans</span><span class="tag">SemiBold</span><span class="tag">Light</span></div>
+      <div class="wordmark v9">
+        <div class="word1"><span class="init r">S</span><span class="w">akthi</span></div>
+        <div class="word2 w">Solutions</div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'IBM Plex Sans'">Editorial feel. SemiBold red S, light body. IBM Plex Sans has warm humanist character.</div>
+    </div>
+
+    <!-- 10 -->
+    <div class="card">
+      <span class="card-label">10 · Premium Enterprise</span>
+      <div class="card-tags"><span class="tag">Inter</span><span class="tag">Thin</span><span class="tag">Bold</span></div>
+      <div class="wordmark v10">
+        <div class="line1">Sakthi Solutions</div>
+        <div class="word1"><span class="init r">S</span><span class="w">akthi</span></div>
+        <div class="word2"><span class="init r">S</span><span class="w">olutions</span></div>
+      </div>
+      <div style="font-size:12px;color:#777;font-family:'Inter'">Premium tiered approach. Smaller uppercase label above, large thin-weight wordmark with bold red initials.</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

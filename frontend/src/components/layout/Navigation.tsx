@@ -18,6 +18,7 @@ const hasChildren = (item: NavItem) => item.children && item.children.length > 0
 export function Navigation() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [wmVar, setWmVar] = useState(0);
   const { data: apiNav } = useNavigation("main");
   const { data: companyInfo } = useCompanyInfo();
   const { theme, typography, cycleTheme, cycleTypography } = useTheme();
@@ -54,8 +55,76 @@ export function Navigation() {
                 style={{ imageRendering: "auto" }}
               />
             )}
-            <div className="flex flex-row items-baseline gap-0.5 leading-none -ml-1">
-              <span className="text-[3.5rem] sm:text-[3.5rem] lg:text-[52px] font-extrabold tracking-tight text-red-600 font-heading text-center lg:text-left whitespace-nowrap">{companyInfo?.company_name?.toLowerCase() || ''}</span>
+                                        <div className="flex flex-row items-baseline leading-none whitespace-nowrap cursor-pointer select-none" onClick={() => setWmVar((p) => (p + 1) % 10)} title={`V${wmVar + 1} - click to cycle`}>
+              {(() => {
+                const name = companyInfo?.company_name || 'Sakthi Solutions';
+                const words = name.split(' ');
+                const sz = 'text-[3rem] sm:text-[3rem] lg:text-[46px] font-heading';
+                switch (wmVar) {
+                  case 0:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-black`}>{w[0]}</span>
+                        <span className={`${sz} font-medium text-gray-900`}>{w.slice(1)}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 1:
+                    return <><span className={`${sz} font-bold text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-gray-900 ml-3`}>{words.slice(1).join(' ')}</span></>;
+                  case 2:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-semibold`}>{w[0]}</span>
+                        <span className={`${sz} font-light tracking-widest text-gray-900`}>{w.slice(1).toUpperCase()}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 3:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-black text-[3.6rem] sm:text-[3.6rem] lg:text-[54px]`}>{w[0]}</span>
+                        <span className={`${sz} font-thin text-gray-900`}>{w.slice(1)}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 4:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-black text-[4rem] sm:text-[4rem] lg:text-[60px]`}>{w[0]}</span>
+                        <span className={`${sz} font-light text-gray-400 uppercase tracking-widest text-[1.8rem] sm:text-[1.8rem] lg:text-[28px]`}>{w.slice(1)}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 5:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} font-semibold tracking-[0.15em] text-red-600`}>{w[0].toUpperCase()}</span>
+                        <span className={`${sz} font-light tracking-[0.25em] text-gray-900`}>{w.slice(1).toUpperCase()}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 6:
+                    return <><span className={`${sz} font-black text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-gray-900 ml-3`}>{words.slice(1).join(' ')}</span></>;
+                  case 7:
+                    return <><span className={`${sz} font-bold text-red-600 lowercase`}>{words[0]}</span><span className={`${sz} font-normal text-red-600 uppercase tracking-wider ml-3`}>{words.slice(1).join(' ')}</span></>;
+                  case 8:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-bold italic font-serif`}>{w[0]}</span>
+                        <span className={`${sz} font-light text-gray-900 font-serif`}>{w.slice(1)}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                  case 9:
+                    return words.map((w: string, i: number) => (
+                      <span key={i} className="flex items-baseline">
+                        <span className={`${sz} text-red-600 font-bold`}>{w[0]}</span>
+                        <span className={`${sz} font-extralight text-gray-900`} style={{ fontWeight: 200 }}>{w.slice(1)}</span>
+                        {i < words.length - 1 && <>&nbsp;</>}
+                      </span>
+                    ));
+                }
+              })()}
             </div>
           </Link>
 
