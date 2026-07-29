@@ -9,11 +9,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self._ensure_superuser()
         self._seed_company_info()
-        self._seed_brands_and_categories()
-        self._seed_products()
-        self._seed_product_images()
-        self._seed_product_features()
-        self._seed_specs()
+
+        # ── Products block: skip entirely if already seeded (preserves manual changes) ──
+        if not ProductCategory.objects.exists():
+            self._seed_brands_and_categories()
+            self._seed_products()
+            self._seed_product_images()
+            self._seed_product_features()
+            self._seed_specs()
+        else:
+            self.stdout.write("Product categories already exist, skipping product seed")
+
         self._seed_services()
         self._seed_service_items()
         self._seed_industries()
@@ -38,6 +44,10 @@ class Command(BaseCommand):
         return Product.objects.get(slug=slug)
 
     def _download_and_save_category_image(self, category_instance, url, filename):
+        # Skip download if image already exists on disk (survives Render ephemeral restarts)
+        if category_instance.image and category_instance.image.storage.exists(category_instance.image.name):
+            self.stdout.write(f"Category image already exists for {category_instance.slug}, skipping")
+            return True
         import urllib.request
         import ssl
         from django.core.files.base import ContentFile
@@ -53,7 +63,7 @@ class Command(BaseCommand):
             with urllib.request.urlopen(req, context=ctx, timeout=15) as response:
                 content = response.read()
                 category_instance.image.save(filename, ContentFile(content), save=True)
-                self.stdout.write(f"Successfully downloaded and saved category image for {category_instance.slug}")
+                self.stdout.write(f"Downloaded category image for {category_instance.slug}")
                 return True
         except Exception as e:
             self.stdout.write(self.style.WARNING(f"Could not download {url}: {e}"))
@@ -178,10 +188,6 @@ class Command(BaseCommand):
     #
 
     def _seed_brands_and_categories(self):
-        # Don't delete — use get_or_create to preserve logo files
-        ProductCategory.objects.all().delete()
-        Product.objects.all().delete()
-
         godspeed, _ = Brand.objects.get_or_create(slug="godspeed", defaults={
             "name": "Godspeed",
             "tagline": "World Class Digital Displays",
@@ -189,32 +195,35 @@ class Command(BaseCommand):
             "icon": "Monitor", "sort_order": 1, "is_active": True,
         })
 
-        # ── Godspeed Categories ──
-        cat_digital_signage = ProductCategory.objects.create(
-            brand=godspeed, name="Digital Signage", slug="digital-signage",
-            tagline="Premium Digital Displays",
-            description="Indoor and outdoor digital signage solutions including floor standing, wall mounting and LG commercial displays.",
-            sort_order=1, is_active=True, show_brand_logo=True)
+        # ── Godspeed Categories (get_or_create so existing images survive restarts) ──
+        cat_digital_signage, _created = ProductCategory.objects.get_or_create(
+            slug="digital-signage",
+            defaults=dict(brand=godspeed, name="Digital Signage",
+                tagline="Premium Digital Displays",
+                description="Indoor and outdoor digital signage solutions including floor standing, wall mounting and LG commercial displays.",
+                sort_order=1, is_active=True, show_brand_logo=True))
         self._download_and_save_category_image(
             cat_digital_signage,
             "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
             "digital-signage.jpg")
 
-        cat_video_wall = ProductCategory.objects.create(
-            brand=godspeed, name="Video Wall", slug="video-wall-cat",
-            tagline="Ultra-Thin Bezel Displays",
-            description="Samsung and LG LCD video wall solutions in 42\", 46\" and 55\" with ultra-thin bezel splicing.",
-            sort_order=2, is_active=True, show_brand_logo=True)
+        cat_video_wall, _created = ProductCategory.objects.get_or_create(
+            slug="video-wall-cat",
+            defaults=dict(brand=godspeed, name="Video Wall",
+                tagline="Ultra-Thin Bezel Displays",
+                description="Samsung and LG LCD video wall solutions in 42\", 46\" and 55\" with ultra-thin bezel splicing.",
+                sort_order=2, is_active=True, show_brand_logo=True))
         self._download_and_save_category_image(
             cat_video_wall,
             "https://images.unsplash.com/photo-1550684376-efcbd6e3f031?auto=format&fit=crop&w=800&q=80",
             "video-wall.jpg")
 
-        cat_interactive = ProductCategory.objects.create(
-            brand=godspeed, name="Interactive Displays", slug="interactive-displays",
-            tagline="Touch & Interactive Solutions",
-            description="Interactive touch kiosks, smart tables and wayfinding solutions with IR, resistive and capacitive touch options.",
-            sort_order=3, is_active=True, show_brand_logo=True)
+        cat_interactive, _created = ProductCategory.objects.get_or_create(
+            slug="interactive-displays",
+            defaults=dict(brand=godspeed, name="Interactive Displays",
+                tagline="Touch & Interactive Solutions",
+                description="Interactive touch kiosks, smart tables and wayfinding solutions with IR, resistive and capacitive touch options.",
+                sort_order=3, is_active=True, show_brand_logo=True))
         self._download_and_save_category_image(
             cat_interactive,
             "https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=800&q=80",

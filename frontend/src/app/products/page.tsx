@@ -17,7 +17,7 @@ export default function Page() {
   return (
     <>
       <Navigation />
-      <main id="main-content">
+      <main id="main-content" className="pt-20 lg:pt-[88px]">
         <ProductsPage />
       </main>
       <Footer />

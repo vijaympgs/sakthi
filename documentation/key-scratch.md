@@ -215,3 +215,6 @@ The implementation is considered complete only if the following statement is TRU
 
 
 The user wants a translucent navigation bar background - light black (dark) transparent that shows the hero background through it. Standard premium website pattern.
+
+
+Refine the product category line into a premium micro-interaction. Increase the font size to 22–26px, use a refined semi-bold serif (Playfair Display/Cormorant) or elegant sans (Manrope), and apply the brand gold color with slightly increased letter spacing. Animate the text using a smooth left-to-right character reveal on page load (not a typing cursor), followed by a subtle shimmer/light sweep every 8–10 seconds. Use elegant gold dot separators that softly pulse, and add a gentle fade/translate-up animation while keeping the text perfectly centered with generous whitespace. The effect should feel luxurious, understated, and enterprise-grade—avoid flashy marquee, continuous scrolling, blinking, or typewriter effects.

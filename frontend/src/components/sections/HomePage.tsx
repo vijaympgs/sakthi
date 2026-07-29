@@ -478,11 +478,7 @@ export function HomePage() {
 
 
 
-  const heroTitle = companyInfo?.hero_title || "";
 
-  const heroDescription = companyInfo?.hero_description || "";
-
-  const heroParsed = heroTitle.includes(" & ") ? { left: heroTitle.split(" & ")[0].split(", "), right: heroTitle.split(" & ")[1] } : null;
 
   const [overlayOpacity, setOverlayOpacity] = useState(0.55);
 
@@ -513,20 +509,6 @@ export function HomePage() {
   }, [heroIdx]);
 
 
-
-  const heroHeadingParts = heroTitle?.includes(" & ")
-
-    ? (() => {
-
-        const i = heroTitle.lastIndexOf(" & ");
-
-        if (i === -1) return null;
-
-        return { before: heroTitle.slice(0, i + 3), last: heroTitle.slice(i + 3) };
-
-      })()
-
-    : null;
 
 
 
@@ -578,165 +560,75 @@ export function HomePage() {
 
     <>
 
-            <section
-
-        className="relative h-[72vh] min-h-[72vh] flex flex-col overflow-hidden text-white"
-
+                            <section
+        className="relative h-[82vh] min-h-[82vh] flex flex-col overflow-hidden text-white"
       >
-
         {/* Hero background images (carousel if multiple) */}
-
         {hasCarousel ? (
-
           heroImages.map((img, i) => (
-
             <div
-
               key={i}
-
               className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-
               style={{
-
                 backgroundImage: `url(${img.image})`,
-
                 opacity: i === heroIdx ? 1 : 0,
-
                 zIndex: i === heroIdx ? 1 : 0,
-
               }}
-
               role="img"
-
               aria-label={img.alt_text || `Hero background ${i + 1}`}
-
             />
-
           ))
-
         ) : (
-
           <div
-
             className="absolute inset-0 bg-cover bg-center"
-
             style={{ backgroundImage: `url(${companyInfo?.hero_bg_image || "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"})` }}
-
           />
-
         )}
-
-
-
-        {/* Dynamic left-to-right gradient overlay - opacity adapts to image brightness */}
-
-        <div
-
-          className="absolute inset-0 z-10 transition-opacity duration-700"
-
-          style={{
-
-            background: `linear-gradient(to right, rgba(0,0,0,${overlayOpacity}) 0%, rgba(0,0,0,${overlayOpacity * 0.55}) 40%, transparent 100%)`,
-
-          }}
-
-        />
-
-
-
-        {/* Content - positioned in left 35-40% */}
-
-                <div className="absolute inset-0 z-20 flex flex-col">
-          <div className="flex-1" />
-          <div
-            style={{
-              opacity: textVisible ? 1 : 0,
-              transform: textVisible ? "translateY(0)" : "translateY(12px)",
-              transition: "opacity 250ms ease-out, transform 250ms ease-out",
-            }}
-            className="ml-[4vw] lg:ml-[6vw] max-w-[560px]"
-          >
-            {/* Eyebrow — Red */}
-            {companyInfo?.hero_eyebrow && (
-              <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[#D63B3B] mb-3">
-                {companyInfo.hero_eyebrow}
-              </p>
-            )}
-            {/* Tagline — Gold */}
-            {companyInfo?.hero_tagline_subtitle && (
-              <p className="text-[14px] font-medium text-[#C7A64A] mb-4">
-                {companyInfo.hero_tagline_subtitle}
-              </p>
-            )}
-            {/* Heading */}
-            {heroTitle && (
-              <h1 className="text-4xl md:text-[2.875rem] lg:text-[3.625rem] font-bold leading-[1.08] mb-5">
-                {heroHeadingParts ? (
-                  <>
-                    {heroHeadingParts.before}<br />
-                    <span className="text-[#C7A64A] italic" style={{ fontFamily: "var(--font-playfair)", fontSize: "0.93em" }}>
-                      {heroHeadingParts.last}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-white">{heroTitle}</span>
-                )}
-              </h1>
-            )}
-            {/* Description */}
-            {heroDescription && (
-              <p className="text-lg leading-[1.7] text-white/90 max-w-[520px] mb-0">
-                {heroDescription}
-              </p>
-            )}
-          </div>
-          {/* CTA Buttons — bottom-aligned with nav dots */}
-          <div
-            style={{
-              opacity: textVisible ? 1 : 0,
-              transform: textVisible ? "translateY(0)" : "translateY(12px)",
-              transition: "opacity 250ms ease-out, transform 250ms ease-out",
-              transitionDelay: "50ms",
-            }}
-            className="ml-[4vw] lg:ml-[6vw] pb-12"
-          >
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/products"
-                className="btn-accent shadow-lg"
-              >
-                Explore Products
-                <ArrowRight size={14} className="ml-2" />
-              </Link>
-              <Link
-                href="#contact-section"
-                className="btn-outline-white"
-              >
-                Book Free IT Consultation
-              </Link>
+        {/* Bottom group
+        {/* Category ribbon — positioned at ~70% hero height */}
+        <div className="absolute left-1/2 -translate-x-1/2 z-20"
+             style={{ top: "70%" }}>
+          <div className="flex items-center justify-center px-12 md:px-14 py-[7px] bg-black/25 backdrop-blur-sm rounded-full">
+            <div className="hero-category-line flex items-center">
+              <span className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold font-serif tracking-[0.01em] leading-none hero-shimmer">
+                <span><span className="text-red-600 font-bold">D</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">igital</span></span>
+                <span className="ml-[2px]"><span className="text-red-600 font-bold">S</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">ignage</span></span>
+                <span className="sep mx-[7px] text-[#D4AF37]" style={{textShadow:'0 0 12px rgba(212,175,55,0.25)'}}>•</span>
+                <span><span className="text-red-600 font-bold">V</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">ideo</span></span>
+                <span className="ml-[2px]"><span className="text-red-600 font-bold">W</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">alls</span></span>
+                <span className="sep mx-[7px] text-[#D4AF37]" style={{textShadow:'0 0 12px rgba(212,175,55,0.25)'}}>•</span>
+                <span><span className="text-red-600 font-bold">I</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">nteractive</span></span>
+                <span className="ml-[2px]"><span className="text-red-600 font-bold">D</span><span className="bg-gradient-to-b from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent font-semibold">isplays</span></span>
+              </span>
             </div>
           </div>
-                </div>
-
-        {/* Carousel Pagination — centered, bottom-aligned with HCB */}
-        {hasCarousel && (
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-30 flex gap-2">
-            {heroImages.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setHeroIdx(i)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                  i === heroIdx ? "bg-[#C7A64A] w-6" : "bg-white/50 hover:bg-white/80"
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
+        </div>
+        {/* Bottom group — scroll cue + carousel dots */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-12 z-20 flex flex-col items-center gap-3">
+          {/* Scroll cue */}
+          <div className="flex flex-col items-center gap-1.5">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-black">Explore Our Solutions</span>
+            <svg className="w-5 h-5 text-white/50 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
           </div>
-        )}
+          {/* Carousel pagination */}
+          {hasCarousel && (
+            <div className="flex gap-2">
+              {heroImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setHeroIdx(i)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    i === heroIdx ? "bg-[#C7A64A] w-5" : "bg-white/40 hover:bg-white/70"
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
-
-
-
       {/* Premium Propertism-style Trust Strip */}
 
       <section className="border-y border-[#B89A4A] grid grid-cols-1 lg:grid-cols-2 text-slate-900 bg-white h-auto lg:h-[18vh] min-h-[18vh] overflow-hidden">

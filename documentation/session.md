@@ -58,3 +58,28 @@ Then redeploy from Vercel dashboard.
 - Render backend: `https://sakthi-89tl.onrender.com/api`
 - Vercel frontend: `https://sakthi-solutions.vercel.app`
 - GitHub: `https://github.com/vijaympgs/sakthi`
+
+## Date: 2026-07-29 (Session 9 — Hero Category Ribbon Refinements & Visual Polish)
+
+### Tasks Completed
+
+1. **Hero Category Ribbon — Colors Matched to NAV V10**
+   - Changed `text-[#D63B3B]` → `text-red-600` to match NAV wordmark red
+   - All 6 first-letter spans updated
+
+2. **Hero Category Ribbon — Compact Refinement**
+   - Font size reduced: `22px/26px` → `18px/20px/22px` (~20% narrower overall)
+   - Letter spacing: `0.08em` → `0.01em` (near-normal)
+   - Word gaps: `ml-1` (4px) → `ml-[2px]` (2px)
+   - Dot spacing: `mx-3` (12px) → `mx-[7px]` (~42% reduction)
+   - Outer padding kept at `px-12 md:px-14` (48-56px per spec)
+
+3. **Hero Category Ribbon — Visual Brilliance**
+   - Rest text changed from `text-white/50 font-extralight` → gold gradient (`from-[#D4AF37] to-[#E0B84F] bg-clip-text text-transparent`) with `font-semibold` (600)
+   - Gold dots: `text-[#C7A64A]/60` → `text-[#D4AF37]` with `textShadow: 0 0 12px rgba(212,175,55,0.25)` glow
+   - Ribbon bg: `bg-black/30` → `bg-black/25 backdrop-blur-sm` (lighter + glass blur)
+
+4. **Scroll Cue**
+   - "Explore Our Solutions": `text-white/50 font-medium` → `text-black font-bold`
+
+5. **All changes verified locally** — BE (8000) + FE (3000) running

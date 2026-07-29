@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Navigation } from "@/components/layout/Navigation";
+import { Footer } from "@/components/layout/Footer";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ProductSpecsSection } from "@/components/ui/ProductSpecsSection";
 import { useProduct } from "@/hooks/useQueries";
@@ -10,21 +12,33 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <section className="section-padding bg-white">
-        <div className="container-page text-center"><p className="text-gray-500">Loading product details...</p></div>
-      </section>
+      <>
+        <Navigation />
+        <main id="main-content">
+          <section className="section-padding bg-white">
+            <div className="container-page text-center"><p className="text-gray-500">Loading product details...</p></div>
+          </section>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   if (!product) {
     return (
-      <section className="section-padding bg-white">
-        <div className="container-page text-center">
-          <h1 className="heading-lg text-primary-500">Product Not Found</h1>
-          <p className="text-gray-500 mt-4">This product could not be loaded.</p>
-          <Link href="/products" className="btn-primary mt-6 inline-block">View All Products</Link>
-        </div>
-      </section>
+      <>
+        <Navigation />
+        <main id="main-content">
+          <section className="section-padding bg-white">
+            <div className="container-page text-center">
+              <h1 className="heading-lg text-primary-500">Product Not Found</h1>
+              <p className="text-gray-500 mt-4">This product could not be loaded.</p>
+              <Link href="/products" className="btn-primary mt-6 inline-block">View All Products</Link>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </>
     );
   }
 
@@ -65,6 +79,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   return (
     <>
+      <Navigation />
+      <main id="main-content">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -135,6 +151,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           <Link href="/contact" className="btn-primary">Request a Quote</Link>
         </div>
       </section>
+      </main>
+      <Footer />
     </>
   );
 }

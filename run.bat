@@ -7,7 +7,7 @@ echo.
 echo [0/5] Stopping previous instances...
 taskkill /F /IM python.exe 2>nul
 taskkill /F /IM node.exe 2>nul
-taskkill /F /IM chrome.exe 2>nul
+rem taskkill /F /IM chrome.exe 2>nul
 timeout /t 2 /nobreak >nul
 echo Done.
 echo.
