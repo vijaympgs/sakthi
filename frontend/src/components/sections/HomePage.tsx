@@ -933,16 +933,15 @@ export function HomePage() {
 
                       <div className="h-48 w-full overflow-hidden relative bg-slate-100 shrink-0">
 
-                        <img
-
-                          src={image}
-
-                          alt={cat.name}
-
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
-
-                        />
-
+                        {image ? (
+                          <img
+                            src={image}
+                            alt={cat.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">No image</div>
+                        )}
                         <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/20 transition-colors duration-300" />
 
                         {brandLogoUrl && cat.show_brand_logo !== false && (

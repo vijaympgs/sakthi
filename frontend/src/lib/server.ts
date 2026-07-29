@@ -21,10 +21,13 @@ export interface CompanyInfoData {
 
 export async function getCompanyInfo(): Promise<CompanyInfoData | null> {
   try {
-    const baseUrl = API_URL.replace(/\/api\/?$/, "");
-    const res = await fetch(`${API_URL.replace(/\/api\/?$/, "")}/cms/settings/company/`, {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${API_URL}/cms/settings/company/`, {
       next: { revalidate: 3600 },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     if (!res.ok) return null;
     return await res.json();
   } catch {

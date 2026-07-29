@@ -194,17 +194,31 @@ class Command(BaseCommand):
             brand=godspeed, name="Digital Signage", slug="digital-signage",
             tagline="Premium Digital Displays",
             description="Indoor and outdoor digital signage solutions including floor standing, wall mounting and LG commercial displays.",
-            sort_order=1, is_active=True)
+            sort_order=1, is_active=True, show_brand_logo=True)
+        self._download_and_save_category_image(
+            cat_digital_signage,
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+            "digital-signage.jpg")
+
         cat_video_wall = ProductCategory.objects.create(
             brand=godspeed, name="Video Wall", slug="video-wall-cat",
             tagline="Ultra-Thin Bezel Displays",
             description="Samsung and LG LCD video wall solutions in 42\", 46\" and 55\" with ultra-thin bezel splicing.",
-            sort_order=2, is_active=True)
+            sort_order=2, is_active=True, show_brand_logo=True)
+        self._download_and_save_category_image(
+            cat_video_wall,
+            "https://images.unsplash.com/photo-1550684376-efcbd6e3f031?auto=format&fit=crop&w=800&q=80",
+            "video-wall.jpg")
+
         cat_interactive = ProductCategory.objects.create(
             brand=godspeed, name="Interactive Displays", slug="interactive-displays",
             tagline="Touch & Interactive Solutions",
             description="Interactive touch kiosks, smart tables and wayfinding solutions with IR, resistive and capacitive touch options.",
-            sort_order=3, is_active=True)
+            sort_order=3, is_active=True, show_brand_logo=True)
+        self._download_and_save_category_image(
+            cat_interactive,
+            "https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=800&q=80",
+            "interactive-displays.jpg")
 
         self._cat_map = {
             "godspeed": cat_digital_signage,
