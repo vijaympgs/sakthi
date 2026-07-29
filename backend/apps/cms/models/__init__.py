@@ -16,7 +16,7 @@ from .blogs import BlogPost, BlogCategory
 from .navigation import NavigationMenu, NavigationItem
 from .footer import FooterColumn, FooterLink
 from .seo import SEOSettings
-from .company_info import CompanyInfo
+from .company_info import CompanyInfo, HeroImage
 from .theme_settings import ThemeSettings
 from .contact_forms import ContactSubmission, EnquiryType
 from .analytics import PageView
@@ -46,6 +46,7 @@ __all__ = [
     "FooterColumn", "FooterLink",
     "SEOSettings",
     "CompanyInfo",
+    "HeroImage",
     "ThemeSettings",
     "ContactSubmission", "EnquiryType",
     "PageView",

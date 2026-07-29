@@ -29,6 +29,7 @@ def custom_get_app_list(self, request, app_label=None):
         # Models that power the Home page sections
         ('[Home Page] Hero, Stats & Site Content', [       
             'CompanyInfo',       # Hero title/desc, stats strip, advantages, about section, CTA, trust chips, timeline, enquiry_types
+            'HeroImage',         # Hero background images (carousel)
         ]),
         ('[Home Page] Clients, Testimonials & Partners', [
             'Testimonial',       # Client testimonials carousel
@@ -333,6 +334,13 @@ class TeamMemberAdmin(admin.ModelAdmin):
     list_display = ["name", "designation", "sort_order", "is_active"]
     list_filter = ["is_active"]
     search_fields = ["name", "designation"]
+
+
+@admin.register(HeroImage)
+class HeroImageAdmin(admin.ModelAdmin):
+    list_display = ["company", "alt_text", "sort_order"]
+    list_filter = ["company"]
+    search_fields = ["alt_text"]
 
 
 @admin.register(CaseStudy)

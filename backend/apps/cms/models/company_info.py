@@ -59,3 +59,18 @@ class CompanyInfo(models.Model):
 
     def __str__(self):
         return self.company_name
+
+
+class HeroImage(models.Model):
+    company = models.ForeignKey(CompanyInfo, on_delete=models.CASCADE, related_name="hero_images")
+    image = models.ImageField(upload_to="hero/")
+    alt_text = models.CharField(max_length=300, blank=True)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+        verbose_name = "Hero Image"
+        verbose_name_plural = "Hero Images"
+
+    def __str__(self):
+        return f"Hero {self.sort_order}: {self.alt_text or self.image.name}"

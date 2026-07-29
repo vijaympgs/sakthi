@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -143,6 +143,16 @@ export function HomePage() {
   const team = apiTeam && apiTeam.length > 0 ? apiTeam : [];
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [heroIdx, setHeroIdx] = useState(0);
+
+  const heroImages: { image: string; alt_text: string }[] = (companyInfo as any)?.hero_images || [];
+  const hasCarousel = heroImages.length > 0;
+
+  useEffect(() => {
+    if (heroImages.length < 2) return;
+    const t = setInterval(() => setHeroIdx((p) => (p + 1) % heroImages.length), 5000);
+    return () => clearInterval(t);
+  }, [heroImages.length]);
   const enquiryTypes: string[] = (companyInfo?.enquiry_types && companyInfo.enquiry_types.length > 0)
     ? companyInfo.enquiry_types.map((e: any) => typeof e === "string" ? e : e.name)
     : [
@@ -232,11 +242,47 @@ export function HomePage() {
   return (
     <>
       <section
-        className="relative h-[72vh] min-h-[72vh] flex flex-col justify-center items-center overflow-hidden bg-cover bg-center text-white"
-        style={{ backgroundImage: `url(${companyInfo?.hero_bg_image || "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"})` }}
+        className="relative h-[72vh] min-h-[72vh] flex flex-col justify-center items-center overflow-hidden text-white"
       >
-        {/* Dark overlay to ensure readability */}
-        <div className="absolute inset-0 bg-slate-950/85 z-0" />
+        {/* Hero background images (carousel if multiple) */}
+        {hasCarousel ? (
+          heroImages.map((img, i) => (
+            <div
+              key={i}
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+              style={{
+                backgroundImage: `url(${img.image})`,
+                opacity: i === heroIdx ? 1 : 0,
+                zIndex: i === heroIdx ? 1 : 0,
+              }}
+              role="img"
+              aria-label={img.alt_text || `Hero background ${i + 1}`}
+            />
+          ))
+        ) : (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${companyInfo?.hero_bg_image || "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"})` }}
+          />
+        )}
+
+        {/* Image navigation dots */}
+        {hasCarousel && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {heroImages.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setHeroIdx(i)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  i === heroIdx
+                    ? "bg-[#B89A4A] w-6"
+                    : "bg-white/50 hover:bg-white/80"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="container-page flex flex-col items-center justify-center text-center z-10 w-full mx-auto pb-10">
           <div className="max-w-4xl mx-auto animate-fade-up flex flex-col items-center">

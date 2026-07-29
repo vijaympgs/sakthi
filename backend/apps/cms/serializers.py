@@ -184,7 +184,27 @@ class SEOSettingsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class HeroImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if request and obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url if obj.image else None
+
+    class Meta:
+        model = HeroImage
+        fields = ["id", "image", "alt_text", "sort_order"]
+
+
 class CompanyInfoSerializer(serializers.ModelSerializer):
+    hero_images = serializers.SerializerMethodField()
+
+    def get_hero_images(self, obj):
+        qs = obj.hero_images.all()
+        return HeroImageSerializer(qs, many=True, context=self.context).data
+
     class Meta:
         model = CompanyInfo
         fields = "__all__"

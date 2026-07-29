@@ -151,7 +151,7 @@ class CompanyInfoView(PublicMixin, APIView):
         company_obj = CompanyInfo.objects.first()
         if not company_obj:
             return Response({})
-        return Response(CompanyInfoSerializer(company_obj).data)
+        return Response(CompanyInfoSerializer(company_obj, context={"request": request}).data)
 
 
 class SEOSettingsView(PublicMixin, APIView):
@@ -193,7 +193,7 @@ class HomePageView(PublicMixin, APIView):
             models.Q(category__brand__isnull=True) | models.Q(category__brand__is_active=True)
         )[:6]
         data = {
-            "site_settings": CompanyInfoSerializer(CompanyInfo.objects.first()).data if CompanyInfo.objects.exists() else {},
+            "site_settings": CompanyInfoSerializer(CompanyInfo.objects.first(), context={"request": request}).data if CompanyInfo.objects.exists() else {},
             "brands": BrandSerializer(Brand.objects.filter(is_active=True), many=True).data,
             "products": ProductSerializer(active_products, many=True).data,
             "product_categories": ProductCategorySerializer(active_cats, many=True).data,

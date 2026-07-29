@@ -26,6 +26,7 @@ class Command(BaseCommand):
         self._seed_case_study()
         self._seed_clients()
         self._seed_team()
+        self._seed_hero_images()
         self.stdout.write(self.style.SUCCESS("Database seeded completely"))
 
     # ─── helpers ────────────────────────────────────────────────
@@ -754,5 +755,65 @@ class Command(BaseCommand):
                 if os.path.exists(local_path):
                     member.photo = f"team/{filename}"
                     member.save()
+
+    # ─── hero images ────────────────────────────────────────────
+
+    def _seed_hero_images(self):
+        import os
+        import shutil
+        from django.conf import settings
+
+        company = CompanyInfo.objects.filter(pk=1).first()
+        if not company:
+            self.stdout.write(self.style.WARNING("No company found, skipping hero images"))
+            return
+
+        # Path to hero-bgs folder (project root, parallel to backend/)
+        # __file__ = backend/apps/cms/management/commands/seed_sakthi.py
+        cmd_dir = os.path.dirname(os.path.abspath(__file__))       # commands/
+        mgmt_dir = os.path.dirname(cmd_dir)                        # management/
+        app_dir = os.path.dirname(mgmt_dir)                        # cms/
+        apps_parent = os.path.dirname(app_dir)                     # apps/
+        backend_dir = os.path.dirname(apps_parent)                 # backend/
+        project_root = os.path.dirname(backend_dir)                # project root
+        hero_bgs_dir = os.path.join(project_root, "hero-bgs")
+        hero_bgs_dir = os.path.normpath(hero_bgs_dir)
+
+        hero_media_dir = os.path.join(settings.MEDIA_ROOT, "hero")
+        os.makedirs(hero_media_dir, exist_ok=True)
+
+        if not os.path.isdir(hero_bgs_dir):
+            self.stdout.write(self.style.WARNING(f"hero-bgs directory not found at {hero_bgs_dir}"))
+            return
+
+        # Remove existing hero images to reseed cleanly
+        HeroImage.objects.filter(company=company).delete()
+
+        # Clear existing hero media files
+        for f in os.listdir(hero_media_dir):
+            fp = os.path.join(hero_media_dir, f)
+            if os.path.isfile(fp):
+                os.remove(fp)
+
+        valid_exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"}
+        files = sorted([f for f in os.listdir(hero_bgs_dir) if os.path.splitext(f)[1].lower() in valid_exts])
+
+        if not files:
+            self.stdout.write(self.style.WARNING("No image files found in hero-bgs"))
+            return
+
+        for idx, filename in enumerate(files):
+            src = os.path.join(hero_bgs_dir, filename)
+            dst = os.path.join(hero_media_dir, filename)
+            shutil.copy2(src, dst)
+
+            HeroImage.objects.create(
+                company=company,
+                image=f"hero/{filename}",
+                alt_text=f"Hero background {idx + 1}",
+                sort_order=idx,
+            )
+
+        self.stdout.write(self.style.SUCCESS(f"Seeded {len(files)} hero images"))
 
 
