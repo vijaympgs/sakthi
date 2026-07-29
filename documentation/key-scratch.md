@@ -212,3 +212,6 @@ Answer YES to every question.
 The implementation is considered complete only if the following statement is TRUE:
 
 "The frontend is a generic rendering engine. All business content, navigation, pages, sections, SEO, and media are owned by Django. A fresh deployment followed by database seeding recreates the website without any frontend code modifications."
+
+
+The user wants a translucent navigation bar background - light black (dark) transparent that shows the hero background through it. Standard premium website pattern.

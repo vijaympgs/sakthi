@@ -43,7 +43,7 @@ export function Navigation() {
   const logoUrl = getLogoUrl();
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 border-b border-gray-100 shadow-sm h-16 lg:h-20 flex items-center backdrop-blur-md">
+    <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-lg h-16 lg:h-20 flex items-center">
         <div className="w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between">
           <Link href="/" className="flex items-center justify-center gap-1 lg:justify-start lg:gap-1.5 group transition-opacity hover:opacity-90">
             {logoUrl && (
@@ -65,17 +65,17 @@ export function Navigation() {
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-black`}>{w[0]}</span>
-                        <span className={`${sz} font-medium text-gray-900`}>{w.slice(1)}</span>
+                        <span className={`${sz} font-medium text-white`}>{w.slice(1)}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
                   case 1:
-                    return <><span className={`${sz} font-bold text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-gray-900 ml-3`}>{words.slice(1).join(' ')}</span></>;
+                    return <><span className={`${sz} font-bold text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-white/80 ml-3`}>{words.slice(1).join(' ')}</span></>;
                   case 2:
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-semibold`}>{w[0]}</span>
-                        <span className={`${sz} font-light tracking-widest text-gray-900`}>{w.slice(1).toUpperCase()}</span>
+                        <span className={`${sz} font-light tracking-widest text-white/70`}>{w.slice(1).toUpperCase()}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
@@ -83,7 +83,7 @@ export function Navigation() {
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-black text-[3.6rem] sm:text-[3.6rem] lg:text-[54px]`}>{w[0]}</span>
-                        <span className={`${sz} font-thin text-gray-900`}>{w.slice(1)}</span>
+                        <span className={`${sz} font-extralight text-white/50`}>{w.slice(1)}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
@@ -91,7 +91,7 @@ export function Navigation() {
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-black text-[4rem] sm:text-[4rem] lg:text-[60px]`}>{w[0]}</span>
-                        <span className={`${sz} font-light text-gray-400 uppercase tracking-widest text-[1.8rem] sm:text-[1.8rem] lg:text-[28px]`}>{w.slice(1)}</span>
+                        <span className={`${sz} font-light text-white/40 uppercase tracking-widest text-[1.8rem] sm:text-[1.8rem] lg:text-[28px]`}>{w.slice(1)}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
@@ -99,19 +99,19 @@ export function Navigation() {
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} font-semibold tracking-[0.15em] text-red-600`}>{w[0].toUpperCase()}</span>
-                        <span className={`${sz} font-light tracking-[0.25em] text-gray-900`}>{w.slice(1).toUpperCase()}</span>
+                        <span className={`${sz} font-light tracking-[0.25em] text-white/70`}>{w.slice(1).toUpperCase()}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
                   case 6:
-                    return <><span className={`${sz} font-black text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-gray-900 ml-3`}>{words.slice(1).join(' ')}</span></>;
+                    return <><span className={`${sz} font-black text-red-600`}>{words[0]}</span><span className={`${sz} font-light text-white/80 ml-3`}>{words.slice(1).join(' ')}</span></>;
                   case 7:
                     return <><span className={`${sz} font-bold text-red-600 lowercase`}>{words[0]}</span><span className={`${sz} font-normal text-red-600 uppercase tracking-wider ml-3`}>{words.slice(1).join(' ')}</span></>;
                   case 8:
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-bold italic font-serif`}>{w[0]}</span>
-                        <span className={`${sz} font-light text-gray-900 font-serif`}>{w.slice(1)}</span>
+                        <span className={`${sz} font-light text-white/70 font-serif`}>{w.slice(1)}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
@@ -119,7 +119,7 @@ export function Navigation() {
                     return words.map((w: string, i: number) => (
                       <span key={i} className="flex items-baseline">
                         <span className={`${sz} text-red-600 font-bold`}>{w[0]}</span>
-                        <span className={`${sz} font-extralight text-gray-900`} style={{ fontWeight: 200 }}>{w.slice(1)}</span>
+                        <span className={`${sz} font-extralight text-white/50`} style={{ fontWeight: 200 }}>{w.slice(1)}</span>
                         {i < words.length - 1 && <>&nbsp;</>}
                       </span>
                     ));
@@ -139,7 +139,7 @@ export function Navigation() {
                 <Link
                   href={item.url || "#"}
                   className={cn(
-                    "flex items-center gap-1 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-700 hover:text-[#B89A4A] transition-colors",
+                    "flex items-center gap-1 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-[#B89A4A] transition-colors",
                     hasChildren(item) && "cursor-pointer",
                   )}
                 >
@@ -195,7 +195,7 @@ export function Navigation() {
 
             <button
               onClick={cycleTheme}
-              className="text-gray-400 hover:text-[#B89A4A] p-2 transition-colors"
+              className="text-white/50 hover:text-[#B89A4A] p-2 transition-colors"
               title={`Theme: ${theme}`}
               aria-label={`Current theme: ${theme}. Click to cycle.`}
             >
@@ -203,7 +203,7 @@ export function Navigation() {
             </button>
             <button
               onClick={cycleTypography}
-              className="text-gray-400 hover:text-[#B89A4A] p-2 transition-colors"
+              className="text-white/50 hover:text-[#B89A4A] p-2 transition-colors"
               title={`Typography: ${typography}`}
               aria-label={`Current typography: ${typography}. Click to cycle.`}
             >
@@ -211,13 +211,13 @@ export function Navigation() {
             </button>
           </div>
 
-          <button className="lg:hidden p-2 text-gray-700" onClick={() => setIsMobileOpen(!isMobileOpen)} aria-label="Toggle menu">
+          <button className="lg:hidden p-2 text-white/80" onClick={() => setIsMobileOpen(!isMobileOpen)} aria-label="Toggle menu">
             {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {isMobileOpen && (
-          <div className="lg:hidden border-t border-gray-100 bg-[#FFFFFF] absolute top-full left-0 w-full shadow-lg z-50">
+          <div className="lg:hidden border-t border-white/10 bg-black/60 backdrop-blur-lg absolute top-full left-0 w-full shadow-lg z-50">
             <div className="container-page py-4 space-y-1">
               {navItems.map((item) => (
                 <MobileNavItem key={item.label} item={item} onClose={() => setIsMobileOpen(false)} />
@@ -232,7 +232,7 @@ export function Navigation() {
               <div className="flex items-center justify-center gap-2 pt-2">
                 <button
                   onClick={cycleTheme}
-                  className="text-gray-400 hover:text-[#B89A4A] p-2 transition-colors"
+                  className="text-white/50 hover:text-[#B89A4A] p-2 transition-colors"
                   title={`Theme: ${theme}`}
                   aria-label={`Current theme: ${theme}. Click to cycle.`}
                 >
@@ -240,7 +240,7 @@ export function Navigation() {
                 </button>
                 <button
                   onClick={cycleTypography}
-                  className="text-gray-400 hover:text-[#B89A4A] p-2 transition-colors"
+                  className="text-white/50 hover:text-[#B89A4A] p-2 transition-colors"
                   title={`Typography: ${typography}`}
                   aria-label={`Current typography: ${typography}. Click to cycle.`}
                 >
@@ -259,7 +259,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 
   if (!item.children) {
     return (
-      <Link href={item.url || "#"} className="block px-4 py-2.5 text-sm font-semibold uppercase tracking-wider text-gray-700 hover:text-[#B89A4A]" onClick={onClose}>
+      <Link href={item.url || "#"} className="block px-4 py-2.5 text-sm font-semibold uppercase tracking-wider text-white/80 hover:text-[#B89A4A]" onClick={onClose}>
         {item.label}
       </Link>
     );
@@ -267,7 +267,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 
   return (
     <div>
-      <button className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold uppercase tracking-wider text-gray-700" onClick={() => setIsOpen(!isOpen)}>
+      <button className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold uppercase tracking-wider text-white/80" onClick={() => setIsOpen(!isOpen)}>
         {item.label}
         <ChevronDown size={14} className={cn("transition-transform", isOpen && "rotate-180")} />
       </button>
@@ -275,13 +275,13 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
         <div className="pl-4 space-y-1">
           {item.children!.map((child) => (
             <div key={child.label}>
-              <Link href={child.url || "#"} className="block px-4 py-2 text-sm text-gray-600 hover:text-[#B89A4A]" onClick={onClose}>
+              <Link href={child.url || "#"} className="block px-4 py-2 text-sm text-white/60 hover:text-[#B89A4A]" onClick={onClose}>
                 {child.label}
               </Link>
               {child.children && child.children.length > 0 && (
                 <div className="pl-4">
                   {child.children!.map((sub) => (
-                    <Link key={sub.label} href={sub.url || "#"} className="block px-4 py-1.5 text-xs text-gray-500 hover:text-[#B89A4A]" onClick={onClose}>
+                    <Link key={sub.label} href={sub.url || "#"} className="block px-4 py-1.5 text-xs text-white/40 hover:text-[#B89A4A]" onClick={onClose}>
                       {sub.label}
                     </Link>
                   ))}
