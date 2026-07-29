@@ -4,39 +4,46 @@
 
 ### Tasks Completed
 
-1. **Multiple Hero Images Carousel (Backend)**
-   - Created `HeroImage` model (FK to CompanyInfo, image, alt_text, sort_order)
-   - Migration 0029 — `hero_heroimage`
-   - Added `hero_eyebrow` and `hero_tagline_subtitle` fields to CompanyInfo — Migration 0030
-   - Registered HeroImage in admin under `[Home Page] Hero`
-   - Serializer returns absolute URLs with request context
-   - Seed script copies 15 images from `hero-bgs/` to `media/hero/`
+1. **Hero Image Carousel & Backend**
+   - Created `HeroImage` model (FK to CompanyInfo, image, alt_text, sort_order) — migration 0029
+   - Added `hero_eyebrow` and `hero_tagline_subtitle` fields to CompanyInfo — migration 0030
+   - Admin registration, serializer with absolute URLs, seed script for 15 hero images
 
-2. **Hero Section Redesign (Frontend)**
-   - Multi-image carousel with fade transitions (1000ms), auto-cycle 5s, nav dots
-   - Left-aligned layout with generous whitespace
-   - Typography: red eyebrow `#D63B3B`, gold subtitle `#C7A64A`, white heading, gold serif italic "&" suffix
-   - No dark overlay / no CSS filters on images
-   - All text driven from CMS — no hardcoded fallbacks
+2. **Hero Section Premium Redesign**
+   - Canvas-based brightness detection → adapts overlay opacity per image (dark: 0.35, bright: 0.75)
+   - Left-to-right gradient overlay (dynamic opacity, 700ms transition)
+   - Typography: 58px/46px/36px heading, Playfair Display italic gold for last line
+   - Content in left 35-40% (`ml-[4vw] lg:ml-[6vw]`, max-w 560px)
+   - Slide animations: 250ms fade + 12px slide-up on image change
+   - HCB left-aligned, carousel pagination centered, same bottom baseline
 
-3. **Floating Contact Widget**
-   - Replaced old vertical social sidebar with premium floating contact bar
-   - Circular 54px buttons, Sakthi navy/gold, staggered animation, hover tooltips
-   - Mobile: FAB speed-dial at bottom-right
-   - Used Lucide icons, CSS transitions, full keyboard accessibility
+3. **Floating Contact Widget** (premium enterprise)
+   - Circular 54px buttons, navy/gold, staggered animation, hover tooltips
+   - Mobile FAB speed-dial, keyboard accessible
 
-4. **Navigation Company Name**
-   - Lowercase red color, whitespace-nowrap to prevent wrapping
-   - Responsive sizing: mobile/tablet `text-2xl`, desktop `text-3xl`
-   - Centered on mobile/tablet, left-aligned on desktop
+4. **Wordmark Cycling in Navigation**
+   - 10 typography variants for "Sakthi Solutions" with red/white color treatment
+   - Click to cycle (V1-V10), hover shows variant number
+   - Uses Inter, Manrope, Montserrat, Outfit, Plus Jakarta Sans, Sora, IBM Plex Sans
 
-5. **Git Push**
-   - All changes pushed to `main` at `https://github.com/vijaympgs/sakthi`
-   - Commits: `f1a8df2`, `a4794b1`, `45ce756`, `e5ae53a`, `088f4fb`
+5. **Wordmark Exploration HTML** — `documentation/wordmark-explorations.html` (10 variations)
 
-### Environment Variables Required for Vercel Deployment
+6. **Hero Content Alignment Fixes**
+   - Empty `hero_eyebrow` and `hero_tagline_subtitle` cleared in seed
+   - About image empty src warning fixed (`""` → `undefined`)
+   - Nav dots moved to centered absolute, HCB left-aligned, both bottom-aligned
 
-To make the site work on Vercel, add these in Vercel Dashboard → Settings → Environment Variables:
+7. **run.bat Updated**
+   - Now kills Chrome, starts BE/FE/9Router, waits 5s, opens Chrome, auto-exits
+
+### Git Push
+
+- Commit `cebd031` — pushed to `main` at `https://github.com/vijaympgs/sakthi`
+- 6 files changed, 1733 insertions, 131 deletions
+
+### Blocker — Vercel Env Vars Not Set
+
+Vercel deployment at `https://sakthi-solutions.vercel.app` will not render API data until these are set in Vercel Dashboard → Settings → Environment Variables:
 
 ```
 NEXT_PUBLIC_API_URL=https://sakthi-89tl.onrender.com/api
@@ -44,34 +51,10 @@ NEXT_PUBLIC_SITE_URL=https://sakthisolutions.in
 NEXT_PUBLIC_SITE_NAME=Sakthi Solutions
 ```
 
-Then redeploy. `NEXT_PUBLIC_*` vars are baked at build time.
+Then redeploy from Vercel dashboard.
 
-### Current Blockers
+### URLs
 
-1. **Vercel env vars NOT set** — `https://sakthi-solutions.vercel.app` renders empty because API calls default to localhost
-2. **Render hero-bgs path** — Fixed in `088f4fb` by moving `hero-bgs/` into `backend/` (Render build context)
-3. **Runtime error "Cannot read properties of undefined (reading 'call')"** — Likely resolves once env vars set
-
-### Files Modified
-
-- `backend/apps/cms/models/__init__.py` — Export HeroImage
-- `backend/apps/cms/models/company_info.py` — HeroImage model + hero_eyebrow/hero_tagline_subtitle fields
-- `backend/apps/cms/serializers.py` — HeroImageSerializer with absolute URL
-- `backend/apps/cms/views.py` — Pass request context to serializer
-- `backend/apps/cms/admin.py` — HeroImage admin (stacked inline)
-- `backend/apps/cms/management/commands/seed_sakthi.py` — _seed_hero_images
-- `backend/apps/cms/migrations/0029_heroimage.py` — New migration
-- `backend/apps/cms/migrations/0030_companyinfo_hero_fields.py` — New migration
-- `frontend/src/components/sections/HomePage.tsx` — Hero carousel with fade/auto-play
-- `frontend/src/components/layout/FloatingContactBar.tsx` — Premium floating widget (replaced old)
-- `frontend/src/components/layout/Navigation.tsx` — Company name style fixes
-- `frontend/.env.example` — Updated API URL
-- `documentation/handoff-2026-07-29.md` — Created
-
-### Notes
-
-- Render backend: `https://sakthi-89tl.onrender.com/api` — working
-- Vercel frontend: `https://sakthi-solutions.vercel.app` — needs env vars
-- Live domain: `https://sakthisolutions.in`
+- Render backend: `https://sakthi-89tl.onrender.com/api`
+- Vercel frontend: `https://sakthi-solutions.vercel.app`
 - GitHub: `https://github.com/vijaympgs/sakthi`
-- `chrome-extension://invalid/` errors in console are from browser extensions, safe to ignore
