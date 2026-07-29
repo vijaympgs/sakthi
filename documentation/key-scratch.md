@@ -86,3 +86,129 @@ Top problem areas
 4. **`siteConfig.ts`** (11 items) — Entire file is a static JS object duplicating `CompanyInfo` data. Used as secondary fallback only.
 
 5. **`AboutPage.tsx`** (31 items) — Stats strip (`ABOUT_STATS`), section labels, CTA texts all hardcoded.
+
+
+# SCCB Verification Checklist
+
+Before marking this SCCB as complete, verify every item below.
+
+## Backend Driven Architecture
+
+- [ ] No business content is hardcoded in the frontend.
+- [ ] Navigation is rendered entirely from Django.
+- [ ] Hero content is rendered entirely from Django.
+- [ ] Footer content is rendered entirely from Django.
+- [ ] CTA content is rendered entirely from Django.
+- [ ] SEO metadata is rendered entirely from Django.
+- [ ] Breadcrumbs are generated from backend data.
+- [ ] Products are rendered from backend models.
+- [ ] Services are rendered from backend models.
+- [ ] Industries are rendered from backend models.
+- [ ] Brands are rendered from backend models.
+- [ ] Partners are rendered from backend models.
+- [ ] Testimonials are rendered from backend models.
+- [ ] Statistics are rendered from backend models.
+
+---
+
+## Generic Frontend
+
+- [ ] No product-specific React components exist.
+- [ ] No brand-specific React components exist.
+- [ ] No service-specific React components exist.
+- [ ] No person-specific React components exist.
+- [ ] No page-specific React components exist.
+
+---
+
+## Naming
+
+Verify only generic component names are used.
+
+Examples
+
+- [ ] ProductPage
+- [ ] ServicePage
+- [ ] BrandPage
+- [ ] IndustryPage
+- [ ] DynamicPage
+- [ ] ContentPage
+- [ ] ProductCard
+- [ ] ServiceCard
+- [ ] HeroSection
+- [ ] SectionRenderer
+- [ ] ContentRenderer
+
+Verify none of the following exist.
+
+- [ ] GodspeedPage
+- [ ] TellusPage
+- [ ] ChildwoodPage
+- [ ] JayakumarPage
+- [ ] DigitalSignagePage
+- [ ] HotelSolutionsPage
+
+---
+
+## Routing
+
+- [ ] Pages use slug-based routing.
+- [ ] Products use slug-based routing.
+- [ ] Services use slug-based routing.
+- [ ] Industries use slug-based routing.
+- [ ] Brands use slug-based routing.
+- [ ] Solutions use slug-based routing.
+
+---
+
+## Rendering
+
+- [ ] Pages render dynamically from backend configuration.
+- [ ] Sections render dynamically.
+- [ ] Cards render dynamically.
+- [ ] Images render dynamically.
+- [ ] CTA buttons render dynamically.
+- [ ] Navigation hierarchy renders dynamically.
+
+---
+
+## Deployment Validation
+
+Simulate a fresh deployment.
+
+- [ ] Run migrations.
+- [ ] Execute seed/import scripts.
+- [ ] Launch application.
+- [ ] Verify navigation is populated automatically.
+- [ ] Verify all pages are available.
+- [ ] Verify products render correctly.
+- [ ] Verify services render correctly.
+- [ ] Verify industries render correctly.
+- [ ] Verify brands render correctly.
+- [ ] Verify SEO metadata is present.
+- [ ] Verify media assets resolve correctly.
+- [ ] Verify no frontend code changes were required.
+
+---
+
+## Architecture Validation
+
+Answer YES to every question.
+
+- [ ] Can a new Product be added without frontend changes?
+- [ ] Can a new Service be added without frontend changes?
+- [ ] Can a new Brand be added without frontend changes?
+- [ ] Can a new Industry be added without frontend changes?
+- [ ] Can a new Page be added without frontend changes?
+- [ ] Can the navigation change without frontend changes?
+- [ ] Can Hero content change without frontend changes?
+- [ ] Can SEO change without frontend changes?
+- [ ] Can the entire website be recreated by seeding only the database?
+
+---
+
+## Final Acceptance Criteria
+
+The implementation is considered complete only if the following statement is TRUE:
+
+"The frontend is a generic rendering engine. All business content, navigation, pages, sections, SEO, and media are owned by Django. A fresh deployment followed by database seeding recreates the website without any frontend code modifications."

@@ -73,7 +73,7 @@ function ScrollReveal({ children, className = "", stagger = false }: { children:
 }
 
 const getCategoryFallbackImage = (slug?: string) => {
-  return "";
+  return undefined;
 };
 
 const getCategoryImage = (cat: any) => {

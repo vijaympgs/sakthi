@@ -30,12 +30,12 @@ export function Navigation() {
 
   const getLogoUrl = () => {
     if (!companyInfo?.logo) {
-      return "";
+      return undefined;
     }
     if (companyInfo.logo.startsWith("http://") || companyInfo.logo.startsWith("https://")) {
       return companyInfo.logo;
     }
-    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/ ?$/, "");
     return `${apiBase}${companyInfo.logo.startsWith("/") ? "" : "/"}${companyInfo.logo}`;
   };
 
@@ -44,7 +44,7 @@ export function Navigation() {
   return (
     <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 border-b border-gray-100 shadow-sm h-16 lg:h-20 flex items-center backdrop-blur-md">
         <div className="w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-0.5 group transition-opacity hover:opacity-90">
+          <Link href="/" className="flex items-center justify-center gap-1 lg:justify-start lg:gap-1.5 group transition-opacity hover:opacity-90">
             {logoUrl && (
               <img 
                 src={logoUrl} 
@@ -55,7 +55,7 @@ export function Navigation() {
               />
             )}
             <div className="flex flex-row items-baseline gap-1.5 leading-none -ml-3">
-              <span className="text-xl sm:text-[37px] lg:text-[49px] font-extrabold tracking-tight text-red-600 font-heading">{companyInfo?.company_name?.toLowerCase() || ''}</span>
+              <span className="text-[5rem] sm:text-[5rem] lg:text-[60px] font-extrabold tracking-tight text-red-600 font-heading text-center lg:text-left">{companyInfo?.company_name?.toLowerCase() || ''}</span>
             </div>
           </Link>
 
