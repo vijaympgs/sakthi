@@ -32,6 +32,8 @@ class CompanyInfo(models.Model):
     advantages = models.JSONField(default=list, blank=True)
     hero_bg_image = models.URLField(max_length=500, default="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80", blank=True)
     hero_tagline = models.CharField(max_length=300, default="Since 2014 — Chennai • Hospitality & Retail IT Partner", blank=True)
+    hero_eyebrow = models.CharField(max_length=200, default="Since 2014", blank=True)
+    hero_tagline_subtitle = models.CharField(max_length=300, default="Chennai • Hospitality & Retail IT Partner", blank=True)
     stats = models.JSONField(default=list, blank=True, help_text="Trust strip stats: [{value, label}]")
     about_image = models.URLField(max_length=500, default="", blank=True)
     about_heading = models.CharField(max_length=300, default="Your Reliable Technology Partner Since 2014", blank=True)

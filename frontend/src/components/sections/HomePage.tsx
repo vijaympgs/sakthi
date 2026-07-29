@@ -284,39 +284,53 @@ export function HomePage() {
           </div>
         )}
 
-        <div className="container-page flex flex-col items-center justify-center text-center z-10 w-full mx-auto pb-10">
-          <div className="max-w-4xl mx-auto animate-fade-up flex flex-col items-center">
-            <p className="text-xs font-bold italic uppercase tracking-[0.22em] text-[#E4C36A] mb-4">
-              {companyInfo?.hero_tagline || ""}
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-[3.65rem] font-extrabold leading-[1.1] tracking-tight mb-4 whitespace-pre-line text-white">
-              {heroTitle.includes("&") ? (
-                <>
-                  <span className="block">
-                    {heroTitle.split("&")[0]}
-                  </span>
-                  <span className="block mt-[0.5em]">
-                    &amp; <span className="text-[#E4C36A] font-serif italic font-normal">{heroTitle.split("&")[1]}</span>
-                  </span>
-                </>
-              ) : (
-                <span className="text-white">{heroTitle}</span>
-              )}
-            </h1>
+        <div className="container-page flex flex-col items-start justify-center text-left z-10 w-full mx-auto pb-10">
+          <div className="max-w-2xl animate-fade-up flex flex-col items-start">
+            {/* Eyebrow — Red */}
+            {companyInfo?.hero_eyebrow && (
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#D63B3B] mb-2">
+                {companyInfo.hero_eyebrow}
+              </p>
+            )}
 
+            {/* Location line — Gold */}
+            {companyInfo?.hero_tagline_subtitle && (
+              <p className="text-sm font-medium text-[#C7A64A] mb-5">
+                {companyInfo.hero_tagline_subtitle}
+              </p>
+            )}
 
-            {/* Premium Gold Divider with Diamond */}
-            <div className="flex items-center justify-center my-6 w-full">
-              <div className="w-24 h-px bg-[#E4C36A]/50" />
-              <div className="w-2.5 h-2.5 mx-3 bg-[#E4C36A] rotate-45 border border-white shrink-0" />
-              <div className="w-24 h-px bg-[#E4C36A]/50" />
+            {/* Heading */}
+            {heroTitle && (
+              <h1 className="text-[2.8rem] md:text-[3.2rem] lg:text-[3.6rem] font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-line">
+                {heroTitle.includes("&") ? (
+                  <>
+                    <span className="block">{heroTitle.split("&")[0]}</span>
+                    <span className="block mt-[0.15em]">
+                      &amp; <span className="text-[#C7A64A] font-serif italic font-normal text-[2.6rem] md:text-[3rem] lg:text-[3.2rem]">{heroTitle.split("&")[1]}</span>
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-white">{heroTitle}</span>
+                )}
+              </h1>
+            )}
+
+            {/* Gold Divider */}
+            <div className="flex items-center my-6">
+              <div className="w-12 h-px bg-[#C7A64A]/50" />
+              <div className="w-1.5 h-1.5 mx-2.5 bg-[#C7A64A] rotate-45 border border-white shrink-0" />
             </div>
 
-            <p className="text-base md:text-lg text-gray-200 max-w-3xl mb-8 leading-relaxed whitespace-pre-line font-light">
-              {heroDescription}
-            </p>
+            {/* Description */}
+            {heroDescription && (
+              <p className="text-lg md:text-xl text-white/90 max-w-[520px] mb-8 leading-relaxed font-light">
+                {heroDescription}
+              </p>
+            )}
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/products"
                 className="btn-accent shadow-lg"
@@ -331,7 +345,6 @@ export function HomePage() {
                 Book Free IT Consultation
               </Link>
             </div>
-
           </div>
         </div>
       </section>

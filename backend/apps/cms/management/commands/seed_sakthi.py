@@ -100,8 +100,8 @@ class Command(BaseCommand):
             "testimonials_section_title": "Testimonials",
             "clients_section_title": "Our Clients",
             "products_section_title": "Our Products",
-            "hero_title": "Digital Signage, Kiosks & IT Solutions",
-            "hero_description": "We help retail & hospitality brands boost customer engagement and streamline operations with premium digital signage, interactive kiosks, and 24/7 on-ground IT support.",
+            "hero_title": "Digital Signage, Video Walls & Interactive Displays",
+            "hero_description": "Premium digital signage, video wall and interactive display solutions for hospitality, retail and corporate sectors, backed by 24/7 on-ground IT support.",
             "hero_bg_image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80",
             "trust_chips": [
                 {"icon": "→", "text": "Digital Signage & Video Walls"},
@@ -116,6 +116,8 @@ class Command(BaseCommand):
                 {"title": "Vandal-Proof Engineering", "description": "All our public-facing signage devices feature heavy-duty commercial bodies and tempered protective glass surfaces built for high-traffic operations."}
             ],
             "hero_tagline": "Since 2014 — Chennai • Hospitality & Retail IT Partner",
+            "hero_eyebrow": "Since 2014",
+            "hero_tagline_subtitle": "Chennai • Hospitality & Retail IT Partner",
             "stats": [
                 {"value": "12+", "label": "Years Experience"},
                 {"value": "500+", "label": "Projects Completed"},
