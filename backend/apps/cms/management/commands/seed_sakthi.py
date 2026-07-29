@@ -768,15 +768,14 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("No company found, skipping hero images"))
             return
 
-        # Path to hero-bgs folder (project root, parallel to backend/)
+        # Path to hero-bgs folder (now inside backend/ for Render build context)
         # __file__ = backend/apps/cms/management/commands/seed_sakthi.py
         cmd_dir = os.path.dirname(os.path.abspath(__file__))       # commands/
         mgmt_dir = os.path.dirname(cmd_dir)                        # management/
         app_dir = os.path.dirname(mgmt_dir)                        # cms/
         apps_parent = os.path.dirname(app_dir)                     # apps/
         backend_dir = os.path.dirname(apps_parent)                 # backend/
-        project_root = os.path.dirname(backend_dir)                # project root
-        hero_bgs_dir = os.path.join(project_root, "hero-bgs")
+        hero_bgs_dir = os.path.join(backend_dir, "hero-bgs")
         hero_bgs_dir = os.path.normpath(hero_bgs_dir)
 
         hero_media_dir = os.path.join(settings.MEDIA_ROOT, "hero")
